@@ -1,0 +1,39 @@
+{
+  "name": "joybox-backend-engineer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node server.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adeputraas/joybox-backend-engineer.git"
+  },
+  "author": "Ade Putra Susila",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adeputraas/joybox-backend-engineer/issues"
+  },
+  "jest": {
+    "verbose": true
+  },
+  "homepage": "https://github.com/adeputraas/joybox-backend-engineer#readme",
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "axios": "^1.1.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.2",
+    "express": "^4.17.3",
+    "jest": "^29.2.2",
+    "joi": "^17.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "knex": "^2.3.0",
+    "mysql": "^2.18.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.0"
+  }
+}
