@@ -5,8 +5,8 @@ const { uniqueNamesGenerator, NumberDictionary, adjectives, colors, names } = re
 
 exports.login = async (req, res) => {
   try {
-    const { name, password } = req.body;
-    const user = await User.findOne({ where: { name } });
+    const { username, password } = req.body;
+    const user = await User.findOne({ where: { username } });
 
     if (!user) {
       return res.status(401).send('User not found');
@@ -39,14 +39,14 @@ exports.register = async (req, res) => {
     const randomNames = uniqueNamesGenerator(configNames);
     const defaultPassword = process.env.DEFAULT_PASSWORD;
 
-    const { username, password, USERID } = req.body;
+    const { username } = req.body;
     const isUserAvailable = await User.findOne({ where: { username } });
-    idUser = isUserAvailable.id;
+    idUser = isUserAvailable?.id;
 
     // return console.log(isUserAvailable,'???')
     if (!isUserAvailable) {
         const hashedPassword = await bcrypt.hash(defaultPassword, 8);
-        const user = await User.create({ username: randomNames, password: hashedPassword, email: "-", token: "-", is_active: 1 });
+        const user = await User.create({ username: randomNames, password: hashedPassword, role: 'User', email: "-", is_active: 1 });
         idUser = user.id;
     }
 
@@ -56,8 +56,9 @@ exports.register = async (req, res) => {
 
     await User.update({ token: token }, { where: { id: idUser } });
 
-    res.status(200).json({ auth: true, token });
+    res.status(201).json({ auth: true, token, user_id: idUser });
   } catch (error) {
+    console.log(error,'??')
     res.status(500).send('Error registering the user.');
   }
 };

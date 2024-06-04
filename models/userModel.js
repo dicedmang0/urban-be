@@ -11,7 +11,7 @@ const User = sequelize.define('User', {
   },
   ref_id: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   username: {
     type: DataTypes.STRING,
@@ -26,6 +26,10 @@ const User = sequelize.define('User', {
     allowNull: false,
   },
   token: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  role: {
     type: DataTypes.STRING,
     allowNull: false,
   },

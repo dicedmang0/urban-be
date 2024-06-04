@@ -63,7 +63,7 @@ describe('AuthController', () => {
   test('should return validation errors for register', async () => {
     req.body = { name: '', password: 'short' };
 
-    const validatorMiddleware = require('../middlewares/validators').validateRegister;
+    const validatorMiddleware = require('../middlewares/validatorUsers').validateRegister;
     await validatorMiddleware[2](req, res, () => {});
 
     expect(res.status).toHaveBeenCalledWith(400);

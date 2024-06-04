@@ -1,23 +1,93 @@
 // controllers/userController.js
-const User = require('../models/userModel');
+const User = require("../models/userModel");
+const bcrypt = require("bcryptjs");
 
-exports.getUsers = async (req, res) => {
+exports.getUsersAll = async (req, res) => {
   try {
     const users = await User.findAll();
-    res.status(201).json({data: users});
+    res.status(201).json(users);
   } catch (error) {
-    res.status(500).send({message: error.message});
+    res.status(500).send({ message: error.message });
+  }
+};
+
+exports.getUsersById = async (req, res) => {
+  try {
+    const { idUser } = req.params;
+    const users = await User.findOne({ where: { id: idUser } });
+    res.status(201).json(users);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
   }
 };
 
 exports.addUser = async (req, res) => {
   try {
-    const { name, password } = req.body;
+    const { username, password, role, email, is_active } = req.body;
     const hashedPassword = await bcrypt.hash(password, 8);
-    const user = await User.create({ name,  password: hashedPassword });
+    const user = await User.create({
+      username,
+      password: hashedPassword,
+      role: role,
+      email: email,
+      is_active: is_active,
+    });
 
-    res.status(201).json(user);
+    res.status(201).json('Success Add User');
   } catch (error) {
-    res.status(500).send({message: error.message});
+    res.status(500).send({ message: error.message });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const { username, password, id, role, email, is_active } = req.body;
+
+    const user = await User.findOne({ where: { id: id } });
+
+    if (!user) {
+      return res.status(401).send("User Not Found!");
+    }
+
+    let dtoUpdateUser = {
+      username,
+      role: role,
+      email: email,
+      is_active: is_active,
+    };
+
+    if (user.password != password) {
+      const hashedPassword = await bcrypt.hash(password, 8);
+      if (hashedPassword != user.password) {
+        dtoUpdateUser = {
+          ...dtoUpdateUser,
+          password: hashedPassword,
+        };
+      }
+    }
+
+    await User.update(dtoUpdateUser, { where: { id: id } });
+
+    res.status(201).json({ message: "Success Update User!" });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const { idUser } = req.params;
+    await User.update(
+      { is_active: 0 },
+      {
+        where: {
+          id: idUser,
+        },
+      }
+    );
+
+    res.status(201).json({ message: "Success Remove User!" });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
   }
 };
