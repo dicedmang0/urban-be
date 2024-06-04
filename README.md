@@ -1,21 +1,21 @@
-# Argon
-## _Absences Task
+# Nero Gaming Backend
+## Payments Task
 
 ## Features
-- Services Users
+- User Register & Login
+- Payments 
 
 ## Tech
 - [NodeJS] - as a Backend !
 - [Express] - Node JS Web Application Framwork.
 - [Axios] - Http Request
 - [Jest] - Unit Testing
-- [RabbitMQ] - Message Broker
 
 ## Installation & How To Use
 ```sh
 cd absences
 npm i
-node server.js
+node app.js
 ```
 # Note
 This task all by asumption of developer, you can ask directly to developer.
