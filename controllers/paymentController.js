@@ -3,7 +3,21 @@ const Payment = require("../models/paymentModel");
 
 exports.getPayment = async (req, res) => {
   try {
-    const payment = await Payment.findAll();
+
+    const { id, limit, offset} = req.query;
+
+    // Construct the query options
+    let queryOptions = {
+      limit: parseInt(limit, 10),
+      offset: parseInt(offset, 10)
+    };
+
+    // If an ID is provided, add it to the query options
+    if (id) {
+      queryOptions.where = { id: id };
+    }
+
+    const payment = await Payment.findAll(queryOptions);
     res.status(201).json( payment );
   } catch (error) {
     res.status(500).send({message: error.message});
@@ -25,8 +39,32 @@ exports.addPayment = async (req, res) => {
         request_date: requested_date,
         payment_status: 'Pending'
     }
-    const payment = await Payment.create(dto);
+
+    await Payment.create(dto);
+
     res.status(201).json({message: "Success Adding Payment!"});
+  } catch (error) {
+    res.status(500).send({message: error.message});
+  }
+};
+
+exports.updatePayment = async (req, res) => {
+  try {
+    
+    const { payment_id, payment_status } = req.body;
+    const dto = {
+        payment_status: payment_status,
+    }
+
+    const payment = await Payment.findOne({ where: { id: payment_id } });
+
+    if (!payment) {
+      return res.status(401).send({message: 'Payment Not Found'});
+    }
+    
+    await Payment.update(dto, { where: { id: payment_id } });
+
+    res.status(201).json({message: "Success Updating Payment!"});
   } catch (error) {
     res.status(500).send({message: error.message});
   }

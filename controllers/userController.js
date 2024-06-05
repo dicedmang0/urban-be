@@ -33,7 +33,7 @@ exports.addUser = async (req, res) => {
       is_active: is_active,
     });
 
-    res.status(201).json('Success Add User');
+    res.status(201).json({ message:'Success Add User'});
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
@@ -46,7 +46,7 @@ exports.updateUser = async (req, res) => {
     const user = await User.findOne({ where: { id: id } });
 
     if (!user) {
-      return res.status(401).send("User Not Found!");
+      return res.status(401).send({ message:"User Not Found!"});
     }
 
     let dtoUpdateUser = {
