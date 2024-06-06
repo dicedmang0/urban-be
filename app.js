@@ -10,6 +10,18 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/swagger.json');
 const errorHandler = require('./middlewares/errorHandler');
 const swaggerJsdoc = require('swagger-jsdoc');
+const fs = require('fs');
+const dotenv = require('dotenv');
+
+const ENV = process.env.NODE_ENV || 'development';
+const ENV_FILE = `.env.${ENV}`;
+
+if (fs.existsSync(ENV_FILE)) {
+  dotenv.config({ path: ENV_FILE });
+} else {
+  console.error(`Environment file ${ENV_FILE} not found!`);
+  process.exit(1);
+}
 
 const app = express();
 

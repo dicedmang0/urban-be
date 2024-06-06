@@ -7,7 +7,7 @@ const initDb = async () => {
     const hashedPassword = await bcrypt.hash(process.env.DEFAULT_PASSWORD, 8);
 
     await sequelize.sync({ force: false }); // This will drop the table if it already exists and create a new one
-    console.log("Database & tables created!");
+    // console.log("Database & tables created!");
 
     const user = await User.findOne({ where: { username: "SUPERADMIN" } });
 
@@ -20,7 +20,7 @@ const initDb = async () => {
         role: "Superadmin",
         is_active: 1,
       });
-      console.log("Initial users created!");
+      // console.log("Initial users created!");
     }
   } catch (error) {
     console.error("Error initializing database:", error);

@@ -43,7 +43,6 @@ exports.register = async (req, res) => {
     const isUserAvailable = await User.findOne({ where: { username } });
     idUser = isUserAvailable?.id;
 
-    // return console.log(isUserAvailable,'???')
     if (!isUserAvailable) {
         const hashedPassword = await bcrypt.hash(defaultPassword, 8);
         const user = await User.create({ username: randomNames, password: hashedPassword, role: 'User', email: "-", is_active: 1 });
