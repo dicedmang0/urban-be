@@ -1,4 +1,4 @@
-const { body, param, checkSchema, validationResult } = require('express-validator');
+const { body, param, query, checkSchema, validationResult } = require('express-validator');
 
 var Schema = {
   "role": {
@@ -66,6 +66,23 @@ exports.validateUpdateUsers = [
 
 exports.validateUsers = [
   param('idUser', 'id is not valid').isUUID(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ status: "Bad Request", errors: errors.array() });
+    }
+    next();
+  }
+];
+
+exports.validateGetUsers = [
+  query("limit")
+    .isInt({ min: 1, max: 1000 })
+    .withMessage("Limit must be an integer between 1 and 1000"),
+  query("offset")
+    .isInt({ min: 0 })
+    .withMessage("Offset must be an integer of at least 0"),
+  query("id").isUUID().withMessage("ID is not valid").optional(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

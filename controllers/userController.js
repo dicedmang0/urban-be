@@ -7,17 +7,28 @@ exports.getUsersAll = async (req, res) => {
     const users = await User.findAll();
     res.status(200).json(users);
   } catch (error) {
-    res.status(400).send({ status: 'Bad Request', message: error.message });
+    res.status(400).send({ status: "Bad Request", message: error.message });
   }
 };
 
-exports.getUsersById = async (req, res) => {
+exports.getUsers = async (req, res) => {
   try {
-    const { idUser } = req.params;
-    const users = await User.findOne({ where: { id: idUser } });
+    const { id, limit, offset } = req.query;
+
+    let queryOptions = {
+      limit: parseInt(limit, 10),
+      offset: parseInt(offset, 10),
+      where: {},
+    };
+
+    if (id) {
+      queryOptions.where.id = id;
+    }
+
+    const users = await User.findAll(queryOptions);
     res.status(200).json(users);
   } catch (error) {
-    res.status(400).send({ status: 'Bad Request', message: error.message });
+    res.status(400).send({ status: "Bad Request", message: error.message });
   }
 };
 
@@ -33,9 +44,9 @@ exports.addUser = async (req, res) => {
       is_active: is_active,
     });
 
-    res.status(200).json({ status: 'Success', message:'Success Add User'});
+    res.status(200).json({ status: "Success", message: "Success Add User" });
   } catch (error) {
-    res.status(400).send({ status: 'Bad Request', message: error.message });
+    res.status(400).send({ status: "Bad Request", message: error.message });
   }
 };
 
@@ -46,7 +57,9 @@ exports.updateUser = async (req, res) => {
     const user = await User.findOne({ where: { id: id } });
 
     if (!user) {
-      return res.status(400).send({ status: 'Bad Request', message:"User Not Found!"});
+      return res
+        .status(400)
+        .send({ status: "Bad Request", message: "User Not Found!" });
     }
 
     let dtoUpdateUser = {
@@ -68,9 +81,11 @@ exports.updateUser = async (req, res) => {
 
     await User.update(dtoUpdateUser, { where: { id: id } });
 
-    res.status(200).json({ status: 'Success', message: "Success Update User!" });
+    res
+      .status(200)
+      .json({ status: "Success", message: "Success Update User!" });
   } catch (error) {
-    res.status(400).send({ status: 'Bad Request', message: error.message });
+    res.status(400).send({ status: "Bad Request", message: error.message });
   }
 };
 
@@ -86,8 +101,10 @@ exports.deleteUser = async (req, res) => {
       }
     );
 
-    res.status(200).json({ status: 'Success', message: "Success Remove User!" });
+    res
+      .status(200)
+      .json({ status: "Success", message: "Success Remove User!" });
   } catch (error) {
-    res.status(400).send({ status: 'Bad Request', message: error.message });
+    res.status(400).send({ status: "Bad Request", message: error.message });
   }
 };

@@ -23,30 +23,39 @@ exports.validateGetPayment = [
   query("offset")
     .isInt({ min: 0 })
     .withMessage("Offset must be an integer of at least 0"),
-    query('id')
-    .isUUID()
-    .withMessage('ID is not valid')
-    .optional(),
-  query('paymentStatus')
+  query("id").isUUID().withMessage("ID is not valid").optional(),
+  query("paymentStatus")
     .isString()
-    .withMessage('Payment status must be a string')
+    .withMessage("Payment status must be a string")
     .optional(),
-  query('paymentMethod')
+  query("paymentMethod")
     .isString()
-    .withMessage('Payment method must be a string')
+    .withMessage("Payment method must be a string")
     .optional(),
-  query('startDate')
-    .isISO8601()
-    .withMessage('Start date must be a valid date in ISO 8601 format')
+  query("startDate")
+    .custom((value) => {
+      if (!value || value === "") return true; // Allow empty string
+      return /^\d{4}-\d{2}-\d{2}$/.test(value); // Validate YYYY-MM-DD format
+    })
+    .withMessage(
+      "Start date must be a valid date in YYYY-MM-DD format or an empty string"
+    )
     .optional(),
-  query('endDate')
-    .isISO8601()
-    .withMessage('End date must be a valid date in ISO 8601 format')
+  query("endDate")
+    .custom((value) => {
+      if (!value || value === "") return true; // Allow empty string
+      return /^\d{4}-\d{2}-\d{2}$/.test(value); // Validate YYYY-MM-DD format
+    })
+    .withMessage(
+      "Start date must be a valid date in YYYY-MM-DD format or an empty string"
+    )
     .optional(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ status: "Bad Request", errors: errors.array() });
+      return res
+        .status(400)
+        .json({ status: "Bad Request", errors: errors.array() });
     }
     next();
   },
@@ -64,7 +73,9 @@ exports.validateAddPayment = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ status: "Bad Request", errors: errors.array() });
+      return res
+        .status(400)
+        .json({ status: "Bad Request", errors: errors.array() });
     }
     next();
   },
@@ -76,7 +87,9 @@ exports.validateUpdatePayment = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ status: "Bad Request", errors: errors.array() });
+      return res
+        .status(400)
+        .json({ status: "Bad Request", errors: errors.array() });
     }
     next();
   },

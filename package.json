@@ -1,10 +1,10 @@
 {
-  "name": "joybox-backend-engineer",
+  "name": "geco-apps",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "dev": "node server.js",
+    "dev": "node app.js",
     "test": "jest"
   },
   "repository": {

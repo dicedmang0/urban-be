@@ -4,10 +4,10 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const verifyToken = require('../middlewares/authJwt').verifyToken;
 const authController = require('../controllers/authController');
-const { validateRegister, validateLogin, validateAddUsers, validateUpdateUsers, validateUsers } = require('../middlewares/validatorUsers');
+const { validateRegister, validateLogin, validateAddUsers, validateUpdateUsers, validateUsers, validateGetUsers } = require('../middlewares/validatorUsers');
 
 router.get('/all-users', verifyToken, userController.getUsersAll);
-router.get('/users/:idUser', verifyToken, validateUsers, userController.getUsersById);
+router.get('/users',  validateGetUsers, userController.getUsers);
 router.post('/users', verifyToken, validateAddUsers, userController.addUser);
 router.put('/users', verifyToken, validateUpdateUsers, userController.updateUser);
 router.delete('/users/:idUser', verifyToken, validateUsers, userController.deleteUser);

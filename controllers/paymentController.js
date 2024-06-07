@@ -2,6 +2,15 @@
 const Payment = require("../models/paymentModel");
 const { Op } = require("sequelize"); // Import Op from Sequelize
 
+exports.getAllPayment = async (req, res) => {
+  try {
+    const payment = await Payment.findAll();
+    res.status(200).json(payment);
+  } catch (error) {
+    res.status(400).send({ status: "Bad Request", message: error.message });
+  }
+};
+
 exports.getPayment = async (req, res) => {
   try {
     const {
@@ -74,6 +83,9 @@ exports.addPayment = async (req, res) => {
     };
 
     await Payment.create(dto);
+
+
+    
 
     res
       .status(200)
