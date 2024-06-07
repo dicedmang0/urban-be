@@ -30,7 +30,7 @@ const app = express();
 const corsOptions = {
   origin: ["http://localhost:3000", "http://127.0.0.1:3000"], // Replace with your desired origin
   methods: 'GET,PUT,POST,DELETE',
-  allowedHeaders: ['Content-Type', 'x-access-token']
+  allowedHeaders: ['Content-Type', 'X-Access-Token']
 };
 
 // Use CORS middleware with options

@@ -20,6 +20,12 @@ exports.login = async (req, res) => {
         .send({ status: "Bad Request", message: "User Not Found" });
     }
 
+    if(!user.is_active) {
+      return res
+      .status(400)
+      .send({ status: "Bad Request", message: "User Is Not Active" });
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res
@@ -34,6 +40,8 @@ exports.login = async (req, res) => {
         expiresIn: "1h",
       }
     );
+
+    await User.update({ token: token }, { where: { id: user.id } });
 
     res.status(200).json({ auth: true, token, role: user.role });
   } catch (error) {

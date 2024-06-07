@@ -9,18 +9,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adeputraas/joybox-backend-engineer.git"
+    "url": "git+https://github.com/adeputraas/adeputraas/nero-gaming-backend.git"
   },
   "author": "Ade Putra Susila",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/adeputraas/joybox-backend-engineer/issues"
+    "url": "https://github.com/adeputraas/adeputraas/nero-gaming-backend/issues"
   },
   "jest": {
     "testEnvironment": "node",
     "verbose": true
   },
-  "homepage": "https://github.com/adeputraas/joybox-backend-engineer#readme",
+  "homepage": "https://github.com/adeputraas/adeputraas/nero-gaming-backend#readme",
   "dependencies": {
     "amqplib": "^0.10.4",
     "axios": "^1.1.3",
