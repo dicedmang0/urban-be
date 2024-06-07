@@ -1,19 +1,45 @@
 // controllers/paymentController.js
 const Payment = require("../models/paymentModel");
+const { Op } = require("sequelize"); // Import Op from Sequelize
 
 exports.getPayment = async (req, res) => {
   try {
-    const { id, limit, offset } = req.query;
+    const {
+      id,
+      limit,
+      offset,
+      paymentStatus,
+      paymentMethod,
+      startDate,
+      endDate,
+    } = req.query;
 
     // Construct the query options
     let queryOptions = {
       limit: parseInt(limit, 10),
       offset: parseInt(offset, 10),
+      where: {},
     };
 
-    // If an ID is provided, add it to the query options
     if (id) {
-      queryOptions.where = { id: id };
+      queryOptions.where.id = id;
+    }
+
+    // If a status is provided, add it to the query options
+    if (paymentStatus) {
+      queryOptions.where.payment_status = paymentStatus;
+    }
+
+    // If methods are provided, add them to the query options
+    if (paymentMethod) {
+      queryOptions.where.payment_method = paymentMethod;
+    }
+
+    // If a date range is provided, add it to the query options
+    if (startDate && endDate) {
+      queryOptions.where.payment_date = {
+        [Op.between]: [new Date(startDate), new Date(endDate)],
+      };
     }
 
     const payment = await Payment.findAll(queryOptions);

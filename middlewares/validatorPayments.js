@@ -23,7 +23,26 @@ exports.validateGetPayment = [
   query("offset")
     .isInt({ min: 0 })
     .withMessage("Offset must be an integer of at least 0"),
-  query("id", "id is not valid").isUUID(),
+    query('id')
+    .isUUID()
+    .withMessage('ID is not valid')
+    .optional(),
+  query('paymentStatus')
+    .isString()
+    .withMessage('Payment status must be a string')
+    .optional(),
+  query('paymentMethod')
+    .isString()
+    .withMessage('Payment method must be a string')
+    .optional(),
+  query('startDate')
+    .isISO8601()
+    .withMessage('Start date must be a valid date in ISO 8601 format')
+    .optional(),
+  query('endDate')
+    .isISO8601()
+    .withMessage('End date must be a valid date in ISO 8601 format')
+    .optional(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

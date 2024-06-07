@@ -37,7 +37,7 @@ exports.validateAddUsers = [
   body('username').notEmpty().withMessage('Username is required'),
   body('password').notEmpty().withMessage('Password is required'),
   checkSchema(Schema),
-  body('email', 'email is not valid').isEmail(),
+  // body('email', 'email is not valid').isEmail(),
   body('is_active', 'is_active is not valid').isBoolean(),
   (req, res, next) => {
     const errors = validationResult(req);
