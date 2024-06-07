@@ -9,12 +9,12 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ where: { username } });
 
     if (!user) {
-      return res.status(401).send('User not found');
+      return res.status(400).send({ status: "Bad Request", message: 'User Not Found' });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).send('Invalid password');
+      return res.status(400).send({ status: "Bad Request", message: 'Invalid Password' });
     }
 
     const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY_APPLICATION, {
@@ -23,7 +23,7 @@ exports.login = async (req, res) => {
 
     res.status(200).json({ auth: true, token });
   } catch (error) {
-    res.status(500).send('Error on the server.');
+    res.status(500).send({ status: "Bad Request", message: error.message });
   }
 };
 
@@ -55,9 +55,8 @@ exports.register = async (req, res) => {
 
     await User.update({ token: token }, { where: { id: idUser } });
 
-    res.status(201).json({ auth: true, token, user_id: idUser });
+    res.status(200).json({ auth: true, token, user_id: idUser });
   } catch (error) {
-    console.log(error,'??')
-    res.status(500).send('Error registering the user.');
+    res.status(500).send({ status: "Bad Request", message: error.message });
   }
 };

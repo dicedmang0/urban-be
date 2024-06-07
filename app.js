@@ -12,6 +12,7 @@ const errorHandler = require('./middlewares/errorHandler');
 const swaggerJsdoc = require('swagger-jsdoc');
 const fs = require('fs');
 const dotenv = require('dotenv');
+const cors = require('cors');
 
 const ENV = process.env.NODE_ENV || 'development';
 const ENV_FILE = `.env.${ENV}`;
@@ -24,6 +25,16 @@ if (fs.existsSync(ENV_FILE)) {
 }
 
 const app = express();
+
+// Configure CORS options
+const corsOptions = {
+  origin: ["http://localhost:3000", "http://127.0.0.1:3000"], // Replace with your desired origin
+  methods: 'GET,PUT,POST,DELETE',
+  allowedHeaders: ['Content-Type', 'x-access-token']
+};
+
+// Use CORS middleware with options
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

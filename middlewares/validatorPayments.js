@@ -27,7 +27,7 @@ exports.validateGetPayment = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ status: "Bad Request", errors: errors.array() });
     }
     next();
   },
@@ -45,7 +45,7 @@ exports.validateAddPayment = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ status: "Bad Request", errors: errors.array() });
     }
     next();
   },
@@ -57,7 +57,7 @@ exports.validateUpdatePayment = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ status: "Bad Request", errors: errors.array() });
     }
     next();
   },
