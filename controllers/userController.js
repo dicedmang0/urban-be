@@ -26,7 +26,13 @@ exports.getUsers = async (req, res) => {
     }
 
     const users = await User.findAll(queryOptions);
-    res.status(200).json(users);
+
+    // Count total items without limit and offset
+    const totalCount = await User.count({
+      where: queryOptions.where,
+    });
+
+    res.status(200).json({ users, totalCount });
   } catch (error) {
     res.status(400).send({ status: "Bad Request", message: error.message });
   }

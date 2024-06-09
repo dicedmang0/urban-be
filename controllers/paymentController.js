@@ -51,8 +51,14 @@ exports.getPayment = async (req, res) => {
       };
     }
 
-    const payment = await Payment.findAll(queryOptions);
-    res.status(200).json(payment);
+    const payments = await Payment.findAll(queryOptions);
+
+    // Count total items without limit and offset
+    const totalCount = await Payment.count({
+      where: queryOptions.where,
+    });
+    
+    res.status(200).json({payments, totalCount});
   } catch (error) {
     res.status(400).send({ status: "Bad Request", message: error.message });
   }

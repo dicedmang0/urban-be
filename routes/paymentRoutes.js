@@ -8,10 +8,10 @@ const verifyToken = require('../middlewares/authJwt').verifyToken;
 
 
 
-router.get('/payments',  validateGetPayment , paymentController.getPayment);
-router.get('/all-payments', paymentController.getAllPayment);
-router.post('/payments',  validateAddPayment, paymentController.addPayment);
-router.put('/payments',  validateUpdatePayment, paymentController.updatePayment);
+router.get('/payments', verifyToken, validateGetPayment , paymentController.getPayment);
+router.get('/all-payments', verifyToken, paymentController.getAllPayment);
+router.post('/payments', verifyToken, validateAddPayment, paymentController.addPayment);
+router.put('/payments', verifyToken, validateUpdatePayment, paymentController.updatePayment);
 
 router.get('/test', cronosVirtualAccount)
 router.get('/test2', cronosAllTransactions)

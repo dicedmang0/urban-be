@@ -7,7 +7,7 @@ const authController = require('../controllers/authController');
 const { validateRegister, validateLogin, validateAddUsers, validateUpdateUsers, validateUsers, validateGetUsers } = require('../middlewares/validatorUsers');
 
 router.get('/all-users', verifyToken, userController.getUsersAll);
-router.get('/users',  validateGetUsers, userController.getUsers);
+router.get('/users', verifyToken, validateGetUsers, userController.getUsers);
 router.post('/users', verifyToken, validateAddUsers, userController.addUser);
 router.put('/users', verifyToken, validateUpdateUsers, userController.updateUser);
 router.delete('/users/:idUser', verifyToken, validateUsers, userController.deleteUser);
