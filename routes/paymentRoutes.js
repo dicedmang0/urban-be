@@ -6,8 +6,6 @@ const { validateAddPayment, validateGetPayment, validateUpdatePayment } = requir
 const { cronosVirtualAccount, cronosAllTransactions } = require('../services/cronosGateway');
 const verifyToken = require('../middlewares/authJwt').verifyToken;
 
-
-
 router.get('/payments', verifyToken, validateGetPayment , paymentController.getPayment);
 router.get('/all-payments', verifyToken, paymentController.getAllPayment);
 router.post('/payments', verifyToken, validateAddPayment, paymentController.addPayment);

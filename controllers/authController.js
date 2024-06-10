@@ -20,10 +20,10 @@ exports.login = async (req, res) => {
         .send({ status: "Bad Request", message: "User Not Found" });
     }
 
-    if(!user.is_active) {
+    if (!user.is_active) {
       return res
-      .status(400)
-      .send({ status: "Bad Request", message: "User Is Not Active" });
+        .status(400)
+        .send({ status: "Bad Request", message: "User Is Not Active" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -51,7 +51,45 @@ exports.login = async (req, res) => {
 
 exports.register = async (req, res) => {
   try {
-    let idUser = req.body.USERID;
+    let idUser = "";
+    let role = "";
+    const defaultPassword = process.env.DEFAULT_PASSWORD;
+
+    const { username, email } = req.body;
+    const isUserAvailable = await User.findOne({ where: { username } });
+    idUser = isUserAvailable?.id;
+    role = isUserAvailable?.role;
+
+    if (!isUserAvailable) {
+      const hashedPassword = await bcrypt.hash(defaultPassword, 8);
+      const user = await User.create({
+        username: username,
+        password: hashedPassword,
+        role: "User",
+        email: email,
+        is_active: 1,
+      });
+      idUser = user.id;
+      role = user.role;
+    } else {
+      throw { message: "This User Already Registered." };
+    }
+
+    const token = jwt.sign({ id: idUser }, process.env.SECRET_KEY_APPLICATION, {
+      expiresIn: "1h",
+    });
+
+    await User.update({ token: token }, { where: { id: idUser } });
+
+    res.status(200).json({ auth: true, token, role: role });
+  } catch (error) {
+    res.status(500).send({ status: "Bad Request", message: error.message });
+  }
+};
+
+exports.registerRandomUser = async (req, res) => {
+  try {
+    let idUser = "";
     let role = "";
     const numberDictionary = NumberDictionary.generate({ min: 100, max: 999 });
     const configNames = {
@@ -61,18 +99,19 @@ exports.register = async (req, res) => {
     const randomNames = uniqueNamesGenerator(configNames);
     const defaultPassword = process.env.DEFAULT_PASSWORD;
 
-    const { username } = req.body;
+    const { username, ref_id } = req.body;
     const isUserAvailable = await User.findOne({ where: { username } });
     idUser = isUserAvailable?.id;
-    idUser = isUserAvailable?.role;
+    role = isUserAvailable?.role;
 
     if (!isUserAvailable) {
       const hashedPassword = await bcrypt.hash(defaultPassword, 8);
       const user = await User.create({
-        username: randomNames,
+        username: username ? username : randomNames,
         password: hashedPassword,
         role: "User",
         email: "-",
+        ref_id: ref_id || null,
         is_active: 1,
       });
       idUser = user.id;
@@ -85,7 +124,7 @@ exports.register = async (req, res) => {
 
     await User.update({ token: token }, { where: { id: idUser } });
 
-    res.status(200).json({ auth: true, token, role: user.role });
+    res.status(200).json({ auth: true, token, role: role });
   } catch (error) {
     res.status(500).send({ status: "Bad Request", message: error.message });
   }

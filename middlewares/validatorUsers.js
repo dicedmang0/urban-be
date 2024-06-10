@@ -12,6 +12,19 @@ var Schema = {
 
 exports.validateRegister = [
   body('username').isLength({ min: 6 }).withMessage('Username must be at least 6 characters long'),
+  body('email', 'email is not valid').isEmail(),
+  body('password').isLength({ min: 6 }).withMessage('Username must be at least 6 characters long'),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ status: "Bad Request", errors: errors.array() });
+    }
+    next();
+  }
+];
+
+exports.validateRegisterUserRandom = [
+  body('username').isLength({ min: 6 }).withMessage('Username must be at least 6 characters long'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

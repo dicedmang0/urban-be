@@ -4,7 +4,7 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const verifyToken = require('../middlewares/authJwt').verifyToken;
 const authController = require('../controllers/authController');
-const { validateRegister, validateLogin, validateAddUsers, validateUpdateUsers, validateUsers, validateGetUsers } = require('../middlewares/validatorUsers');
+const { validateRegister, validateLogin, validateAddUsers, validateUpdateUsers, validateUsers, validateGetUsers, validateRegisterUserRandom } = require('../middlewares/validatorUsers');
 
 router.get('/all-users', verifyToken, userController.getUsersAll);
 router.get('/users', verifyToken, validateGetUsers, userController.getUsers);
@@ -14,5 +14,6 @@ router.delete('/users/:idUser', verifyToken, validateUsers, userController.delet
 
 router.post('/login', validateLogin, authController.login);
 router.post('/register', validateRegister, authController.register);
+router.post('/user-regist-random', validateRegisterUserRandom, authController.registerRandomUser);
 
 module.exports = router;
