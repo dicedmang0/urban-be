@@ -17,7 +17,7 @@ const initDb = async () => {
     const paymentMethod = await PaymentMethod.count();
     const paymentMethodDetail = await PaymentMethodDetail.count();
 
-    console.log(paymentMethod, paymentMethodDetail,'????')
+    // console.log(paymentMethod, paymentMethodDetail,'????')
 
     if (paymentMethod === 0 && paymentMethodDetail === 0) {
       fundList.forEach(async (val, index) => {

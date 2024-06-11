@@ -14,27 +14,29 @@ exports.cronosVirtualAccount = async (body) => {
       },
     };
 
-    const response = await API.post("/virtual-account", sampleBody);
+    const response = await API.post("/virtual-account", body);
+    return response;
   } catch (error) {
-    throw error;
+    throw { message: error.responseMessage };
   }
 };
 
 exports.cronosQris = async (body) => {
   try {
-    const sampleBody = {
-      reference: "TRX0024",
-      amount: 10000,
-      expiryMinutes: 30,
-      viewName: "Gilang",
-      additionalInfo: {
-        callback: "https://kraken.free.beeceptor.com/notify",
-      },
-    };
+    // const sampleBody = {
+    //   reference: "TRX0024",
+    //   amount: 10000,
+    //   expiryMinutes: 30,
+    //   viewName: "Gilang",
+    //   additionalInfo: {
+    //     callback: "https://kraken.free.beeceptor.com/notify",
+    //   },
+    // };
 
-    const response = await API.post("/qris", sampleBody);
+    const response = await API.post("/qris", body);
+    return response;
   } catch (error) {
-    throw error;
+    throw { message: error.responseMessage };
   }
 };
 
@@ -53,9 +55,10 @@ exports.cronosEWallet = async (body) => {
       },
     };
 
-    const response = await API.post("/e-wallet", sampleBody);
+    const response = await API.post("/e-wallet", body);
+    return response;
   } catch (error) {
-    throw error;
+    throw { message: error.responseMessage };
   }
 };
 
@@ -73,9 +76,10 @@ exports.cronosRetail = async (body) => {
       },
     };
 
-    const response = await API.post("/retail", sampleBody);
+    const response = await API.post("/retail", body);
+    return response;
   } catch (error) {
-    throw error;
+    throw { message: error.responseMessage };
   }
 };
 
@@ -92,9 +96,10 @@ exports.cronosCreditCard = async (body) => {
       },
     };
 
-    const response = await API.post("/credit-card", sampleBody);
+    const response = await API.post("/credit-card", body);
+    return response;
   } catch (error) {
-    throw error;
+    throw { message: error.responseMessage };
   }
 };
 
@@ -111,18 +116,20 @@ exports.cronosAllTransactions = async (dto) => {
       },
     };
 
-    const response = await API.get("/transactions?page=1&status=success&date=2023-08-23&type=cashIn");
+    const response = await API.get(
+      "/transactions?page=1&status=success&date=2023-08-23&type=cashIn"
+    );
+    return response;
   } catch (error) {
-    throw error;
+    throw { message: error.responseMessage };
   }
 };
 
 exports.cronosSingleTransactions = async (id) => {
   try {
     const response = await API.get("/check/123?resendCallback=true");
+    return response;
   } catch (error) {
-    throw error;
+    throw { message: error.responseMessage };
   }
 };
-
-

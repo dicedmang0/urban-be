@@ -13,7 +13,7 @@ const Payment = sequelize.define(
     },
     merchant_id: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     transaction_id: {
       type: DataTypes.STRING,
@@ -26,6 +26,14 @@ const Payment = sequelize.define(
     user_id: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    phone_number: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     amount: {
       type: DataTypes.STRING,

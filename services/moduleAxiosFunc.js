@@ -59,7 +59,7 @@ class API {
       const response = await axios.post(url, body, config);
       return response.data;
     } catch (error) {
-      return error.response.data;
+      throw error.response.data;
     }
   };
 
@@ -102,8 +102,7 @@ class API {
 
       return response.data;
     } catch (error) {
-        console.log(error,'???')
-        return error.response.data;
+        throw error.response.data;
     }
   };
 }

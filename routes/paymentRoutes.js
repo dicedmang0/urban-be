@@ -8,7 +8,7 @@ const verifyToken = require('../middlewares/authJwt').verifyToken;
 
 router.get('/payments', verifyToken, validateGetPayment , paymentController.getPayment);
 router.get('/all-payments', verifyToken, paymentController.getAllPayment);
-router.post('/payments', verifyToken, validateAddPayment, paymentController.addPayment);
+router.post('/payments',  validateAddPayment, paymentController.addPayment);
 router.put('/payments', verifyToken, validateUpdatePayment, paymentController.updatePayment);
 
 router.get('/test', cronosVirtualAccount)
