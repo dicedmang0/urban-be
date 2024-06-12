@@ -1,11 +1,11 @@
-import getGameModel from "../models/gameModel";
+const getGameModel = require('../models/gameModel');
 
 async function createNewUser(game_id, user_id) {
   const gameModel = getGameModel(game_id);
   return gameModel.create({
     user_id,
     save_data: {},
-    coin: 0,
+    coin: 0
   });
 }
 
@@ -18,9 +18,9 @@ exports.addNewUser = async (req, res) => {
 
     res
       .status(200)
-      .json({ status: "Success", message: "Success Add New User" });
+      .json({ status: 'Success', message: 'Success Add New User' });
   } catch (error) {
-    res.status(400).send({ status: "Bad Request", message: error.message });
+    res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };
 
@@ -36,9 +36,9 @@ exports.getUserSaveData = async (req, res) => {
       game = await createNewUser(game_id, user_id);
     }
 
-    res.status(200).json({ status: "Success", data: game });
+    res.status(200).json({ status: 'Success', data: game });
   } catch (error) {
-    res.status(400).send({ status: "Bad Request", message: error.message });
+    res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };
 
@@ -59,9 +59,9 @@ exports.updateSaveData = async (req, res) => {
 
     res
       .status(200)
-      .json({ status: "Success", message: "Success Update Save Data!" });
+      .json({ status: 'Success', message: 'Success Update Save Data!' });
   } catch (error) {
-    res.status(400).send({ status: "Bad Request", message: error.message });
+    res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };
 
@@ -78,11 +78,11 @@ exports.addCoin = async (req, res) => {
       game = await createNewUser(game_id, user_id);
     }
 
-    await game.increment("coin", { by: coin });
+    await game.increment('coin', { by: coin });
 
-    res.status(200).json({ status: "Success", message: "Success Add Coin!" });
+    res.status(200).json({ status: 'Success', message: 'Success Add Coin!' });
   } catch (error) {
-    res.status(400).send({ status: "Bad Request", message: error.message });
+    res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };
 
@@ -99,12 +99,12 @@ exports.deductCoin = async (req, res) => {
       game = await createNewUser(game_id, user_id);
     }
 
-    await game.decrement("coin", { by: coin });
+    await game.decrement('coin', { by: coin });
 
     res
       .status(200)
-      .json({ status: "Success", message: "Success Deduct Coin!" });
+      .json({ status: 'Success', message: 'Success Deduct Coin!' });
   } catch (error) {
-    res.status(400).send({ status: "Bad Request", message: error.message });
+    res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };

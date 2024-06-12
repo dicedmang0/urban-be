@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoutes');
 const coinRoutes = require('./routes/coinRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const gameRoutes = require('./routes/gameRoutes');
 const sequelize = require('./config/database');
 const initDB = require('./config/initializeDB');
 const swaggerUi = require('swagger-ui-express');
@@ -13,6 +14,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const fs = require('fs');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const initializeGameModel = require('./config/initializeGameModel');
 
 const ENV = process.env.NODE_ENV || 'development';
 const ENV_FILE = `.env.${ENV}`;
@@ -41,6 +43,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api', userRoutes);
 app.use('/api', coinRoutes);
 app.use('/api', paymentRoutes);
+app.use('/api', gameRoutes);
 
 // Error handling middleware
 app.use(errorHandler);
@@ -48,6 +51,8 @@ app.use(errorHandler);
 // Initialize the database and start the server.
 const startServer = async () => {
   try {
+    // Initialize the game table
+    initializeGameModel();
 
     if (process.env.NODE_ENV !== 'production') {
       // Sync database with force true in non-production environments
