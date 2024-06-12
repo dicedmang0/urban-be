@@ -76,7 +76,7 @@ exports.validateAddPayment = [
   // body("merchant_id").notEmpty().withMessage("merchant_id is required"),
   // body("transaction_id").notEmpty().withMessage("transaction_id is required"),
   body("amount").notEmpty().withMessage("amount is required"),
-  body("user_id", "id is not valid").isUUID(),
+  body("user_id").notEmpty().withMessage("user_id is not empty"),
   body("name").notEmpty().withMessage("name is required"),
   body("phone_number").notEmpty().withMessage("phone_number is required"),
   body("game_id").notEmpty().withMessage("game_id is required"),

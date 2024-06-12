@@ -16,7 +16,7 @@ const PaymentMethod = sequelize.define(
       allowNull: false,
     },
     is_active: {
-      type: DataTypes.STRING,
+      type: DataTypes.BOOLEAN,
       allowNull: false,
     },
   },
