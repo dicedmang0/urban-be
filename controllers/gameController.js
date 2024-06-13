@@ -11,7 +11,7 @@ async function createNewUser(game_id, user_id) {
 
 exports.addNewUser = async (req, res) => {
   try {
-    const game_id = req.params.gameId;
+    const game_id = 'game_' + req.params.gameId;
     const { user_id } = req.body;
 
     await createNewUser(game_id, user_id);
@@ -26,8 +26,8 @@ exports.addNewUser = async (req, res) => {
 
 exports.getUserSaveData = async (req, res) => {
   try {
-    const game_id = req.params.gameId;
-    const user_id = req.params.userId;
+    const game_id = 'game_' + req.params.gameId;
+    const user_id = req.params.idUser;
     const gameModel = getGameModel(game_id);
 
     const game = await gameModel.findOne({ where: { user_id } });
@@ -44,8 +44,8 @@ exports.getUserSaveData = async (req, res) => {
 
 exports.updateSaveData = async (req, res) => {
   try {
-    const game_id = req.params.gameId;
-    const user_id = req.params.userId;
+    const game_id = 'game_' + req.params.gameId;
+    const user_id = req.params.idUser;
     const { save_data } = req.body;
     const gameModel = getGameModel(game_id);
 
@@ -67,8 +67,8 @@ exports.updateSaveData = async (req, res) => {
 
 exports.addCoin = async (req, res) => {
   try {
-    const game_id = req.params.gameId;
-    const user_id = req.params.userId;
+    const game_id = 'game_' + req.params.gameId;
+    const user_id = req.params.idUser;
     const { coin } = req.body;
     const gameModel = getGameModel(game_id);
 
@@ -88,8 +88,8 @@ exports.addCoin = async (req, res) => {
 
 exports.deductCoin = async (req, res) => {
   try {
-    const game_id = req.params.gameId;
-    const user_id = req.params.userId;
+    const game_id = 'game_' + req.params.gameId;
+    const user_id = req.params.idUser;
     const { coin } = req.body;
     const gameModel = getGameModel(game_id);
 

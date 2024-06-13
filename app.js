@@ -14,7 +14,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const fs = require('fs');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const initializeGameModel = require('./config/initializeGameModel');
+const { initGameModel } = require('./config/initializeGameModel');
 
 const ENV = process.env.NODE_ENV || 'development';
 const ENV_FILE = `.env.${ENV}`;
@@ -52,7 +52,7 @@ app.use(errorHandler);
 const startServer = async () => {
   try {
     // Initialize the game table
-    initializeGameModel();
+    initGameModel();
 
     if (process.env.NODE_ENV !== 'production') {
       // Sync database with force true in non-production environments
