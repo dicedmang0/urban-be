@@ -68,10 +68,6 @@ exports.validateUserAlreadyAdded = [
 exports.validateSaveData = [
   body('save_data')
     .custom((value) => {
-      if (typeof value === 'object') {
-        // If it's an object, we consider it a JSON object
-        return true;
-      }
       if (typeof value === 'string') {
         // If it's a string, we try to parse it to see if it's a JSON string
         try {
@@ -85,7 +81,7 @@ exports.validateSaveData = [
       // If it's neither an object nor a string, it's not valid
       return false;
     })
-    .withMessage('Save data must be a JSON object or a JSON string.'),
+    .withMessage('Save data must be a JSON string.'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

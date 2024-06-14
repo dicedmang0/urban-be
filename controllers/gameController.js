@@ -4,7 +4,7 @@ async function createNewUser(game_id, user_id) {
   const gameModel = getGameModel(game_id);
   return gameModel.create({
     user_id,
-    save_data: {},
+    save_data: '{}',
     coin: 0
   });
 }
@@ -57,9 +57,7 @@ exports.updateSaveData = async (req, res) => {
 
     await game.update({ save_data });
 
-    res
-      .status(200)
-      .json({ status: 'Success', message: 'Success Update Save Data!' });
+    res.status(200).json({ status: 'Success', data: game });
   } catch (error) {
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
