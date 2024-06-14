@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const userRoutes = require("./routes/userRoutes");
 const coinRoutes = require("./routes/coinRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const agentRoutes = require("./routes/agentRoutes");
 const paymentMethodsRoutes = require("./routes/paymentMethodRoutes");
 const sequelize = require("./config/database");
 const initDB = require("./config/initializeDB");
@@ -48,6 +49,7 @@ app.use("/api", userRoutes);
 app.use("/api", coinRoutes);
 app.use("/api", paymentRoutes);
 app.use("/api", paymentMethodsRoutes);
+app.use("/api", agentRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

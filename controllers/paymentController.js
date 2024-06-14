@@ -75,7 +75,7 @@ exports.getPayment = async (req, res) => {
 exports.addPayment = async (req, res) => {
   try {
     const {
-      merchant_id,
+      ref_id,
       transaction_id,
       user_id,
       name,
@@ -87,7 +87,7 @@ exports.addPayment = async (req, res) => {
     } = req.body;
 
     const dto = {
-      merchant_id: merchant_id || uuidv4(),
+      ref_id: ref_id || uuidv4(),
       transaction_id: transaction_id || uuidv4(),
       amount: amount,
       user_id: user_id,

@@ -2,6 +2,7 @@ const sequelize = require("./database");
 const User = require("../models/userModel");
 const PaymentMethod = require("../models/paymentMethodModel");
 const PaymentMethodDetail = require("../models/paymentMethodDetailModel");
+const Agent = require("../models/agentModel");
 const bcrypt = require("bcryptjs");
 const fundList = require("./initialPayment");
 
@@ -13,6 +14,7 @@ const initDb = async () => {
     // console.log("Database & tables created!");
 
     const user = await User.findOne({ where: { username: "SUPERADMIN" } });
+    const agentList = await Agent.count();
 
     const paymentMethod = await PaymentMethod.count();
     const paymentMethodDetail = await PaymentMethodDetail.count();
@@ -41,12 +43,15 @@ const initDb = async () => {
       });
     }
 
-    if (!user) {
+    if (!user && !agentList) {
+      const agent = await Agent.create({name: 'AMP', expired_at: "2030-12-30", is_active: 1});
+      console.log(agent.id,'???')
       await User.create({
         username: "SUPERADMIN",
         ref_id: "-",
         password: hashedPassword,
         email: "-",
+        agent_id: agent.id,
         role: "Superadmin",
         is_active: 1,
       });

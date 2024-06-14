@@ -30,6 +30,14 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  agent_id: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'Agents',  // Name of the referenced table
+      key: 'id'
+    }
+  },
   role: {
     type: DataTypes.STRING,
     allowNull: false,

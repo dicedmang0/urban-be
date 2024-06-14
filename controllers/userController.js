@@ -1,4 +1,5 @@
 // controllers/userController.js
+const Agents = require("../models/agentModel");
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 
@@ -40,13 +41,21 @@ exports.getUsers = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    const { username, password, role, email, is_active } = req.body;
+    const { username, password, role, email, is_active, agent_id } = req.body;
     const hashedPassword = await bcrypt.hash(password, 8);
-    const user = await User.create({
+
+    const agent = await Agents.findByPk(agent_id);
+
+    if(!agent){
+      throw {message: "Agent is Not Found!"};
+    }
+
+    await User.create({
       username,
       password: hashedPassword,
       role: role,
       email: email,
+      agent_id: agent.id,
       is_active: is_active,
     });
 
@@ -58,10 +67,16 @@ exports.addUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const { username, password, id, role, email, is_active } = req.body;
+    const { username, password, id, role, email, is_active, agent_id } = req.body;
 
     const user = await User.findOne({ where: { id: id } });
 
+    const agent = await Agents.findByPk(agent_id);
+
+    if(!agent){
+      throw {message: "Agent is Not Found!"};
+    }
+    
     if (!user) {
       return res
         .status(400)
@@ -72,6 +87,7 @@ exports.updateUser = async (req, res) => {
       username,
       role: role,
       email: email,
+      agent_id: agent.id,
       is_active: is_active,
     };
 

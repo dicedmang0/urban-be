@@ -9,7 +9,7 @@ const { validateRegister, validateLogin, validateAddUsers, validateUpdateUsers, 
 router.get('/all-users', verifyToken, userController.getUsersAll);
 router.get('/users', verifyToken, validateGetUsers, userController.getUsers);
 router.post('/users', verifyToken, validateAddUsers, userController.addUser);
-router.put('/users', verifyToken, validateUpdateUsers, userController.updateUser);
+router.put('/users',  validateUpdateUsers, userController.updateUser);
 router.delete('/users/:idUser', verifyToken, validateUsers, userController.deleteUser);
 
 router.post('/login', validateLogin, authController.login);
