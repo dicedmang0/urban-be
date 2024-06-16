@@ -21,7 +21,7 @@ const PaymentMethodDetail = sequelize.define(
       allowNull: false,
     },
     is_active: {
-      type: DataTypes.STRING,
+      type: DataTypes.BOOLEAN,
       allowNull: false,
     },
     paymentMethodId: {  // Define foreign key column

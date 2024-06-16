@@ -42,18 +42,18 @@ exports.cronosQris = async (body) => {
 
 exports.cronosEWallet = async (body) => {
   try {
-    const sampleBody = {
-      reference: "123456",
-      phoneNumber: "082195395779",
-      channel: "ovo",
-      amount: 10000,
-      expiryMinutes: 30,
-      viewName: "Mr. Gentur",
-      additionalInfo: {
-        callback: "http://your-site-callback.com/notify",
-        successRedirectUrl: "http://redirect-after-success.com",
-      },
-    };
+    // const sampleBody = {
+    //   reference: "123456",
+    //   phoneNumber: "082195395779",
+    //   channel: "ovo",
+    //   amount: 10000,
+    //   expiryMinutes: 30,
+    //   viewName: "Mr. Gentur",
+    //   additionalInfo: {
+    //     callback: "http://your-site-callback.com/notify",
+    //     successRedirectUrl: "http://redirect-after-success.com",
+    //   },
+    // };
 
     const response = await API.post("/e-wallet", body);
     return response;
@@ -64,17 +64,17 @@ exports.cronosEWallet = async (body) => {
 
 exports.cronosRetail = async (body) => {
   try {
-    const sampleBody = {
-      reference: "123456",
-      phoneNumber: "082195395779",
-      channel: "alfamart",
-      amount: 10000,
-      expiryMinutes: 30,
-      viewName: "Mr. Gentur",
-      additionalInfo: {
-        callback: "http://your-site-callback.com/notify",
-      },
-    };
+    // const sampleBody = {
+    //   reference: "123456",
+    //   phoneNumber: "082195395779",
+    //   channel: "alfamart",
+    //   amount: 10000,
+    //   expiryMinutes: 30,
+    //   viewName: "Mr. Gentur",
+    //   additionalInfo: {
+    //     callback: "http://your-site-callback.com/notify",
+    //   },
+    // };
 
     const response = await API.post("/retail", body);
     return response;
@@ -85,16 +85,16 @@ exports.cronosRetail = async (body) => {
 
 exports.cronosCreditCard = async (body) => {
   try {
-    const sampleBody = {
-      reference: "123456",
-      phoneNumber: "082195395779",
-      amount: 10000,
-      expiryMinutes: 30,
-      viewName: "Mr. Gentur",
-      additionalInfo: {
-        callback: "http://your-site-callback.com/notify",
-      },
-    };
+    // const sampleBody = {
+    //   reference: "123456",
+    //   phoneNumber: "082195395779",
+    //   amount: 10000,
+    //   expiryMinutes: 30,
+    //   viewName: "Mr. Gentur",
+    //   additionalInfo: {
+    //     callback: "http://your-site-callback.com/notify",
+    //   },
+    // };
 
     const response = await API.post("/credit-card", body);
     return response;

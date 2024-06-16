@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoutes');
 const coinRoutes = require('./routes/coinRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const paymentMethodRoutes = require('./routes/paymentMethodRoutes');
 const gameRoutes = require('./routes/gameRoutes');
 const sequelize = require('./config/database');
 const initDB = require('./config/initializeDB');
@@ -30,7 +31,12 @@ const app = express();
 
 // Configure CORS options
 const corsOptions = {
-  origin: ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3006", "http://127.0.0.1:3006"], // Replace with your desired origin
+  origin: [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:3006',
+    'http://127.0.0.1:3006'
+  ], // Replace with your desired origin
   methods: 'GET,PUT,POST,DELETE',
   allowedHeaders: ['Content-Type', 'X-Access-Token']
 };
@@ -43,6 +49,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api', userRoutes);
 app.use('/api', coinRoutes);
 app.use('/api', paymentRoutes);
+app.use('/api', paymentMethodRoutes);
 app.use('/api', gameRoutes);
 
 // Error handling middleware
