@@ -9,6 +9,7 @@ const {
   cronosVirtualAccount,
   cronosEWallet,
 } = require("../services/cronosGateway");
+const gameController = require('./gameController');
 
 exports.getAllPayment = async (req, res) => {
   try {
@@ -103,6 +104,8 @@ exports.addPayment = async (req, res) => {
     const resp = await sendCronosGateway(dto);
 
     await Payment.create(dto);
+
+    await gameController.incrementCoin(game_id, user_id, amount);
 
     res.status(200).json({
       status: "Success",
