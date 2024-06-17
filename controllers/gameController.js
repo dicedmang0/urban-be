@@ -9,6 +9,18 @@ async function createNewUser(game_id, user_id) {
   });
 }
 
+exports.incrementCoin = async (game_id, user_id, coin_amount) => {
+  game_id = 'game_' + game_id;
+  const gameModel = getGameModel(game_id);
+  const game = await gameModel.findOne({ where: { user_id } });
+
+  if (!game) {
+    game = await createNewUser(game_id, user_id);
+  }
+
+  await game.increment('coin', { by: coin_amount });
+};
+
 exports.addNewUser = async (req, res) => {
   try {
     const game_id = 'game_' + req.params.gameId;
