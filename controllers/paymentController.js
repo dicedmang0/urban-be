@@ -84,6 +84,7 @@ exports.addPayment = async (req, res) => {
       payment_method,
       requested_date,
       phone_number,
+      nmid
     } = req.body;
 
     const dto = {
@@ -93,6 +94,7 @@ exports.addPayment = async (req, res) => {
       user_id: user_id,
       name: name,
       game_id: game_id,
+      nmid: nmid,
       payment_method: payment_method,
       phone_number: phone_number,
       payment_date: null,

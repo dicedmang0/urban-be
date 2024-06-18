@@ -7,6 +7,8 @@ const {
   validateCreateAgent,
   validateIdAgent,
   validateUpdateAgent,
+  validateAddAgentDetail,
+  validateUpdateAgentDetail,
 } = require("../middlewares/validatorAgent");
 const verifyToken = require("../middlewares/authJwt").verifyToken;
 
@@ -19,5 +21,9 @@ router.put(
   agentController.updateAgent
 );
 router.delete("/agents/:id", validateIdAgent, agentController.deleteAgent);
+
+// Routes for Payment Method Detail
+router.post('/agent-detail', validateAddAgentDetail, agentController.addAgentDetails);
+router.put('/agent-detail/:id', validateUpdateAgentDetail, agentController.updateAgentDetails);
 
 module.exports = router;
