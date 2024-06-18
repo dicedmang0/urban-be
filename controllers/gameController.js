@@ -12,7 +12,7 @@ async function createNewUser(game_id, user_id) {
 exports.incrementCoin = async (game_id, user_id, coin_amount) => {
   game_id = 'game_' + game_id;
   const gameModel = getGameModel(game_id);
-  const game = await gameModel.findOne({ where: { user_id } });
+  let game = await gameModel.findOne({ where: { user_id } });
 
   if (!game) {
     game = await createNewUser(game_id, user_id);
@@ -42,7 +42,7 @@ exports.getUserSaveData = async (req, res) => {
     const user_id = req.params.idUser;
     const gameModel = getGameModel(game_id);
 
-    const game = await gameModel.findOne({ where: { user_id } });
+    let game = await gameModel.findOne({ where: { user_id } });
 
     if (!game) {
       game = await createNewUser(game_id, user_id);
@@ -61,7 +61,7 @@ exports.updateSaveData = async (req, res) => {
     const { save_data } = req.body;
     const gameModel = getGameModel(game_id);
 
-    const game = await gameModel.findOne({ where: { user_id } });
+    let game = await gameModel.findOne({ where: { user_id } });
 
     if (!game) {
       game = await createNewUser(game_id, user_id);
@@ -82,7 +82,7 @@ exports.addCoin = async (req, res) => {
     const { coin } = req.body;
     const gameModel = getGameModel(game_id);
 
-    const game = await gameModel.findOne({ where: { user_id } });
+    let game = await gameModel.findOne({ where: { user_id } });
 
     if (!game) {
       game = await createNewUser(game_id, user_id);
@@ -103,7 +103,7 @@ exports.deductCoin = async (req, res) => {
     const { coin } = req.body;
     const gameModel = getGameModel(game_id);
 
-    const game = await gameModel.findOne({ where: { user_id } });
+    let game = await gameModel.findOne({ where: { user_id } });
 
     if (!game) {
       game = await createNewUser(game_id, user_id);
