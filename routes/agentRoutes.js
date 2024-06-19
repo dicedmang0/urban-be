@@ -22,7 +22,7 @@ router.put(
 );
 router.delete("/agents/:id", validateIdAgent, agentController.deleteAgent);
 
-// Routes for Payment Method Detail
+// Routes for Agent Detail
 router.post('/agent-detail', validateAddAgentDetail, agentController.addAgentDetails);
 router.put('/agent-detail/:id', validateUpdateAgentDetail, agentController.updateAgentDetails);
 

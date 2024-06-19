@@ -44,14 +44,14 @@ const initDb = async () => {
     }
 
     if (!user && !agentList) {
-      const agent = await Agent.create({name: 'AMP', expired_at: "2030-12-30", is_active: 1});
+      const agent = await Agent.create({name: 'AMP', is_active: 1});
       await User.create({
         username: "SUPERADMIN",
         ref_id: "-",
         password: hashedPassword,
         email: "-",
         agent_id: agent.id,
-        role: "Superadmin",
+        role: "superadmin",
         is_active: 1,
       });
       // console.log("Initial users created!");

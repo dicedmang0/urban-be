@@ -23,7 +23,9 @@ exports.getAgents = async (req, res) => {
     let queryOptions = {
       limit: parseInt(limit, 10),
       offset: parseInt(offset, 10),
-      where: {},
+      where: {
+        is_active: true
+      },
       include: [
         {
           model: AgentDetails,

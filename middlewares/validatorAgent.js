@@ -12,11 +12,11 @@ exports.validateCreateAgent = [
     .withMessage("Name is required")
     .isString()
     .withMessage("Name must be a string"),
-  body("expired_at")
-    .notEmpty()
-    .withMessage("Expiration date is required")
-    .isDate()
-    .withMessage("Expiration date must be a valid date (YYYY-MM-DD)"),
+  // body("expired_at")
+  //   .notEmpty()
+  //   .withMessage("Expiration date is required")
+  //   .isDate()
+  //   .withMessage("Expiration date must be a valid date (YYYY-MM-DD)"),
   body("is_active")
     .notEmpty()
     .withMessage("Active status is required")
@@ -52,11 +52,11 @@ exports.validateUpdateAgent = [
     .withMessage("Name is required")
     .isString()
     .withMessage("Name must be a string"),
-  body("expired_at")
-    .notEmpty()
-    .withMessage("Expiration date is required")
-    .isDate()
-    .withMessage("Expiration date must be a valid date (YYYY-MM-DD)"),
+  // body("expired_at")
+  //   .notEmpty()
+  //   .withMessage("Expiration date is required")
+  //   .isDate()
+  //   .withMessage("Expiration date must be a valid date (YYYY-MM-DD)"),
   body("is_active")
     .notEmpty()
     .withMessage("Active status is required")

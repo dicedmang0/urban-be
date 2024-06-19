@@ -4,7 +4,7 @@ var Schema = {
   "role": {
     in: 'body',
     matches: {
-      options: [/\b(?:Superadmin|User)\b/],
+      options: [/\b(?:superadmin|user)\b/],
       errorMessage: "Invalid Role"
     }
   }

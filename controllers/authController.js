@@ -43,7 +43,7 @@ exports.login = async (req, res) => {
 
     await User.update({ token: token }, { where: { id: user.id } });
 
-    res.status(200).json({ auth: true, token, role: user.role });
+    res.status(200).json({ auth: true, token, role: user.role, user_id: user.id });
   } catch (error) {
     res.status(500).send({ status: "Bad Request", message: error.message });
   }
