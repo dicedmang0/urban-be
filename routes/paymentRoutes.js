@@ -2,16 +2,201 @@
 const express = require('express');
 const router = express.Router();
 const paymentController = require('../controllers/paymentController');
-const { validateAddPayment, validateGetPayment, validateUpdatePayment } = require('../middlewares/validatorPayments');
-const { cronosVirtualAccount, cronosAllTransactions } = require('../services/cronosGateway');
+const {
+  validateAddPayment,
+  validateGetPayment,
+  validateUpdatePayment
+} = require('../middlewares/validatorPayments');
+const {
+  cronosVirtualAccount,
+  cronosAllTransactions
+} = require('../services/cronosGateway');
 const verifyToken = require('../middlewares/authJwt').verifyToken;
 
-router.get('/payments', validateGetPayment , paymentController.getPayment);
-router.get('/all-payments', paymentController.getAllPayment);
-router.post('/payments',  validateAddPayment, paymentController.addPayment);
-router.put('/payments', validateUpdatePayment, paymentController.updatePayment);
+router.get('/all-payments', verifyToken, paymentController.getAllPayment);
+router.get(
+  '/payments',
+  verifyToken,
+  validateGetPayment,
+  paymentController.getPayment
+);
+router.post(
+  '/payments',
+  verifyToken,
+  validateAddPayment,
+  paymentController.addPayment
+);
+router.put(
+  '/payments',
+  verifyToken,
+  validateUpdatePayment,
+  paymentController.updatePayment
+);
 
-router.get('/test', cronosVirtualAccount)
-router.get('/test2', cronosAllTransactions)
+// router.get('/test', cronosVirtualAccount)
+// router.get('/test2', cronosAllTransactions)
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Payment:
+ *       type: object
+ *       required:
+ *         - id
+ *         - transaction_id
+ *         - game_id
+ *         - user_id
+ *         - amount
+ *         - payment_method
+ *         - request_date
+ *         - payment_status
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *           description: The unique identifier for the payment.
+ *         merchant_id:
+ *           type: string
+ *           description: Optional merchant ID associated with the payment.
+ *         transaction_id:
+ *           type: string
+ *           description: The unique transaction ID for the payment. Required.
+ *         game_id:
+ *           type: string
+ *           description: The ID of the game related to the payment. Required.
+ *         nmid:
+ *           type: string
+ *           description: Optional NMID associated with the payment.
+ *         user_id:
+ *           type: string
+ *           description: The ID of the user making the payment. Required.
+ *         name:
+ *           type: string
+ *           description: Optional name associated with the payment.
+ *         phone_number:
+ *           type: string
+ *           description: Optional phone number associated with the payment.
+ *         amount:
+ *           type: string
+ *           description: The amount of the payment. Required.
+ *         payment_method:
+ *           type: string
+ *           description: The method used for the payment (e.g., credit card, PayPal). Required.
+ *         payment_date:
+ *           type: string
+ *           format: date-time
+ *           description: Optional date when the payment was made.
+ *         request_date:
+ *           type: string
+ *           format: date-time
+ *           description: The date when the payment request was made. Required.
+ *         payment_status:
+ *           type: string
+ *           description: The status of the payment (e.g., pending, success, failed). Required.
+ */
+
+/**
+ * @swagger
+ * /api/payments?offset=0&limit=100:
+ *   get:
+ *     summary: Get all payments
+ *     tags: [Payments]
+ *     description: Retrieve a list of all payments.
+ *     security:
+ *       - accessToken: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     responses:
+ *       '200':
+ *         description: A list of payments
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Payment'
+ *       '401':
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/payments:
+ *   post:
+ *     summary: Add a new payment
+ *     tags: [Payments]
+ *     description: Create a new payment.
+ *     security:
+ *       - accessToken: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     requestBody:
+ *       required: true
+ *       description: Only Merchant ID, transaction id, code, nmid, name, user_id, game_id, amount, phone_number, payment_method, requested_date
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Payment'
+ *     responses:
+ *       '201':
+ *         description: Payment created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Payment'
+ *       '401':
+ *         description: Unauthorized
+ *       '400':
+ *         description: Bad request, validation error
+ */
+
+/**
+ * @swagger
+ * /api/payments:
+ *   put:
+ *     summary: Update a payment
+ *     tags: [Payments]
+ *     description: Update an existing payment.
+ *     security:
+ *       - accessToken: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     requestBody:
+ *       required: true
+ *       description: only id as payment_id and payment status 
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Payment'
+ *     responses:
+ *       '200':
+ *         description: Payment updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Payment'
+ *       '401':
+ *         description: Unauthorized
+ *       '404':
+ *         description: Payment not found
+ *       '400':
+ *         description: Bad request, validation error
+ */
 
 module.exports = router;

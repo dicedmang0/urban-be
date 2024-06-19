@@ -9,8 +9,9 @@ const gameRoutes = require('./routes/gameRoutes');
 const sequelize = require('./config/database');
 const agentRoutes = require("./routes/agentRoutes");
 const initDB = require('./config/initializeDB');
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger/swagger.json');
+// const swaggerUi = require('swagger-ui-express');
+const { swaggerUi, specs } = require('./swagger/swagger');
+// const swaggerDocument = require('./swagger/swagger.json');
 const errorHandler = require('./middlewares/errorHandler');
 const swaggerJsdoc = require('swagger-jsdoc');
 const fs = require('fs');
@@ -46,7 +47,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api', userRoutes);
 app.use('/api', coinRoutes);
 app.use('/api', paymentRoutes);

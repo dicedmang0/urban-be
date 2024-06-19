@@ -9,7 +9,7 @@ exports.verifyToken = async (req, res, next) => {
 
   jwt.verify(token, process.env.SECRET_KEY_APPLICATION, (err, decoded) => {
     if (err) {
-      return res.status(500).send({ status: "Server Error", message: 'Failed to authenticate token.' });
+      return res.status(500).send({ status: "Server Error", message: 'Failed to authenticate token or Token Expired.' });
     }
 
     req.userId = decoded.id;

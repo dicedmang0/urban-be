@@ -15,10 +15,6 @@ const Agents = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // expired_at: {
-    //   type: DataTypes.DATEONLY,
-    //   allowNull: false,
-    // },
     is_active: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

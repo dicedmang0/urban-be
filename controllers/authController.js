@@ -37,7 +37,7 @@ exports.login = async (req, res) => {
       { id: user.id },
       process.env.SECRET_KEY_APPLICATION,
       {
-        expiresIn: "1h",
+        expiresIn: process.env.EXPIRED_TIME,
       }
     );
 
@@ -76,7 +76,7 @@ exports.register = async (req, res) => {
     }
 
     const token = jwt.sign({ id: idUser }, process.env.SECRET_KEY_APPLICATION, {
-      expiresIn: "1h",
+      expiresIn: process.env.EXPIRED_TIME,
     });
 
     await User.update({ token: token }, { where: { id: idUser } });
@@ -119,7 +119,7 @@ exports.registerRandomUser = async (req, res) => {
     }
 
     const token = jwt.sign({ id: idUser }, process.env.SECRET_KEY_APPLICATION, {
-      expiresIn: "1h",
+      expiresIn: process.env.EXPIRED_TIME,
     });
 
     await User.update({ token: token }, { where: { id: idUser } });
