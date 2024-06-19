@@ -105,7 +105,7 @@ router.put(
 
 /**
  * @swagger
- * /agents:
+ * /api/agents:
  *   post:
  *     summary: Create a new agent
  *     tags: [Agents]
@@ -150,7 +150,7 @@ router.put(
 
 /**
  * @swagger
- * /agents/{id}:
+ * /api/agents/{id}:
  *   put:
  *     summary: Update an agent
  *     tags: [Agents]
@@ -192,7 +192,7 @@ router.put(
 
 /**
  * @swagger
- * /agents/{id}:
+ * /api/agents/{id}:
  *   delete:
  *     summary: Delete an agent
  *     tags: [Agents]
