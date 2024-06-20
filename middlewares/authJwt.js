@@ -12,7 +12,7 @@ exports.verifyToken = async (req, res, next) => {
       return res.status(500).send({ status: "Server Error", message: 'Failed to authenticate token or Token Expired.' });
     }
 
-    req.userId = decoded.id;
+    req.decoded = decoded;
     next();
   });
 };

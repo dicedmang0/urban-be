@@ -2,6 +2,7 @@
 const Payment = require("../models/paymentModel");
 const PaymentMethodDetail = require("../models/paymentMethodDetailModel");
 const PaymentMethod = require("../models/paymentMethodModel");
+const AgentDetail = require("../models/agentDetailModel");
 const { Op } = require("sequelize"); // Import Op from Sequelize
 const { v4: uuidv4 } = require("uuid");
 const {
@@ -10,6 +11,7 @@ const {
   cronosEWallet,
 } = require("../services/cronosGateway");
 const gameController = require('./gameController');
+const User = require("../models/userModel");
 
 exports.getAllPayment = async (req, res) => {
   try {
@@ -32,32 +34,46 @@ exports.getPayment = async (req, res) => {
       endDate,
     } = req.query;
 
+    let isThisAgent = null;
+
+    // Check if user is part of agent 
+    if (req.decoded.role === "agent") {
+      const user = await User.findOne({ where: { id: req.decoded.id } });
+      if (user) {
+        const agent = await AgentDetail.findAll({ where: { agentDetailsId: user.agent_id } });
+        if (agent) {
+          isThisAgent = agent.map(val => val.code);
+        }
+      }
+    }
+
     // Construct the query options
     let queryOptions = {
-      limit: parseInt(limit, 10),
-      offset: parseInt(offset, 10),
-      where: {},
+      limit: parseInt(limit, 10) || 10, // Set default limit if not provided
+      offset: parseInt(offset, 10) || 0, // Set default offset if not provided
+      where: {}
     };
 
     if (id) {
       queryOptions.where.id = id;
     }
 
-    // If a status is provided, add it to the query options
     if (paymentStatus) {
       queryOptions.where.payment_status = paymentStatus;
     }
 
-    // If methods are provided, add them to the query options
     if (paymentMethod) {
       queryOptions.where.payment_method = paymentMethod;
     }
 
-    // If a date range is provided, add it to the query options
     if (startDate && endDate) {
       queryOptions.where.payment_date = {
         [Op.between]: [new Date(startDate), new Date(endDate)],
       };
+    }
+
+    if (isThisAgent) {
+      queryOptions.where.nmid = { [Op.in]: isThisAgent};
     }
 
     const payments = await Payment.findAll(queryOptions);
@@ -65,6 +81,7 @@ exports.getPayment = async (req, res) => {
     // Count total items without limit and offset
     const totalCount = await Payment.count({
       where: queryOptions.where,
+      include: queryOptions.include
     });
 
     res.status(200).json({ payments, totalCount });

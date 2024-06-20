@@ -1,7 +1,8 @@
 // models/paymentMethodDetailModel.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
-const AgentModel = require("./agentModel"); // Import PaymentMethod model
+const Agent = require("./agentModel"); // Import PaymentMethod model
+const Payment = require("./paymentModel");
 
 const AgentDetail = sequelize.define(
   "Agents_Detail",
@@ -12,7 +13,7 @@ const AgentDetail = sequelize.define(
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
     },
-    code: {
+    code: { // this is for NMID
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -28,7 +29,7 @@ const AgentDetail = sequelize.define(
       type: DataTypes.UUID,
       allowNull: false,
       references: {
-        model: AgentModel,  // Reference to PaymentMethod model
+        model: Agent,  // Reference to PaymentMethod model
         key: 'id',
       }
     },
@@ -39,12 +40,12 @@ const AgentDetail = sequelize.define(
 );
 
 // Define the association
-AgentDetail.belongsTo(AgentModel, {
+AgentDetail.belongsTo(Agent, {
   foreignKey: 'agentDetailsId',
   as: 'AgentDetails'
 });
 
-AgentModel.hasMany(AgentDetail, {
+Agent.hasMany(AgentDetail, {
   foreignKey: 'agentDetailsId',
   as: 'AgentDetails'
 });

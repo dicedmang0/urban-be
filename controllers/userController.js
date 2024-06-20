@@ -46,9 +46,9 @@ exports.addUser = async (req, res) => {
 
     const agent = await Agents.findByPk(agent_id);
 
-    if(!agent){
-      throw {message: "Agent is Not Found!"};
-    }
+    // if(!agent){
+    //   throw {message: "Agent is Not Found!"};
+    // }
 
     await User.create({
       username,

@@ -34,7 +34,7 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id },
+      { id: user.id, role: user.role },
       process.env.SECRET_KEY_APPLICATION,
       {
         expiresIn: process.env.EXPIRED_TIME,
@@ -75,7 +75,7 @@ exports.register = async (req, res) => {
       throw { message: "This User Already Registered." };
     }
 
-    const token = jwt.sign({ id: idUser }, process.env.SECRET_KEY_APPLICATION, {
+    const token = jwt.sign({ id: idUser, role: role }, process.env.SECRET_KEY_APPLICATION, {
       expiresIn: process.env.EXPIRED_TIME,
     });
 

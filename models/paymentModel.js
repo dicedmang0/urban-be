@@ -1,6 +1,7 @@
 // models/userModel.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
+const AgentDetail = require("./agentDetailModel");
 
 const Payment = sequelize.define(
   "Payments",
@@ -64,5 +65,11 @@ const Payment = sequelize.define(
     timestamps: true,
   }
 );
+
+Payment.belongsTo(AgentDetail, {
+  foreignKey: 'nmid',
+  targetKey: 'code',
+  as: 'AgentDetail'
+});
 
 module.exports = Payment;
