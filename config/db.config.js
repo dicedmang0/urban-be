@@ -1,6 +1,6 @@
 require('dotenv').config();
 module.exports = {
-  HOST: "10.117.32.3",
+  HOST: "34.124.207.224",
   PORT: "5432",
   USER: "Nero-Admin",
   PASSWORD: "Neroadmin12",
