@@ -66,10 +66,4 @@ const Payment = sequelize.define(
   }
 );
 
-Payment.belongsTo(AgentDetail, {
-  foreignKey: 'nmid',
-  targetKey: 'code',
-  as: 'AgentDetail'
-});
-
 module.exports = Payment;
