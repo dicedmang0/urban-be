@@ -37,8 +37,10 @@ const corsOptions = {
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'http://localhost:3006',
-    'http://127.0.0.1:3006'
-  ], // Replace with your desired origin
+    'http://127.0.0.1:3006',
+    'https://nerogames.id/',
+    'https://advance-genre-425305-g1.web.app/'
+  ], // Replace with your desired origin & add FE URL
   methods: 'GET,PUT,POST,DELETE',
   allowedHeaders: ['Content-Type', 'X-Access-Token']
 };
