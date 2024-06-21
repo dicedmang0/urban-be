@@ -45,30 +45,20 @@ class API {
     hmac.update(message);
     const hash = hmac.digest('hex');
 
-    let config = await API.getConfig();
-    config = {
+    let headers = (await API.getConfig()).headers;
+    const config = {
       headers: {
-        ...API.getConfig().headers,
-        'On-Signature': hash
+        ...headers,
+        "On-Signature": hash,
       },
-      maxBodyLength: Infinity
+      maxBodyLength: Infinity,
     };
-    // const config = {
-    //   ...API.getConfig(),
-    //   headers: {
-    //     ...API.getConfig().headers,
-    //     "On-Signature": hash,
-    //   },
-    //   maxBodyLength: Infinity,
-    // };
 
     const url = `${API.API_URL}${endpoint}`;
     try {
       const response = await axios.post(url, body, config);
-      console.log(response,'resp??')
       return response.data;
     } catch (error) {
-      console.log(error,'error??')
       throw error.response.data;
     }
   };
@@ -95,31 +85,20 @@ class API {
     hmac.update(message);
     const hash = hmac.digest('hex');
 
-    let config = await API.getConfig();
-    config = {
+    let headers = (await API.getConfig()).headers;
+    const config = {
       headers: {
-        ...API.getConfig().headers,
-        'On-Signature': hash
+        ...headers,
+        "On-Signature": hash,
       },
-      maxBodyLength: Infinity
+      maxBodyLength: Infinity,
     };
-    // const config = {
-    //   ...API.getConfig(),
-    //   headers: {
-    //     ...API.getConfig().headers,
-    //     "On-Signature": hash,
-    //     Accept: "application/json",
-    //   },
-    //   maxBodyLength: Infinity,
-    // };
 
     const url = `${API.API_URL}${endpoint}`;
     try {
       const response = await axios.get(url, config);
-      console.log(response,'resp??')
       return response.data;
     } catch (error) {
-      console.log(error,'error??')
       throw error.response.data;
     }
   };
