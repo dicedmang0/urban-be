@@ -65,6 +65,7 @@ app.use(errorHandler);
 // Initialize the database and start the server.
 const startServer = async () => {
   try {
+    console.log(process.env,'test aja')
     // Initialize the game table
     initGameModel();
 
