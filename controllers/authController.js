@@ -55,13 +55,14 @@ exports.register = async (req, res) => {
     let role = "";
     const defaultPassword = process.env.DEFAULT_PASSWORD;
 
-    const { username, email } = req.body;
+    const { username, email, password } = req.body;
     const isUserAvailable = await User.findOne({ where: { username } });
     idUser = isUserAvailable?.id;
     role = isUserAvailable?.role;
 
     if (!isUserAvailable) {
-      const hashedPassword = await bcrypt.hash(defaultPassword, 8);
+      const hashedPassword = await bcrypt.hash(password, 8);
+      // const hashedPassword = await bcrypt.hash(defaultPassword, 8);
       const user = await User.create({
         username: username,
         password: hashedPassword,
