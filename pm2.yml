@@ -1,0 +1,7 @@
+apps:
+  - name: nero
+    script: ./app.js
+    exec_mode: cluster
+    instances: 1
+    env: { "NODE_ENV": "production" }
+    watch: true

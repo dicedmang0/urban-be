@@ -1,0 +1,7 @@
+runtime: nodejs22
+entrypoint: npm start
+env: standard
+
+handlers:
+  - url: /.*
+    script: auto

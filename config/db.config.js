@@ -1,8 +1,8 @@
 require('dotenv').config();
 module.exports = {
-  HOST: process.env.DB_HOST || "host.docker.internal",
-  PORT: process.env.DB_PORT || "3306",
-  USER: process.env.DB_USER ||"postgres",
-  PASSWORD: process.env.DB_PASSWORD || "root",
-  DB: process.env.DB_DBNAME || "geco"
+  HOST: "34.124.207.224",
+  PORT: "5432",
+  USER: "Nero-Admin",
+  PASSWORD: "Neroadmin12",
+  DB: "Nero"
 };
