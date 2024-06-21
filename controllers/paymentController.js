@@ -15,7 +15,23 @@ const User = require("../models/userModel");
 
 exports.getAllPayment = async (req, res) => {
   try {
-    const payment = await Payment.findAll();
+    const {
+      startDate,
+      endDate,
+    } = req.query;
+
+    // Construct the query options
+    let queryOptions = {
+      where: {}
+    };
+
+    if (startDate && endDate) {
+      queryOptions.where.payment_date = {
+        [Op.between]: [new Date(startDate), new Date(endDate)],
+      };
+    }
+
+    const payment = await Payment.findAll(queryOptions);
     res.status(200).json(payment);
   } catch (error) {
     res.status(400).send({ status: "Bad Request", message: error.message });
