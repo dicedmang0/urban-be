@@ -57,7 +57,7 @@ const initDb = async () => {
       const agent = await Agent.create({name: 'AMP', is_active: 1});
     }
 
-    if (!user ) {
+    if (!user) {
       await User.create({
         username: "SUPERADMIN",
         ref_id: "-",

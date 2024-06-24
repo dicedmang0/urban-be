@@ -44,11 +44,30 @@ exports.addUser = async (req, res) => {
     const { username, password, role, email, is_active, agent_id } = req.body;
     const hashedPassword = await bcrypt.hash(password, 8);
 
-    const agent = await Agents.findByPk(agent_id);
-
+    
     // if(!agent){
-    //   throw {message: "Agent is Not Found!"};
-    // }
+      //   throw {message: "Agent is Not Found!"};
+      // }
+      let agent = null
+    let dtoCreateUser = {
+      username,
+      role: role,
+      email: email,
+      // agent_id: agent.id,
+      is_active: is_active,
+    };
+    
+    if(role == 'agent') {
+      agent = await Agents.findByPk(agent_id);
+      
+      if(!agent){
+        throw {message: "Agent is Not Found!"};
+      }
+      dtoCreateUser = {
+        ...dtoCreateUser,
+        agent_id: agent.id
+      }
+    }
 
     let isAgentNull = agent ? agent.id : null;
 
