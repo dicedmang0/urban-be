@@ -32,6 +32,8 @@ router.delete(
   agentController.deleteAgent
 );
 
+// TODO: Swagger For This Agent Detail
+
 // Routes for Agent Detail
 router.post(
   '/agent-detail',

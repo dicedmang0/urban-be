@@ -42,6 +42,14 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  recovery_question: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  recovery_answer: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   is_active: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
