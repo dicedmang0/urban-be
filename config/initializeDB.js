@@ -4,14 +4,14 @@ const PaymentMethod = require("../models/paymentMethodModel");
 const PaymentMethodDetail = require("../models/paymentMethodDetailModel");
 const Agent = require("../models/agentModel");
 const bcrypt = require("bcryptjs");
-const fundList = require("./initialPayment");
+const {arrayFund, arrayRecoveryQuestions} = require("./initialPayment");
+const RecoveryQuestion = require("../models/recoveryQuestionModel");
 
 const initDb = async () => {
   try {
     const hashedPassword = await bcrypt.hash(process.env.DEFAULT_PASSWORD, 8);
 
     await sequelize.sync({ force: false }); // This will drop the table if it already exists and create a new one
-    // console.log("Database & tables created!");
 
     const user = await User.findOne({ where: { username: "SUPERADMIN" } });
     const agentList = await Agent.count();
@@ -19,10 +19,20 @@ const initDb = async () => {
     const paymentMethod = await PaymentMethod.count();
     const paymentMethodDetail = await PaymentMethodDetail.count();
 
-    // console.log(paymentMethod, paymentMethodDetail,'????')
+    const recoveryQuestions = await RecoveryQuestion.count();
+
+
+    if(recoveryQuestions === 0) {
+      arrayRecoveryQuestions.forEach(async (val, index) => {
+        const paymentMethod = await RecoveryQuestion.create({
+          text: val.text,
+          is_active: val.is_active,
+        });
+      });
+    }
 
     if (paymentMethod === 0 && paymentMethodDetail === 0) {
-      fundList.forEach(async (val, index) => {
+      arrayFund.forEach(async (val, index) => {
         const paymentMethod = await PaymentMethod.create({
           name: val.name,
           is_active: 1,
@@ -43,14 +53,17 @@ const initDb = async () => {
       });
     }
 
-    if (!user && !agentList) {
+    if(!agentList) {
       const agent = await Agent.create({name: 'AMP', is_active: 1});
+    }
+
+    if (!user ) {
       await User.create({
         username: "SUPERADMIN",
         ref_id: "-",
         password: hashedPassword,
         email: "-",
-        agent_id: agent.id,
+        agent_id: null,
         role: "superadmin",
         is_active: 1,
       });

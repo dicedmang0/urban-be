@@ -50,17 +50,21 @@ exports.addUser = async (req, res) => {
     //   throw {message: "Agent is Not Found!"};
     // }
 
+    let isAgentNull = agent ? agent.id : null;
+
     await User.create({
       username,
       password: hashedPassword,
       role: role,
       email: email,
-      agent_id: agent.id,
+      agent_id: isAgentNull,
       is_active: is_active,
     });
 
+    console.log(agent,'???asad')
     res.status(200).json({ status: "Success", message: "Success Add User" });
   } catch (error) {
+    console.log(error,'???')
     res.status(400).send({ status: "Bad Request", message: error.message });
   }
 };
