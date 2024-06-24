@@ -61,10 +61,8 @@ exports.addUser = async (req, res) => {
       is_active: is_active,
     });
 
-    console.log(agent,'???asad')
     res.status(200).json({ status: "Success", message: "Success Add User" });
   } catch (error) {
-    console.log(error,'???')
     res.status(400).send({ status: "Bad Request", message: error.message });
   }
 };
@@ -74,11 +72,25 @@ exports.updateUser = async (req, res) => {
     const { username, password, id, role, email, is_active, agent_id } = req.body;
 
     const user = await User.findOne({ where: { id: id } });
+    let agent = null
+    let dtoUpdateUser = {
+      username,
+      role: role,
+      email: email,
+      // agent_id: agent.id,
+      is_active: is_active,
+    };
 
-    const agent = await Agents.findByPk(agent_id);
-
-    if(!agent){
-      throw {message: "Agent is Not Found!"};
+    if(role == 'agent') {
+      agent = await Agents.findByPk(agent_id);
+      
+      if(!agent){
+        throw {message: "Agent is Not Found!"};
+      }
+      dtoUpdateUser = {
+        ...dtoUpdateUser,
+        agent_id: agent.id
+      }
     }
     
     if (!user) {
@@ -86,14 +98,6 @@ exports.updateUser = async (req, res) => {
         .status(400)
         .send({ status: "Bad Request", message: "User Not Found!" });
     }
-
-    let dtoUpdateUser = {
-      username,
-      role: role,
-      email: email,
-      agent_id: agent.id,
-      is_active: is_active,
-    };
 
     if (user.password != password) {
       const hashedPassword = await bcrypt.hash(password, 8);
