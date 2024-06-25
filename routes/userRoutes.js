@@ -14,7 +14,8 @@ const {
   validateRegisterUserRandom,
   validateForgotPassword,
   validateAnswerCheck,
-  validateUserCheck
+  validateUserCheck,
+  validateUpdateProfileUsers
 } = require('../middlewares/validatorUsers');
 
 router.get('/all-users', verifyToken, userController.getUsersAll);
@@ -33,6 +34,8 @@ router.post('/register', validateRegister, authController.register);
 
 //TODO: Swagger API Answer Check and Change Password
 // TODO: Create API Update Profile
+
+router.put('/profile-user', validateUpdateProfileUsers, userController.updateProfileUser);
 
 router.post('/answer-check', validateAnswerCheck, authController.checkAnswerUser)
 router.post('/user-check', validateUserCheck, authController.checkUserCheck)

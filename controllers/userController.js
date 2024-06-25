@@ -39,6 +39,42 @@ exports.getUsers = async (req, res) => {
   }
 };
 
+exports.updateProfileUser = async (req, res) => {
+  try {
+    const { password, id, email } = req.body;
+
+    const user = await User.findOne({ where: { id: id } });
+    let dtoUpdateUser = {
+      email: email,
+    };
+
+    if (!user) {
+      return res
+        .status(400)
+        .send({ status: "Bad Request", message: "User Not Found!" });
+    }
+
+    if (user.password != password) {
+      const hashedPassword = await bcrypt.hash(password, 8);
+      if (hashedPassword != user.password) {
+        dtoUpdateUser = {
+          ...dtoUpdateUser,
+          password: hashedPassword,
+        };
+      }
+    }
+
+    await User.update(dtoUpdateUser, { where: { id: id } });
+
+    res
+      .status(200)
+      .json({ status: "Success", message: "Success Update Profile User!" });
+
+  } catch (error) {
+    res.status(400).send({ status: "Bad Request", message: error.message });
+  }
+}
+
 exports.addUser = async (req, res) => {
   try {
     const { username, password, role, email, is_active, agent_id } = req.body;
@@ -48,7 +84,7 @@ exports.addUser = async (req, res) => {
     // if(!agent){
       //   throw {message: "Agent is Not Found!"};
       // }
-      let agent = null
+    let agent = null
     let dtoCreateUser = {
       username,
       role: role,

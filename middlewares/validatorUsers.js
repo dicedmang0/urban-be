@@ -119,6 +119,20 @@ exports.validateUpdateUsers = [
   }
 ];
 
+
+exports.validateUpdateProfileUsers = [
+  body('password').notEmpty().withMessage('Password is required'),
+  body('id', 'id is not valid').isUUID(),
+  body('email', 'email is not valid').isEmail(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ status: "Bad Request", errors: errors.array() });
+    }
+    next();
+  }
+];
+
 exports.validateUsers = [
   param('idUser', 'id is not valid').isUUID(),
   (req, res, next) => {
