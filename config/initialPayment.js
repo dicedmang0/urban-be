@@ -99,4 +99,50 @@ const arrayFund = [
   },
 ];
 
-module.exports = arrayFund;
+const arrayRecoveryQuestions = [
+  {
+    text: "What was the name of your first pet?",
+    is_active: 1
+  },
+  {
+    text: "What is your mother’s maiden name?",
+    is_active: 1
+  },
+  {
+    text: "What was the name of your elementary school?",
+    is_active: 1
+  },
+  {
+    text: "What was the make and model of your first car?",
+    is_active: 1
+  },
+  {
+    text: "In what city were you born?",
+    is_active: 1
+  },
+  {
+    text: "What is the name of the street you grew up on?",
+    is_active: 1
+  },
+  {
+    text: "What is the name of your favorite childhood friend?",
+    is_active: 1
+  },
+  {
+    text: "What is your favorite food?",
+    is_active: 1
+  },
+  {
+    text: "What was the name of your first employer?",
+    is_active: 1
+  },
+  {
+    text: "What is your favorite movie?",
+    is_active: 1
+  },
+]
+
+module.exports = {
+  arrayFund: arrayFund,
+  arrayRecoveryQuestions: arrayRecoveryQuestions
+};

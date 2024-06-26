@@ -8,6 +8,7 @@ const paymentMethodRoutes = require('./routes/paymentMethodRoutes');
 const gameRoutes = require('./routes/gameRoutes');
 const sequelize = require('./config/database');
 const agentRoutes = require("./routes/agentRoutes");
+const recoveryQuestionsRoutes = require("./routes/recoveryQuestionsRoutes");
 const initDB = require('./config/initializeDB');
 // const swaggerUi = require('swagger-ui-express');
 const { swaggerUi, specs } = require('./swagger/swagger');
@@ -58,6 +59,7 @@ app.use('/api', paymentRoutes);
 app.use('/api', paymentMethodRoutes);
 app.use('/api', gameRoutes);
 app.use("/api", agentRoutes);
+app.use("/api", recoveryQuestionsRoutes);
 
 // Error handling middleware
 app.use(errorHandler);
@@ -67,7 +69,7 @@ const startServer = async () => {
   try {
     // Initialize the game table
     initGameModel();
-
+    // console.log(process.env,'???')
     if (process.env.NODE_ENV !== 'production') {
       // Sync database with force true in non-production environments
       await initDB();

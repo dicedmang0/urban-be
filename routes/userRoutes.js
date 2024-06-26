@@ -11,7 +11,11 @@ const {
   validateUpdateUsers,
   validateUsers,
   validateGetUsers,
-  validateRegisterUserRandom
+  validateRegisterUserRandom,
+  validateForgotPassword,
+  validateAnswerCheck,
+  validateUserCheck,
+  validateUpdateProfileUsers
 } = require('../middlewares/validatorUsers');
 
 router.get('/all-users', verifyToken, userController.getUsersAll);
@@ -27,6 +31,16 @@ router.delete(
 
 router.post('/login', validateLogin, authController.login);
 router.post('/register', validateRegister, authController.register);
+
+//TODO: Swagger API Answer Check and Change Password
+// TODO: Create API Update Profile
+
+router.put('/profile-user', validateUpdateProfileUsers, userController.updateProfileUser);
+
+router.post('/answer-check', validateAnswerCheck, authController.checkAnswerUser)
+router.post('/user-check', validateUserCheck, authController.checkUserCheck)
+router.post('/reset-password', validateForgotPassword, authController.changePasswordRecovery)
+
 router.post(
   '/user-regist-random',
   validateRegisterUserRandom,
