@@ -5,7 +5,9 @@ const paymentController = require('../controllers/paymentController');
 const {
   validateAddPayment,
   validateGetPayment,
-  validateUpdatePayment
+  validateUpdatePayment,
+  validateCheckPayment,
+  validateUpdatePaymentByUser
 } = require('../middlewares/validatorPayments');
 const {
   cronosVirtualAccount,
@@ -33,6 +35,21 @@ router.put(
   paymentController.updatePayment
 );
 
+// TODO: Swagger For Checking Transactions
+
+router.get(
+  '/check-payments/:payment_id',
+  verifyToken,
+  validateCheckPayment,
+  paymentController.checkStatusPaymentsCronos
+);
+
+router.put(
+  '/update-payments-by-user',
+  verifyToken,
+  validateUpdatePaymentByUser,
+  paymentController.updatePaymentByUser
+);
 // router.get('/test', cronosVirtualAccount)
 // router.get('/test2', cronosAllTransactions)
 

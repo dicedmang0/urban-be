@@ -107,3 +107,29 @@ exports.validateUpdatePayment = [
     next();
   },
 ];
+
+exports.validateCheckPayment = [
+  param("payment_id", "payment_id is not valid").isString().notEmpty(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json({ status: "Bad Request", errors: errors.array() });
+    }
+    next();
+  },
+];
+
+exports.validateUpdatePaymentByUser = [
+  body("payment_id", "payment_id is not valid").isUUID(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json({ status: "Bad Request", errors: errors.array() });
+    }
+    next();
+  },
+];

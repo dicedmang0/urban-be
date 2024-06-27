@@ -74,27 +74,21 @@ class API {
       API.initialize();
     }
 
-    // Step 1: JSON encode the body
-    const bodyJson = JSON.stringify('');
-
-    // Step 2: Concatenate key and JSON-encoded body
-    const message = API.SECRET_KEY_CRONOS + bodyJson.replace(/\//g, '\\/');
-
-    // Step 3: Calculate the hash using HMAC-SHA512
-    const hmac = crypto.createHmac('sha512', API.SECRET_KEY_TOKEN_CRONOS);
-    hmac.update(message);
-    const hash = hmac.digest('hex');
+    const signature = crypto.createHmac('sha512', API.SECRET_KEY_TOKEN_CRONOS).update(API.SECRET_KEY_CRONOS).digest('hex');
 
     let headers = (await API.getConfig()).headers;
     const config = {
       headers: {
         ...headers,
-        "On-Signature": hash,
+        "On-Signature": signature,
       },
       maxBodyLength: Infinity,
     };
 
+
     const url = `${API.API_URL}${endpoint}`;
+    console.log(url,'??')
+
     try {
       const response = await axios.get(url, config);
       return response.data;
