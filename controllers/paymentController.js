@@ -118,7 +118,8 @@ exports.addPayment = async (req, res) => {
       payment_method,
       requested_date,
       phone_number,
-      nmid
+      nmid,
+      code
     } = req.body;
 
     let dto = {
@@ -136,10 +137,9 @@ exports.addPayment = async (req, res) => {
       payment_status: 'Pending'
     };
 
-    const resp = await sendCronosGateway(dto);
+    const resp = await sendCronosGateway({...dto, code});
 
     dto.transaction_id = resp.responseData.id;
-    console.log(dto, '??');
     await Payment.create(dto);
 
     await gameController.incrementCoin(game_id, user_id, amount);
