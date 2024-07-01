@@ -1,18 +1,18 @@
 const API = require("./moduleAxiosFunc");
 exports.cronosVirtualAccount = async (body) => {
   try {
-    const sampleBody = {
-      bankCode: "014",
-      singleUse: true,
-      type: "ClosedAmount",
-      reference: "123",
-      amount: 10000,
-      expiryMinutes: 30,
-      viewName: "Mr. Gentur",
-      additionalInfo: {
-        callback: "http://your-site-callback.com/notify",
-      },
-    };
+    // const sampleBody = {
+    //   bankCode: "014",
+    //   singleUse: true,
+    //   type: "ClosedAmount",
+    //   reference: "123",
+    //   amount: 10000,
+    //   expiryMinutes: 30,
+    //   viewName: "Mr. Gentur",
+    //   additionalInfo: {
+    //     callback: "http://your-site-callback.com/notify",
+    //   },
+    // };
 
     const response = await API.post("/virtual-account", body);
     return response;
