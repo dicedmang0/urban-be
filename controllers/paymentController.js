@@ -262,6 +262,7 @@ const sendCronosGateway = async (object) => {
                 callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`,
               }
             };
+            console.log(dto,'dto')
             const response = await cronosVirtualAccount(dto);
             return response;
           } else {
@@ -299,6 +300,8 @@ const sendCronosGateway = async (object) => {
                 successRedirectUrl: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`
               }
             };
+            console.log(dto,'dto')
+
             const response = await cronosEWallet(dto);
             return response;
           } else {
@@ -320,6 +323,7 @@ const sendCronosGateway = async (object) => {
           callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`
         }
       };
+      console.log(dto,'dto')
 
       const response = await cronosQris(dto);
       return response;
@@ -346,6 +350,9 @@ const sendCronosGateway = async (object) => {
                 callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`
               }
             };
+
+            console.log(dto,'dto')
+
             const response = await cronosEWallet(dto);
             return response;
           } else {
@@ -368,6 +375,8 @@ const sendCronosGateway = async (object) => {
           callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`
         }
       };
+      console.log(dto,'dto')
+
       const response = await cronosEWallet(dto);
       return response;
     } else {
