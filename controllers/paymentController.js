@@ -259,7 +259,7 @@ const sendCronosGateway = async (object) => {
               expiryMinutes: 30,
               viewName: object.name,
               additionalInfo: {
-                callback: 'https://kraken.free.beeceptor.com/notify'
+                callback: `http://localhost:3006/confirmation/${object.user_id}`,
               }
             };
             const response = await cronosVirtualAccount(dto);
@@ -295,7 +295,8 @@ const sendCronosGateway = async (object) => {
               expiryMinutes: 30,
               viewName: object.name,
               additionalInfo: {
-                callback: 'https://kraken.free.beeceptor.com/notify'
+                callback: `http://localhost:3006/confirmation/${object.user_id}`,
+                successRedirectUrl: `http://localhost:3006/confirmation/${object.user_id}`
               }
             };
             const response = await cronosEWallet(dto);
@@ -316,7 +317,7 @@ const sendCronosGateway = async (object) => {
         expiryMinutes: 30,
         viewName: object.name,
         additionalInfo: {
-          callback: 'https://kraken.free.beeceptor.com/notify'
+          callback: `http://localhost:3006/confirmation/${object.user_id}`
         }
       };
 
@@ -342,7 +343,7 @@ const sendCronosGateway = async (object) => {
               expiryMinutes: 30,
               viewName: object.name,
               additionalInfo: {
-                callback: 'https://kraken.free.beeceptor.com/notify'
+                callback: `http://localhost:3006/confirmation/${object.user_id}`
               }
             };
             const response = await cronosEWallet(dto);
@@ -364,7 +365,7 @@ const sendCronosGateway = async (object) => {
         expiryMinutes: 30,
         viewName: object.name,
         additionalInfo: {
-          callback: 'https://kraken.free.beeceptor.com/notify'
+          callback: `http://localhost:3006/confirmation/${object.user_id}`
         }
       };
       const response = await cronosEWallet(dto);
