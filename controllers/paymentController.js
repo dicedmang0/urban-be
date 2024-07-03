@@ -259,7 +259,7 @@ const sendCronosGateway = async (object) => {
               expiryMinutes: 30,
               viewName: object.name,
               additionalInfo: {
-                callback: `http://localhost:3006/confirmation/${object.user_id}`,
+                callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`,
               }
             };
             const response = await cronosVirtualAccount(dto);
@@ -295,8 +295,8 @@ const sendCronosGateway = async (object) => {
               expiryMinutes: 30,
               viewName: object.name,
               additionalInfo: {
-                callback: `http://localhost:3006/confirmation/${object.user_id}`,
-                successRedirectUrl: `http://localhost:3006/confirmation/${object.user_id}`
+                callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`,
+                successRedirectUrl: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`
               }
             };
             const response = await cronosEWallet(dto);
@@ -317,7 +317,7 @@ const sendCronosGateway = async (object) => {
         expiryMinutes: 30,
         viewName: object.name,
         additionalInfo: {
-          callback: `http://localhost:3006/confirmation/${object.user_id}`
+          callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`
         }
       };
 
@@ -343,7 +343,7 @@ const sendCronosGateway = async (object) => {
               expiryMinutes: 30,
               viewName: object.name,
               additionalInfo: {
-                callback: `http://localhost:3006/confirmation/${object.user_id}`
+                callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`
               }
             };
             const response = await cronosEWallet(dto);
@@ -365,7 +365,7 @@ const sendCronosGateway = async (object) => {
         expiryMinutes: 30,
         viewName: object.name,
         additionalInfo: {
-          callback: `http://localhost:3006/confirmation/${object.user_id}`
+          callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`
         }
       };
       const response = await cronosEWallet(dto);
