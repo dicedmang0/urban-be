@@ -259,7 +259,7 @@ const sendCronosGateway = async (object) => {
               expiryMinutes: 30,
               viewName: object.name,
               additionalInfo: {
-                callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`,
+                callback: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`,
               }
             };
             console.log(dto,'dto')
@@ -296,8 +296,8 @@ const sendCronosGateway = async (object) => {
               expiryMinutes: 30,
               viewName: object.name,
               additionalInfo: {
-                callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`,
-                successRedirectUrl: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`
+                callback: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`,
+                successRedirectUrl: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`
               }
             };
             console.log(dto,'dto')
@@ -320,7 +320,7 @@ const sendCronosGateway = async (object) => {
         expiryMinutes: 30,
         viewName: object.name,
         additionalInfo: {
-          callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`
+          callback: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`
         }
       };
       console.log(dto,'dto')
@@ -347,7 +347,7 @@ const sendCronosGateway = async (object) => {
               expiryMinutes: 30,
               viewName: object.name,
               additionalInfo: {
-                callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`
+                callback: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`
               }
             };
 
@@ -372,7 +372,7 @@ const sendCronosGateway = async (object) => {
         expiryMinutes: 30,
         viewName: object.name,
         additionalInfo: {
-          callback: `${process.env.REDIRECT_HOST}/confirmation/${object.user_id}`
+          callback: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`
         }
       };
       console.log(dto,'dto')
