@@ -13,6 +13,7 @@ const {
 } = require('../services/cronosGateway');
 const gameController = require('./gameController');
 const User = require('../models/userModel');
+const { checkUserIdGames } = require('../services/apigamesGateway');
 
 exports.getAllPayment = async (req, res) => {
   try {
@@ -108,6 +109,8 @@ exports.getPayment = async (req, res) => {
 
 exports.addPayment = async (req, res) => {
   try {
+    const gameHasToCheck = ['mobilelegend','freefire'];
+
     const {
       ref_id,
       transaction_id,
@@ -137,12 +140,29 @@ exports.addPayment = async (req, res) => {
       payment_status: 'Pending'
     };
 
+    // check if the games was mobile legend or free fire
+    const isGameHasToCheck = gameHasToCheck.includes(game_id);
+
+    if(isGameHasToCheck) {
+      const resp = await checkUserIdGames(dto);
+      if(resp.status == 0) {
+        throw {
+          message: resp.error_msg
+        }
+      } else if (!resp.data.is_valid) {
+        throw {
+          message: resp.message
+        }
+      }
+    }
+
+
     const resp = await sendCronosGateway({...dto, code});
 
     dto.transaction_id = resp.responseData.id;
     await Payment.create(dto);
 
-    await gameController.incrementCoin(game_id, user_id, amount);
+    // await gameController.incrementCoin(game_id, user_id, amount);
 
     res.status(200).json({
       status: 'Success',
@@ -262,7 +282,6 @@ const sendCronosGateway = async (object) => {
                 callback: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`,
               }
             };
-            console.log(dto,'dto')
             const response = await cronosVirtualAccount(dto);
             return response;
           } else {

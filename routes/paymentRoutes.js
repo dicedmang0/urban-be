@@ -24,7 +24,7 @@ router.get(
 );
 router.post(
   '/payments',
-  verifyToken,
+  // verifyToken,
   validateAddPayment,
   paymentController.addPayment
 );

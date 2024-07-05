@@ -5,11 +5,17 @@ class API {
   static API_URL;
   static SECRET_KEY_TOKEN_CRONOS;
   static SECRET_KEY_CRONOS;
+  static APIGAMES_MERCHANT_SECRET_KEY;
+  static SECRET_KEY_APIGAMES;
+  static API_GAMES_URL;
 
   static initialize() {
     API.API_URL = process.env.CRONOS_BASE_URL;
     API.SECRET_KEY_TOKEN_CRONOS = process.env.SECRET_KEY_TOKEN_CRONOS;
     API.SECRET_KEY_CRONOS = process.env.SECRET_KEY_CRONOS;
+    API.APIGAMES_MERCHANT_SECRET_KEY = process.env.APIGAMES_MERCHANT_SECRET_KEY;
+    API.SECRET_KEY_APIGAMES = process.env.SECRET_KEY_APIGAMES;
+    API.API_GAMES_URL = process.env.API_GAMES_URL;
   }
 
   // Get configuration with authorization token
@@ -55,7 +61,6 @@ class API {
     };
 
     const url = `${API.API_URL}${endpoint}`;
-    console.log(url,'??')
     try {
       const response = await axios.post(url, body, config);
       return response.data;
@@ -88,8 +93,29 @@ class API {
 
 
     const url = `${API.API_URL}${endpoint}`;
-    console.log(url,'??')
+    try {
+      const response = await axios.get(url, config);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  };
 
+  // Make a GET request
+  static getApiGames = async (endpoint, params) => {
+    // Ensure the API is initialized
+    if (
+      !API.APIGAMES_MERCHANT_SECRET_KEY ||
+      !API.SECRET_KEY_APIGAMES ||
+      !API.API_GAMES_URL
+    ) {
+      API.initialize();
+    }
+    const signature = crypto.createHash('md5').update(API.APIGAMES_MERCHANT_SECRET_KEY + API.SECRET_KEY_APIGAMES).digest('hex');
+    const config = {};
+
+    const url = `${API.API_GAMES_URL}/merchant/${API.APIGAMES_MERCHANT_SECRET_KEY}${endpoint}&signature=${signature}`;
+    console.log(url,'??')
     try {
       const response = await axios.get(url, config);
       return response.data;
