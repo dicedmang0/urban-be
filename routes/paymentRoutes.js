@@ -10,9 +10,13 @@ const {
   validateUpdatePaymentByUser
 } = require('../middlewares/validatorPayments');
 const {
-  cronosVirtualAccount,
-  cronosAllTransactions
-} = require('../services/cronosGateway');
+  getAccessToken,
+  getInquirySaldo,
+  getInquiryDTU,
+  getInquiryVoucher,
+  postConfirmPayment,
+  getCheckOrder
+} = require('../services/unipinGateway');
 const verifyToken = require('../middlewares/authJwt').verifyToken;
 
 router.get('/all-payments', verifyToken, paymentController.getAllPayment);
@@ -50,8 +54,31 @@ router.put(
   validateUpdatePaymentByUser,
   paymentController.updatePaymentByUser
 );
-// router.get('/test', cronosVirtualAccount)
-// router.get('/test2', cronosAllTransactions)
+
+router.get(
+  '/retrieveDTU',
+  // verifyToken,
+  paymentController.getDTU
+)
+
+router.get(
+  '/retrieveSaldo',
+  // verifyToken,
+  paymentController.getSaldoUni
+)
+
+router.get(
+  '/checkOrderOnUniPlay/:order_id',
+  // verifyToken,
+  paymentController.checkOrderOnUniPlay
+)
+
+// router.get('/test', getAccessToken)
+// router.get('/test2', getInquirySaldo)
+// router.get('/test3', getInquiryDTU)
+router.get('/test4', getInquiryVoucher)
+router.get('/test5', postConfirmPayment)
+router.get('/test6', getCheckOrder)
 
 /**
  * @swagger

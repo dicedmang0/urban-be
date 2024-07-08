@@ -14,6 +14,7 @@ const {
 const gameController = require('./gameController');
 const User = require('../models/userModel');
 const { checkUserIdGames } = require('../services/apigamesGateway');
+const { getInquiryDTU, getInquirySaldo, getCheckOrder } = require('../services/unipinGateway');
 
 exports.getAllPayment = async (req, res) => {
   try {
@@ -122,7 +123,9 @@ exports.addPayment = async (req, res) => {
       requested_date,
       phone_number,
       nmid,
-      code
+      code,
+      entitas_id,
+      denom_id
     } = req.body;
 
     let dto = {
@@ -137,7 +140,9 @@ exports.addPayment = async (req, res) => {
       phone_number: phone_number,
       payment_date: null,
       request_date: requested_date,
-      payment_status: 'Pending'
+      payment_status: 'Pending',
+      entitas_id: entitas_id,
+      denom_id: denom_id
     };
 
     // check if the games was mobile legend or free fire
@@ -242,6 +247,34 @@ exports.checkStatusPaymentsCronos = async (req, res) => {
 
     const statusTransactions = await checkCronosPaymentStatus({ payment_id });
     res.status(200).json(statusTransactions);
+  } catch (error) {
+    res.status(400).send({ status: 'Bad Request', message: error.message });
+  }
+};
+
+
+exports.getDTU = async (req, res) => {
+  try {
+    const response = await getInquiryDTU();
+    res.status(200).json({ response });
+  } catch (error) {
+    res.status(400).send({ status: 'Bad Request', message: error.message });
+  }
+};
+
+exports.getSaldoUni = async (req, res) => {
+  try {
+    const response = await getInquirySaldo();
+    res.status(200).json({ response });
+  } catch (error) {
+    res.status(400).send({ status: 'Bad Request', message: error.message });
+  }
+};
+
+exports.checkOrderOnUniPlay = async (req, res) => {
+  try {
+    const response = await getCheckOrder(req.params);
+    res.status(200).json({ response });
   } catch (error) {
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }

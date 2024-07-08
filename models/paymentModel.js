@@ -44,6 +44,14 @@ const Payment = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    entitas_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    denom_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     payment_method: {
       type: DataTypes.STRING,
       allowNull: false,
