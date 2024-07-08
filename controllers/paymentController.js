@@ -14,7 +14,7 @@ const {
 const gameController = require('./gameController');
 const User = require('../models/userModel');
 const { checkUserIdGames } = require('../services/apigamesGateway');
-const { getInquiryDTU, getInquirySaldo, getCheckOrder } = require('../services/unipinGateway');
+const { getInquiryDTU, getInquirySaldo, getCheckOrder, postInquiryPayment, postConfirmPayment } = require('../services/unipinGateway');
 
 exports.getAllPayment = async (req, res) => {
   try {
@@ -110,7 +110,14 @@ exports.getPayment = async (req, res) => {
 
 exports.addPayment = async (req, res) => {
   try {
-    const gameHasToCheck = ['mobilelegend','freefire'];
+    // TODO: Create CRUD Games To Describe API Using Uniplay or not, and using api games or not
+    const gameHasToCheck = [
+      {name: "PUBG Mobile (Indonesia)", id:"PUBG Mobile (Indonesia)", checkUsername: false, useUniplay: true},
+      {name: "PUBG Mobile (Global)", id:"PUBG Mobile (Global)", checkUsername: false, useUniplay: true},
+      {name: "Mobile Legends", id:"mobilelegend", checkUsername: true, useUniplay: true}
+    ];
+
+    // TODO: Create Payment For Minimum Prices Transactions, E-Wallet 1k, Qris 5k, VA 10k
 
     const {
       ref_id,
@@ -124,8 +131,8 @@ exports.addPayment = async (req, res) => {
       phone_number,
       nmid,
       code,
-      entitas_id,
-      denom_id
+      package,
+      server_id
     } = req.body;
 
     let dto = {
@@ -141,14 +148,17 @@ exports.addPayment = async (req, res) => {
       payment_date: null,
       request_date: requested_date,
       payment_status: 'Pending',
-      entitas_id: entitas_id,
-      denom_id: denom_id
+      package: package,
+      server_id: server_id,
+      inquiry_id: null
     };
 
+    let isLogicAllPassed = false;
+    let finalResponse = null;
     // check if the games was mobile legend or free fire
-    const isGameHasToCheck = gameHasToCheck.includes(game_id);
+    const isGameHasToCheck = gameHasToCheck.find(v => v.id == game_id);
 
-    if(isGameHasToCheck) {
+    if(isGameHasToCheck.checkUsername) {
       const resp = await checkUserIdGames(dto);
       if(resp.status == 0) {
         throw {
@@ -161,18 +171,57 @@ exports.addPayment = async (req, res) => {
       }
     }
 
+    let dtoUniplay = {};
 
-    const resp = await sendCronosGateway({...dto, code});
+    if(isGameHasToCheck.useUniplay) {
+      // get data first 
+      const responseDTU = await getInquiryDTU();
+      let choosenGame = responseDTU.list_dtu.find(val => val.name == isGameHasToCheck.name);
+      const choosenDenom = choosenGame.denom.find(val => val.package == dto.package); 
 
-    dto.transaction_id = resp.responseData.id;
+      if(!choosenDenom) {
+        throw {
+          message: 'Wrong Products.'
+        }
+      }
+
+      if(choosenDenom.price != dto.amount){
+        throw {
+          message: 'Inputted Wrong Prices!'
+        }
+      }
+
+      dtoUniplay = {
+        entitas_id: choosenGame.id,
+        denom_id: choosenDenom.id,
+        user_id: dto.user_id,
+        server_id: dto.server_id
+      };
+
+      isLogicAllPassed = true;
+      
+    }
+    if(isLogicAllPassed) {
+      // Hit Cronos
+      const resp = await sendCronosGateway({...dto, code});
+      dto.transaction_id = resp.responseData.id;
+
+      finalResponse = resp
+
+      // Hit UniPlay
+      const responseUniPlay = await postInquiryPayment(body);
+      dto.inquiry_id = responseUniPlay.inquiry_id;
+    }
+
     await Payment.create(dto);
 
+    // Hit Amount Coin in Nero Games
     // await gameController.incrementCoin(game_id, user_id, amount);
 
     res.status(200).json({
       status: 'Success',
       message: 'Success Adding Payment!',
-      data: resp.responseData
+      data: finalResponse
     });
   } catch (error) {
     res.status(400).send({ status: 'Bad Request', message: error.message });
@@ -217,7 +266,7 @@ exports.updatePaymentByUser = async (req, res) => {
   try {
     const { payment_id } = req.body;
 
-    const statusTransactions = await checkCronosPaymentStatus({ payment_id });
+    const statusTransactionsCronos = await checkCronosPaymentStatus({ payment_id });
     const payment = await Payment.findOne({
       where: { transaction_id: payment_id }
     });
@@ -229,8 +278,12 @@ exports.updatePaymentByUser = async (req, res) => {
     }
 
     let dto = {
-      payment_status: await updatePaymentStatus(statusTransactions.status)
+      payment_status: await updatePaymentStatus(statusTransactionsCronos.status)
     };
+
+    if(dto.payment_status == "Success") {
+      await postConfirmPayment({inquiry_id: payment.inquiry_id, pincode: process.env.PINCODE_UNIPIN});
+    }
 
     await Payment.update(dto, { where: { transaction_id: payment_id } });
     res

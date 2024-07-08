@@ -50,7 +50,7 @@ router.get(
 
 router.put(
   '/update-payments-by-user',
-  verifyToken,
+  // verifyToken,
   validateUpdatePaymentByUser,
   paymentController.updatePaymentByUser
 );
@@ -76,9 +76,9 @@ router.get(
 // router.get('/test', getAccessToken)
 // router.get('/test2', getInquirySaldo)
 // router.get('/test3', getInquiryDTU)
-router.get('/test4', getInquiryVoucher)
+// router.get('/test4', getInquiryVoucher)
 router.get('/test5', postConfirmPayment)
-router.get('/test6', getCheckOrder)
+// router.get('/test6', getCheckOrder)
 
 /**
  * @swagger

@@ -44,11 +44,11 @@ const Payment = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    entitas_id: {
+    package: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    denom_id: {
+    inquiry_id: {
       type: DataTypes.STRING,
       allowNull: true,
     },
