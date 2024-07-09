@@ -28,7 +28,7 @@ router.get(
 );
 router.post(
   '/payments',
-  // verifyToken,
+  verifyToken,
   validateAddPayment,
   paymentController.addPayment
 );
@@ -50,26 +50,26 @@ router.get(
 
 router.put(
   '/update-payments-by-user',
-  // verifyToken,
+  verifyToken,
   validateUpdatePaymentByUser,
   paymentController.updatePaymentByUser
 );
 
 router.get(
   '/retrieveDTU',
-  // verifyToken,
+  verifyToken,
   paymentController.getDTU
 )
 
 router.get(
   '/retrieveSaldo',
-  // verifyToken,
+  verifyToken,
   paymentController.getSaldoUni
 )
 
 router.get(
   '/checkOrderOnUniPlay/:order_id',
-  // verifyToken,
+  verifyToken,
   paymentController.checkOrderOnUniPlay
 )
 
@@ -77,7 +77,7 @@ router.get(
 // router.get('/test2', getInquirySaldo)
 // router.get('/test3', getInquiryDTU)
 // router.get('/test4', getInquiryVoucher)
-router.get('/test5', postConfirmPayment)
+// router.get('/test5', postConfirmPayment)
 // router.get('/test6', getCheckOrder)
 
 /**
