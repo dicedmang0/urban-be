@@ -218,9 +218,6 @@ exports.addPayment = async (req, res) => {
 
     await Payment.create(dto);
 
-    // Hit Amount Coin in Nero Games
-    // await gameController.incrementCoin(game_id, user_id, amount);
-
     res.status(200).json({
       status: 'Success',
       message: 'Success Adding Payment!',
@@ -267,12 +264,21 @@ const updatePaymentStatus = async (cronosStatus) => {
 
 exports.updatePaymentByUser = async (req, res) => {
   try {
+    const gameHasToCheck = [
+      {name: "PUBG Mobile (Indonesia)", id:"PUBG Mobile (Indonesia)", checkUsername: false, useUniplay: true},
+      {name: "PUBG Mobile (Global)", id:"PUBG Mobile (Global)", checkUsername: false, useUniplay: true},
+      {name: "Mobile Legends", id:"mobilelegend", checkUsername: true, useUniplay: true}
+    ];   
+
     const { payment_id } = req.body;
 
     const statusTransactionsCronos = await checkCronosPaymentStatus({ payment_id });
     const payment = await Payment.findOne({
       where: { transaction_id: payment_id }
     });
+
+     // check if the games was mobile legend or free fire
+     const isGameHasToCheck = gameHasToCheck.find(v => v.id == payment.game_id);
 
     if (!payment) {
       return res
@@ -284,8 +290,12 @@ exports.updatePaymentByUser = async (req, res) => {
       payment_status: await updatePaymentStatus(statusTransactionsCronos.status)
     };
 
-    if(dto.payment_status == "Success") {
+    if(isGameHasToCheck && isGameHasToCheck.useUniplay && dto.payment_status == "Success") {
+      // GAME UNIPLAY
       await postConfirmPayment({inquiry_id: payment.inquiry_id, pincode: process.env.PINCODE_UNIPIN});
+    } else {
+      // Hit Amount Coin in Nero Games
+      await gameController.incrementCoin(payment.game_id, payment.user_id, payment.amount);
     }
 
     await Payment.update(dto, { where: { transaction_id: payment_id } });
