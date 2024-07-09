@@ -209,7 +209,7 @@ exports.addPayment = async (req, res) => {
       finalResponse = resp
 
       // Hit UniPlay
-      const responseUniPlay = await postInquiryPayment(body);
+      const responseUniPlay = await postInquiryPayment(dtoUniplay);
       dto.inquiry_id = responseUniPlay.inquiry_id;
     }
 
