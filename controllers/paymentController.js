@@ -158,7 +158,7 @@ exports.addPayment = async (req, res) => {
     // check if the games was mobile legend or free fire
     const isGameHasToCheck = gameHasToCheck.find(v => v.id == game_id);
 
-    if(isGameHasToCheck.checkUsername) {
+    if(isGameHasToCheck && isGameHasToCheck.checkUsername) {
       const resp = await checkUserIdGames(dto);
       if(resp.status == 0) {
         throw {
@@ -173,7 +173,7 @@ exports.addPayment = async (req, res) => {
 
     let dtoUniplay = {};
 
-    if(isGameHasToCheck.useUniplay) {
+    if(isGameHasToCheck && isGameHasToCheck.useUniplay) {
       // get data first 
       const responseDTU = await getInquiryDTU();
       let choosenGame = responseDTU.list_dtu.find(val => val.name == isGameHasToCheck.name);
@@ -201,12 +201,15 @@ exports.addPayment = async (req, res) => {
       isLogicAllPassed = true;
       
     }
-    if(isLogicAllPassed) {
-      // Hit Cronos
-      const resp = await sendCronosGateway({...dto, code});
-      dto.transaction_id = resp.responseData.id;
 
-      finalResponse = resp
+    // Hit Cronos
+    const resp = await sendCronosGateway({...dto, code});
+    dto.transaction_id = resp.responseData.id;
+
+    finalResponse = resp
+    
+    if(isLogicAllPassed) {
+      
 
       // Hit UniPlay
       const responseUniPlay = await postInquiryPayment(dtoUniplay);
