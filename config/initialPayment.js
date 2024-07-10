@@ -142,7 +142,81 @@ const arrayRecoveryQuestions = [
   },
 ]
 
+const arrayGamePackages = [
+  {
+    name: 'sugarpuffs',
+    title: 'SUGAR',
+    description: 'Nero Game Sugarpuffs',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: false,
+    is_active: true
+  },
+  {
+    name: 'idlemarkets',
+    title: 'IDLE',
+    description: 'Nero Game Idle Markets',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: false,
+    is_active: true
+  },
+  {
+    name: 'mobilelegend',
+    title: 'Mobile Legends',
+    description: 'Game Mobile Legends',
+    image: null,
+    check_username: true,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'PUBG Mobile (Indonesia)',
+    title: 'PUBG Mobile (Indonesia)',
+    description: 'Game PUBG Mobile (Indonesia)',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'PUBG Mobile (Global)',
+    title: 'PUBG Mobile (Global)',
+    description: 'Game PUBG Mobile (Global)',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+]
+
 module.exports = {
   arrayFund: arrayFund,
-  arrayRecoveryQuestions: arrayRecoveryQuestions
+  arrayRecoveryQuestions: arrayRecoveryQuestions,
+  arrayGamePackages: arrayGamePackages
 };

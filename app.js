@@ -9,6 +9,7 @@ const gameRoutes = require('./routes/gameRoutes');
 const sequelize = require('./config/database');
 const agentRoutes = require("./routes/agentRoutes");
 const recoveryQuestionsRoutes = require("./routes/recoveryQuestionsRoutes");
+const gamePackageRoutes = require("./routes/gamePackageRoutes");
 const initDB = require('./config/initializeDB');
 // const swaggerUi = require('swagger-ui-express');
 const { swaggerUi, specs } = require('./swagger/swagger');
@@ -60,6 +61,7 @@ app.use('/api', paymentMethodRoutes);
 app.use('/api', gameRoutes);
 app.use("/api", agentRoutes);
 app.use("/api", recoveryQuestionsRoutes);
+app.use("/api", gamePackageRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

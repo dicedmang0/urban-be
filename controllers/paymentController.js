@@ -15,6 +15,7 @@ const gameController = require('./gameController');
 const User = require('../models/userModel');
 const { checkUserIdGames } = require('../services/apigamesGateway');
 const { getInquiryDTU, getInquirySaldo, getCheckOrder, postInquiryPayment, postConfirmPayment } = require('../services/unipinGateway');
+const GamePackage = require('../models/gamePackageModel');
 
 exports.getAllPayment = async (req, res) => {
   try {
@@ -111,11 +112,11 @@ exports.getPayment = async (req, res) => {
 exports.addPayment = async (req, res) => {
   try {
     // TODO: Create CRUD Games To Describe API Using Uniplay or not, and using api games or not
-    const gameHasToCheck = [
-      {name: "PUBG Mobile (Indonesia)", id:"PUBG Mobile (Indonesia)", checkUsername: false, useUniplay: true},
-      {name: "PUBG Mobile (Global)", id:"PUBG Mobile (Global)", checkUsername: false, useUniplay: true},
-      {name: "Mobile Legends", id:"mobilelegend", checkUsername: true, useUniplay: true}
-    ];
+    // const gameHasToCheck = [
+    //   {name: "PUBG Mobile (Indonesia)", id:"PUBG Mobile (Indonesia)", checkUsername: false, useUniplay: true},
+    //   {name: "PUBG Mobile (Global)", id:"PUBG Mobile (Global)", checkUsername: false, useUniplay: true},
+    //   {name: "Mobile Legends", id:"mobilelegend", checkUsername: true, useUniplay: true}
+    // ];
 
     // TODO: Create Payment For Minimum Prices Transactions, E-Wallet 1k, Qris 5k, VA 10k
 
@@ -155,10 +156,14 @@ exports.addPayment = async (req, res) => {
 
     let isLogicAllPassed = false;
     let finalResponse = null;
-    // check if the games was mobile legend or free fire
-    const isGameHasToCheck = gameHasToCheck.find(v => v.id == game_id);
 
-    if(isGameHasToCheck && isGameHasToCheck.checkUsername) {
+    const isGameHasToCheck = await GamePackage.findAll({where: {
+      is_active: true, name: game_id
+    }})
+
+    // check if the games was mobile legend or free fire
+    // const isGameHasToCheck = gameHasToCheck.find(v => v.id == game_id);
+    if(isGameHasToCheck && isGameHasToCheck.check_username) {
       const resp = await checkUserIdGames(dto);
       if(resp.status == 0) {
         throw {
@@ -173,7 +178,7 @@ exports.addPayment = async (req, res) => {
 
     let dtoUniplay = {};
 
-    if(isGameHasToCheck && isGameHasToCheck.useUniplay) {
+    if(isGameHasToCheck && isGameHasToCheck.use_uniplay) {
       // get data first 
       const responseDTU = await getInquiryDTU();
       let choosenGame = responseDTU.list_dtu.find(val => val.name == isGameHasToCheck.name);
@@ -264,11 +269,11 @@ const updatePaymentStatus = async (cronosStatus) => {
 
 exports.updatePaymentByUser = async (req, res) => {
   try {
-    const gameHasToCheck = [
-      {name: "PUBG Mobile (Indonesia)", id:"PUBG Mobile (Indonesia)", checkUsername: false, useUniplay: true},
-      {name: "PUBG Mobile (Global)", id:"PUBG Mobile (Global)", checkUsername: false, useUniplay: true},
-      {name: "Mobile Legends", id:"mobilelegend", checkUsername: true, useUniplay: true}
-    ];   
+    // const gameHasToCheck = [
+    //   {name: "PUBG Mobile (Indonesia)", id:"PUBG Mobile (Indonesia)", checkUsername: false, useUniplay: true},
+    //   {name: "PUBG Mobile (Global)", id:"PUBG Mobile (Global)", checkUsername: false, useUniplay: true},
+    //   {name: "Mobile Legends", id:"mobilelegend", checkUsername: true, useUniplay: true}
+    // ];   
 
     const { payment_id } = req.body;
 
@@ -277,8 +282,12 @@ exports.updatePaymentByUser = async (req, res) => {
       where: { transaction_id: payment_id }
     });
 
+    const isGameHasToCheck = await GamePackage.findAll({where: {
+      is_active: true, name: payment.game_id
+    }})
+
      // check if the games was mobile legend or free fire
-     const isGameHasToCheck = gameHasToCheck.find(v => v.id == payment.game_id);
+    //  const isGameHasToCheck = gameHasToCheck.find(v => v.id == payment.game_id);
 
     if (!payment) {
       return res
@@ -290,7 +299,7 @@ exports.updatePaymentByUser = async (req, res) => {
       payment_status: await updatePaymentStatus(statusTransactionsCronos.status)
     };
 
-    if(isGameHasToCheck && isGameHasToCheck.useUniplay && dto.payment_status == "Success") {
+    if(isGameHasToCheck && isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
       // GAME UNIPLAY
       await postConfirmPayment({inquiry_id: payment.inquiry_id, pincode: process.env.PINCODE_UNIPIN});
     } else {
