@@ -188,7 +188,12 @@ exports.addPayment = async (req, res) => {
     if(isGameHasToCheck && isGameHasToCheck.use_uniplay) {
       // get data first 
       const responseDTU = await getInquiryDTU();
-      let choosenGame = responseDTU.list_dtu.find(val => val.name == isGameHasToCheck.name);
+      let choosenGame = responseDTU.list_dtu.find(val => val.name == isGameHasToCheck.title);
+      if(!choosenGame){
+        throw {
+          message: 'Wrong Game.'
+        }
+      }
       const choosenDenom = choosenGame.denom.find(val => val.package == dto.package); 
 
       if(!choosenDenom) {
