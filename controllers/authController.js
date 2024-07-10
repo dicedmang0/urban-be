@@ -71,7 +71,7 @@ exports.register = async (req, res) => {
         username: username,
         password: hashedPassword,
         role: 'user',
-        email: email,
+        // email: email,
         recovery_question: recovery_question,
         recovery_answer: recovery_answer,
         is_active: 1
@@ -121,7 +121,7 @@ exports.registerRandomUser = async (req, res) => {
         username: username ? username : randomNames,
         password: hashedPassword,
         role: 'user',
-        email: '-',
+        // email: '-',
         ref_id: ref_id || null,
         is_active: 1
       });

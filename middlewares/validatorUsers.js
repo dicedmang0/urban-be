@@ -12,7 +12,7 @@ var Schema = {
 
 exports.validateRegister = [
   body('username').isLength({ min: 6 }).withMessage('Username must be at least 6 characters long'),
-  body('email', 'email is not valid').isEmail(),
+  // body('email', 'email is not valid').isEmail(),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
   body("recovery_question").isUUID().withMessage("recovery question is not valid"),
   body("recovery_answer").notEmpty().withMessage("recovery answer is required"),
@@ -108,7 +108,7 @@ exports.validateUpdateUsers = [
   body('id', 'id is not valid').isUUID(),
   body('agent_id', 'agent_id is not valid').isString().optional(),
   checkSchema(Schema),
-  body('email', 'email is not valid').isEmail(),
+  // body('email', 'email is not valid').isEmail(),
   body('is_active', 'is_active is not valid').isBoolean(),
   (req, res, next) => {
     const errors = validationResult(req);
@@ -123,7 +123,7 @@ exports.validateUpdateUsers = [
 exports.validateUpdateProfileUsers = [
   body('password').notEmpty().withMessage('Password is required'),
   body('id', 'id is not valid').isUUID(),
-  body('email', 'email is not valid').isEmail(),
+  // body('email', 'email is not valid').isEmail(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

@@ -45,7 +45,7 @@ exports.updateProfileUser = async (req, res) => {
 
     const user = await User.findOne({ where: { id: id } });
     let dtoUpdateUser = {
-      email: email,
+      // email: email,
     };
 
     if (!user) {
@@ -88,7 +88,7 @@ exports.addUser = async (req, res) => {
     let dtoCreateUser = {
       username,
       role: role,
-      email: email,
+      // email: email,
       // agent_id: agent.id,
       is_active: is_active,
     };
@@ -111,7 +111,7 @@ exports.addUser = async (req, res) => {
       username,
       password: hashedPassword,
       role: role,
-      email: email,
+      // email: email,
       agent_id: isAgentNull,
       is_active: is_active,
     });
@@ -131,7 +131,7 @@ exports.updateUser = async (req, res) => {
     let dtoUpdateUser = {
       username,
       role: role,
-      email: email,
+      // email: email,
       // agent_id: agent.id,
       is_active: is_active,
     };

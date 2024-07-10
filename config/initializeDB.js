@@ -62,7 +62,7 @@ const initDb = async () => {
         username: "SUPERADMIN",
         ref_id: "-",
         password: hashedPassword,
-        email: "-",
+        // email: "-",
         agent_id: null,
         role: "superadmin",
         is_active: 1,
