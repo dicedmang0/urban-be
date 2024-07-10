@@ -157,9 +157,16 @@ exports.addPayment = async (req, res) => {
     let isLogicAllPassed = false;
     let finalResponse = null;
 
-    const isGameHasToCheck = await GamePackage.findAll({where: {
+    const isGameHasToCheck = await GamePackage.findOne({where: {
       is_active: true, name: game_id
     }})
+
+    // return console.log(isGameHasToCheck && isGameHasToCheck.check_username,'??')
+    if(!isGameHasToCheck) {
+      throw {
+        message: 'Your Game is not available.'
+      }
+    }
 
     // check if the games was mobile legend or free fire
     // const isGameHasToCheck = gameHasToCheck.find(v => v.id == game_id);
@@ -282,12 +289,18 @@ exports.updatePaymentByUser = async (req, res) => {
       where: { transaction_id: payment_id }
     });
 
-    const isGameHasToCheck = await GamePackage.findAll({where: {
+    const isGameHasToCheck = await GamePackage.findOne({where: {
       is_active: true, name: payment.game_id
     }})
 
      // check if the games was mobile legend or free fire
     //  const isGameHasToCheck = gameHasToCheck.find(v => v.id == payment.game_id);
+
+    if(!isGameHasToCheck) {
+      throw {
+        message: 'Your Game is not available.'
+      }
+    }
 
     if (!payment) {
       return res
