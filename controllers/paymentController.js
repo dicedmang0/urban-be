@@ -294,6 +294,12 @@ exports.updatePaymentByUser = async (req, res) => {
       where: { transaction_id: payment_id }
     });
 
+    if(!payment){
+      throw {
+        message: 'Your Transactions Doesnt Exist.'
+      }
+    }
+
     const isGameHasToCheck = await GamePackage.findOne({where: {
       is_active: true, name: payment.game_id
     }})
@@ -311,18 +317,21 @@ exports.updatePaymentByUser = async (req, res) => {
       return res
         .status(400)
         .send({ status: 'Bad Request', message: 'Payment Not Found' });
-    }
+      }
 
     let dto = {
       payment_status: await updatePaymentStatus(statusTransactionsCronos.status)
     };
-
     if(isGameHasToCheck && isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
       // GAME UNIPLAY
       await postConfirmPayment({inquiry_id: payment.inquiry_id, pincode: process.env.PINCODE_UNIPIN});
-    } else {
+    } else if (isGameHasToCheck && !isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
       // Hit Amount Coin in Nero Games
       await gameController.incrementCoin(payment.game_id, payment.user_id, payment.amount);
+    } else if (dto.payment_status == "Pending" || dto.payment_status == 'Failed') {
+      throw {
+        message: 'You havent paid.'
+      }
     }
 
     await Payment.update(dto, { where: { transaction_id: payment_id } });
