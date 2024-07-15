@@ -7,7 +7,8 @@ const {
   validateGetPayment,
   validateUpdatePayment,
   validateCheckPayment,
-  validateUpdatePaymentByUser
+  validateUpdatePaymentByUser,
+  validateAddPaymentPrivate
 } = require('../middlewares/validatorPayments');
 const {
   getAccessToken,
@@ -72,6 +73,20 @@ router.get(
   verifyToken,
   paymentController.checkOrderOnUniPlay
 )
+
+router.post(
+  '/private-initial-payments',
+  // verifyToken,
+  validateAddPaymentPrivate,
+  paymentController.privateInitialPayment
+);
+
+router.put(
+  '/private-update-payments-by-user',
+  // verifyToken,
+  validateUpdatePaymentByUser,
+  paymentController.privateUpdatePaymentByUser
+);
 
 // router.get('/test', getAccessToken)
 // router.get('/test2', getInquirySaldo)

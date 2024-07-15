@@ -30,7 +30,7 @@ const Payment = sequelize.define(
     },
     user_id: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     name: {
       type: DataTypes.STRING,
