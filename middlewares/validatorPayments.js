@@ -35,6 +35,7 @@ exports.validateGetPayment = [
     .isInt({ min: 0 })
     .withMessage("Offset must be an integer of at least 0"),
   query("id").isUUID().withMessage("ID is not valid").optional(),
+  query("user_id_nero").isUUID().withMessage("user id nero is not valid").optional(),
   query("paymentStatus")
     .isString()
     .withMessage("Payment status must be a string")

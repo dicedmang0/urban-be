@@ -58,7 +58,8 @@ exports.getPayment = async (req, res) => {
       paymentStatus,
       paymentMethod,
       startDate,
-      endDate
+      endDate,
+      user_id_nero
     } = req.query;
 
     let isThisAgent = null;
@@ -85,6 +86,10 @@ exports.getPayment = async (req, res) => {
 
     if (id) {
       queryOptions.where.id = id;
+    }
+
+    if (user_id_nero) {
+      queryOptions.where.user_id_nero = user_id_nero;
     }
 
     if (paymentStatus) {
@@ -161,7 +166,8 @@ exports.addPayment = async (req, res) => {
       payment_status: 'Pending',
       package: package,
       server_id: server_id,
-      inquiry_id: null
+      inquiry_id: null,
+      user_id_nero: req.decoded.id
     };
 
     let isLogicAllPassed = false;
@@ -386,7 +392,6 @@ exports.privateInitialPayment = async (req, res) => {
       data: finalResponse
     });
   } catch (error) {
-    console.log(error,'????')
 
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
