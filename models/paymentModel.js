@@ -28,9 +28,13 @@ const Payment = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    user_id_nero: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     user_id: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     name: {
       type: DataTypes.STRING,
