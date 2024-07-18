@@ -31,6 +31,9 @@ exports.validateGetPayment = [
   query("limit")
     .isInt({ min: 1, max: 1000 })
     .withMessage("Limit must be an integer between 1 and 1000"),
+  param("user_id_nero", "user_id_nero is not valid").isString().optional(),
+  param("ref_id", "ref_id is not valid").isString().optional(),
+  param("nmid", "nmid is not valid").isString().optional(),
   query("offset")
     .isInt({ min: 0 })
     .withMessage("Offset must be an integer of at least 0"),
