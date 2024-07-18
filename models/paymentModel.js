@@ -24,6 +24,10 @@ const Payment = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    ref_id: { // for refferal
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     nmid: {
       type: DataTypes.STRING,
       allowNull: true,

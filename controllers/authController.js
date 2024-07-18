@@ -58,7 +58,7 @@ exports.register = async (req, res) => {
     let role = '';
     const defaultPassword = process.env.DEFAULT_PASSWORD;
 
-    const { username, email, password, recovery_question, recovery_answer } =
+    const { username, email, nik, ref_id, password, recovery_question, recovery_answer } =
       req.body;
     const isUserAvailable = await User.findOne({ where: { username } });
     idUser = isUserAvailable?.id;
@@ -74,6 +74,8 @@ exports.register = async (req, res) => {
         // email: email,
         recovery_question: recovery_question,
         recovery_answer: recovery_answer,
+        nik: nik || null,
+        ref_id: ref_id || null,
         is_active: 1
       });
       idUser = user.id;

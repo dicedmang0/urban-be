@@ -91,10 +91,12 @@ exports.validateAddUsers = [
   body('password').notEmpty().withMessage('Password is required'),
   checkSchema(Schema),
   // body('email', 'email is not valid').isEmail(),
+  body('ref_id', 'ref_id is not valid').isString().optional(),
   body('is_active', 'is_active is not valid').isBoolean(),
   body('agent_id', 'agent_id is not valid').isString().optional(),
   (req, res, next) => {
     const errors = validationResult(req);
+    console.log(errors,'???')
     if (!errors.isEmpty()) {
       return res.status(400).json({ status: "Bad Request", errors: errors.array() });
     }
@@ -107,6 +109,7 @@ exports.validateUpdateUsers = [
   body('password').notEmpty().withMessage('Password is required'),
   body('id', 'id is not valid').isUUID(),
   body('agent_id', 'agent_id is not valid').isString().optional(),
+  body('ref_id', 'ref_id is not valid').isString().optional(),
   checkSchema(Schema),
   // body('email', 'email is not valid').isEmail(),
   body('is_active', 'is_active is not valid').isBoolean(),

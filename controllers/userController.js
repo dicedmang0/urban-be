@@ -77,7 +77,7 @@ exports.updateProfileUser = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    const { username, password, role, email, is_active, agent_id } = req.body;
+    const { username, password, ref_id, role, nik, email, is_active, agent_id } = req.body;
     const hashedPassword = await bcrypt.hash(password, 8);
 
     
@@ -88,6 +88,8 @@ exports.addUser = async (req, res) => {
     let dtoCreateUser = {
       username,
       role: role,
+      nik: nik,
+      ref_id: ref_id,
       // email: email,
       // agent_id: agent.id,
       is_active: is_active,
@@ -111,6 +113,8 @@ exports.addUser = async (req, res) => {
       username,
       password: hashedPassword,
       role: role,
+      nik: nik,
+      ref_id: ref_id,
       // email: email,
       agent_id: isAgentNull,
       is_active: is_active,
@@ -124,13 +128,15 @@ exports.addUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const { username, password, id, role, email, is_active, agent_id } = req.body;
+    const { username, ref_id, nik, password, id, role, email, is_active, agent_id } = req.body;
 
     const user = await User.findOne({ where: { id: id } });
     let agent = null
     let dtoUpdateUser = {
       username,
       role: role,
+      nik: nik,
+      ref_id: ref_id,
       // email: email,
       // agent_id: agent.id,
       is_active: is_active,
