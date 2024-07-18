@@ -150,9 +150,18 @@ router.put(
  *           type: string
  *           format: date-time
  *           description: The date when the payment request was made. Required.
- *         payment_status:
+ *         server_id:
  *           type: string
- *           description: The status of the payment (e.g., pending, success, failed). Required.
+ *           description: The server (e.g., JAPAN, ID, etc). Optional.
+ *         package:
+ *           type: string
+ *           description: The package (e.g., 60 + 5 Tokens, etc). Optional.
+ *         ref_id:
+ *           type: string
+ *           description: refferral user/agents (e.g., Hyungg, etc). Optional.
+ *         code:
+ *           type: string
+ *           description: code is for payment method like bank (e.g., 014, 015, ovo, bca, etc). Optional.
  */
 
 /**
@@ -202,7 +211,7 @@ router.put(
  *         description: Bearer token for authentication
  *     requestBody:
  *       required: true
- *       description: Only Merchant ID, transaction id, code, nmid, name, user_id, game_id, amount, phone_number, payment_method, requested_date
+ *       description: Only Merchant ID, transaction id, code, nmid, name, user_id, game_id, amount, phone_number, payment_method, requested_date, server_id, package, code, ref_id
  *       content:
  *         application/json:
  *           schema:
@@ -250,6 +259,57 @@ router.put(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Payment'
+ *       '401':
+ *         description: Unauthorized
+ *       '404':
+ *         description: Payment not found
+ *       '400':
+ *         description: Bad request, validation error
+ */
+
+/**
+ * @swagger
+ * /api/update-payments-by-user:
+ *   put:
+ *     summary: Update a payment by users
+ *     tags: [Payments]
+ *     description: Update an status of transaction existing payment.
+ *     security:
+ *       - accessToken: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     requestBody:
+ *       required: true
+ *       description: only id as payment_id and payment status 
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              required:
+ *               - payment_id
+ *              properties:
+ *               payment_id:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Payment updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                - status
+ *                - message
+ *               properties:
+ *                status:
+ *                 type: string
+ *                message:
+ *                 type: string
  *       '401':
  *         description: Unauthorized
  *       '404':
