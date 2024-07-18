@@ -61,6 +61,7 @@ router.post(
  *         - ref_id
  *         - nik
  *         - is_active
+ *         - phone_number
  *       properties:
  *         id:
  *           type: string
@@ -91,6 +92,9 @@ router.post(
  *         nik:
  *           type: string
  *           description: The nik of the user. Optional.
+ *         phone_number:
+ *           type: string
+ *           description: The phone number of the user. Optional.
  *         is_active:
  *           type: boolean
  *           description: Indicates whether the user account is active or not. Required.
