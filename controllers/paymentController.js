@@ -59,7 +59,9 @@ exports.getPayment = async (req, res) => {
       paymentMethod,
       startDate,
       endDate,
-      user_id_nero
+      user_id_nero,
+      ref_id,
+      nmid
     } = req.query;
 
     let isThisAgent = null;
@@ -86,6 +88,14 @@ exports.getPayment = async (req, res) => {
 
     if (id) {
       queryOptions.where.id = id;
+    }
+
+    if (ref_id) {
+      queryOptions.where.ref_id = ref_id;
+    }
+
+    if (nmid) {
+      queryOptions.where.nmid = nmid;
     }
 
     if (user_id_nero) {
@@ -285,7 +295,7 @@ exports.privateInitialPayment = async (req, res) => {
       nmid,
       code,
       package,
-      server_id
+      server_id,
     } = req.body;
 
     let dto = {
