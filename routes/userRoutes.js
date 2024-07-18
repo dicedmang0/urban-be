@@ -158,12 +158,18 @@ router.post(
  *               - username
  *               - email
  *               - password
+ *               - phone_number
+ *               - nik
  *             properties:
  *               username:
  *                 type: string
  *               email:
  *                 type: string
  *               password:
+ *                 type: string
+ *               phone_number:
+ *                 type: string
+ *               nik: 
  *                 type: string
  *     responses:
  *       '200':
