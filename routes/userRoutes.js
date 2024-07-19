@@ -39,6 +39,7 @@ router.put('/profile-user', validateUpdateProfileUsers, userController.updatePro
 
 router.post('/answer-check', validateAnswerCheck, authController.checkAnswerUser)
 router.post('/user-check', validateUserCheck, authController.checkUserCheck)
+router.post('/refferral-check', authController.refferralCheck)
 router.post('/reset-password', validateForgotPassword, authController.changePasswordRecovery)
 
 router.post(

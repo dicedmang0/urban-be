@@ -12,6 +12,7 @@ const User = sequelize.define('User', {
   ref_id: {
     type: DataTypes.STRING,
     allowNull: true,
+    unique: true,
   },
   nik: {
     type: DataTypes.STRING,

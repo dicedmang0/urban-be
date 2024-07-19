@@ -161,6 +161,21 @@ exports.checkUserCheck = async (req, res) => {
   }
 };
 
+exports.refferralCheck = async (req, res) => {
+  try {
+    const { code_ref } = req.body;
+    const isUserAvailable = await User.findOne({ where: { ref_id: code_ref } });
+
+    if (!isUserAvailable) {
+      throw { message: "Referral Not Found."}  
+    } 
+    
+    res.status(200).json({ isRefAvailable: true });
+  } catch (error) {
+    res.status(500).send({ status: 'Bad Request', message: error.message });
+  }
+};
+
 
 exports.checkAnswerUser = async (req, res) => {
   try {
