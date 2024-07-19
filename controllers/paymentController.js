@@ -66,6 +66,8 @@ exports.getPayment = async (req, res) => {
 
     let isThisAgent = null;
 
+    let isThisAgentWithRef = null;
+
     // Check if user is part of agent
     if (req.decoded.role === 'agent') {
       const user = await User.findOne({ where: { id: req.decoded.id } });
@@ -75,6 +77,8 @@ exports.getPayment = async (req, res) => {
         });
         if (agent) {
           isThisAgent = agent.map((val) => val.code);
+
+          isThisAgentWithRef = user.ref_id;
         }
       }
     }
@@ -116,10 +120,18 @@ exports.getPayment = async (req, res) => {
       };
     }
 
-    if (isThisAgent) {
-      queryOptions.where.nmid = { [Op.in]: isThisAgent };
-    }
+    if (isThisAgent || isThisAgentWithRef) {
+      queryOptions.where[Op.or] = [];
 
+      if (isThisAgent) {
+        queryOptions.where[Op.or].push({ nmid: { [Op.in]: isThisAgent } });
+      }
+
+      if (isThisAgentWithRef) {
+        queryOptions.where[Op.or].push({ ref_id: isThisAgentWithRef });
+      }
+    }
+    
     const payments = await Payment.findAll(queryOptions);
 
     // Count total items without limit and offset
