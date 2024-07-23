@@ -259,6 +259,9 @@ exports.addPayment = async (req, res) => {
 
     // Hit Cronos
     const resp = await sendCronosGateway({...dto, code});
+    // Overwrite for addittionalInfo Callback Purposed API
+    resp.responseData.additionalInfo.callback = `${process.env.REDIRECT_HOST}/api/confirmation/${resp.responseData.id}`
+    
     dto.transaction_id = resp.responseData.id;
 
     finalResponse = resp
@@ -494,7 +497,8 @@ exports.updatePaymentByUser = async (req, res) => {
       }
 
     let dto = {
-      payment_status: await updatePaymentStatus(statusTransactionsCronos.status)
+      payment_status: await updatePaymentStatus(statusTransactionsCronos.status),
+      payment_date: statusTransactionsCronos.paidDate
     };
     if(isGameHasToCheck && isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
       // GAME UNIPLAY
@@ -558,7 +562,8 @@ exports.privateUpdatePaymentByUser = async (req, res) => {
       }
 
     let dto = {
-      payment_status: await updatePaymentStatus(statusTransactionsCronos.status)
+      payment_status: await updatePaymentStatus(statusTransactionsCronos.status),
+      payment_date: statusTransactionsCronos.paidDate
     };
     if(isGameHasToCheck && isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
       // GAME UNIPLAY
@@ -569,6 +574,71 @@ exports.privateUpdatePaymentByUser = async (req, res) => {
 
       // Hit Amount Coin in Nero Games
       await gameController.incrementCoin(payment.game_id, response.idUser, payment.amount);
+    } else if (dto.payment_status == "Pending" || dto.payment_status == 'Failed') {
+      throw {
+        message: 'You havent paid.'
+      }
+    }
+
+    await Payment.update(dto, { where: { transaction_id: payment_id } });
+    res
+      .status(200)
+      .json({ status: 'Success', message: 'Success Updating Payment!' });
+  } catch (error) {
+    res.status(400).send({ status: 'Bad Request', message: error.message });
+  }
+};
+
+exports.privateConfirmationPayment = async (req, res) => {
+  try {
+    // const gameHasToCheck = [
+    //   {name: "PUBG Mobile (Indonesia)", id:"PUBG Mobile (Indonesia)", checkUsername: false, useUniplay: true},
+    //   {name: "PUBG Mobile (Global)", id:"PUBG Mobile (Global)", checkUsername: false, useUniplay: true},
+    //   {name: "Mobile Legends", id:"mobilelegend", checkUsername: true, useUniplay: true}
+    // ];   
+
+    const { payment_id } = req.params;
+
+    const statusTransactionsCronos = await checkCronosPaymentStatus({ payment_id });
+    const payment = await Payment.findOne({
+      where: { transaction_id: payment_id }
+    });
+
+    if(!payment){
+      throw {
+        message: 'Your Transactions Doesnt Exist.'
+      }
+    }
+
+    const isGameHasToCheck = await GamePackage.findOne({where: {
+      is_active: true, name: payment.game_id
+    }})
+
+     // check if the games was mobile legend or free fire
+    //  const isGameHasToCheck = gameHasToCheck.find(v => v.id == payment.game_id);
+
+    if(!isGameHasToCheck) {
+      throw {
+        message: 'Your Game is not available.'
+      }
+    }
+
+    if (!payment) {
+      return res
+        .status(400)
+        .send({ status: 'Bad Request', message: 'Payment Not Found' });
+      }
+
+    let dto = {
+      payment_status: await updatePaymentStatus(statusTransactionsCronos.status),
+      payment_date: statusTransactionsCronos.paidDate
+    };
+    if(isGameHasToCheck && isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
+      // GAME UNIPLAY
+      await postConfirmPayment({inquiry_id: payment.inquiry_id, pincode: process.env.PINCODE_UNIPIN});
+    } else if (isGameHasToCheck && !isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
+      // Hit Amount Coin in Nero Games
+      await gameController.incrementCoin(payment.game_id, payment.user_id, payment.amount);
     } else if (dto.payment_status == "Pending" || dto.payment_status == 'Failed') {
       throw {
         message: 'You havent paid.'
@@ -733,7 +803,6 @@ const sendCronosGateway = async (object) => {
                 successRedirectUrl: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`
               }
             };
-            console.log(dto,'dto')
 
             const response = await cronosEWallet(dto);
             return response;
@@ -756,7 +825,6 @@ const sendCronosGateway = async (object) => {
           callback: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`
         }
       };
-      console.log(dto,'dto')
 
       const response = await cronosQris(dto);
       return response;
@@ -784,8 +852,6 @@ const sendCronosGateway = async (object) => {
               }
             };
 
-            console.log(dto,'dto')
-
             const response = await cronosEWallet(dto);
             return response;
           } else {
@@ -808,7 +874,6 @@ const sendCronosGateway = async (object) => {
           callback: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`
         }
       };
-      console.log(dto,'dto')
 
       const response = await cronosEWallet(dto);
       return response;
