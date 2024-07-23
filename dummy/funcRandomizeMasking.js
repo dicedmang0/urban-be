@@ -48,11 +48,25 @@ function randomizeTransaction(ex, randomizePayment) {
   return transaction;
 }
 
+function randomizePackage(budget, choosenPackage) {
+    let bestPackage = null;
+
+    choosenPackage.denom.forEach(item => {
+    const price = parseInt(item.price, 10);
+    if (price <= budget && (!bestPackage || price > parseInt(bestPackage.price, 10))) {
+      bestPackage = item.package;
+    }
+  });
+
+  return bestPackage;
+}
+
 function splitTransaction(ex, fixAmount, randomizePayment) {
   let amount = parseInt(ex.amount);
   let transactions = [];
   let remainingAmount = amount;
   let transactionCount = 1;
+  let choosenPackage = getRandomElement(dummyPackage.response.list_dtu)
 
   while (remainingAmount > 0) {
     let transaction = { ...ex };
@@ -65,10 +79,9 @@ function splitTransaction(ex, fixAmount, randomizePayment) {
       remainingAmount = 0;
     }
 
-    transaction.transaction_id = `${
-      transaction.transaction_id || 'txn'
-    }_${transactionCount}`;
+    transaction.transaction_id = uuidv4();
     transaction = randomizeTransaction(transaction, randomizePayment);
+    transaction.package = randomizePackage(fixAmount, choosenPackage);
 
     transactions.push(transaction);
     transactionCount++;
@@ -76,6 +89,22 @@ function splitTransaction(ex, fixAmount, randomizePayment) {
 
   return transactions;
 }
+
+const findBestPackage = (denom, budget) => {
+    let bestPackage = null;
+  
+    denom.forEach(item => {
+      const price = parseInt(item.price, 10);
+      if (price <= budget && (!bestPackage || price > parseInt(bestPackage.price, 10))) {
+        bestPackage = item;
+      }
+    });
+  
+    return bestPackage;
+  };
+  
+  const budget = 500000;
+//   const bestPackage = findBestPackage(denom, budget);
 
 const splitTransactions = splitTransaction(ex, fixAmount, randomizePayment);
 console.log(splitTransactions);
