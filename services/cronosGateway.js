@@ -34,6 +34,7 @@ exports.cronosQris = async (body) => {
     // };
 
     const response = await API.post("/qris", body);
+    console.log(response,'???')
     return response;
   } catch (error) {
     throw { message: error.responseMessage };

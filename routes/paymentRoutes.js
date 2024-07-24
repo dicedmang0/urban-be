@@ -88,6 +88,13 @@ router.put(
   paymentController.privateUpdatePaymentByUser
 );
 
+router.post(
+  '/confirmation/:payment_id',
+  // verifyToken,
+  // validateUpdatePaymentByUser,
+  paymentController.privateConfirmationPayment
+);
+
 // router.get('/test', getAccessToken)
 // router.get('/test2', getInquirySaldo)
 // router.get('/test3', getInquiryDTU)
