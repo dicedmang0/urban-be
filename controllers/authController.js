@@ -66,6 +66,7 @@ exports.register = async (req, res) => {
 
     if (!isUserAvailable) {
       const hashedPassword = await bcrypt.hash(password, 8);
+      const hashedAnswer = await bcrypt.hash(recovery_answer, 8);
       // const hashedPassword = await bcrypt.hash(defaultPassword, 8);
       const user = await User.create({
         username: username,
@@ -73,7 +74,7 @@ exports.register = async (req, res) => {
         role: 'user',
         // email: email,
         recovery_question: recovery_question,
-        recovery_answer: recovery_answer,
+        recovery_answer: hashedAnswer,
         nik: nik || null,
         ref_id: ref_id || null,
         phone_number: phone_number || null,
@@ -189,9 +190,11 @@ exports.checkAnswerUser = async (req, res) => {
 
     let isValidToChange = false;
     if (isUserAvailable) {
+
+      const hashedAnswer = await bcrypt.hash(recovery_answer, 8);
       if (
         recovery_question == isUserAvailable.recovery_question &&
-        recovery_answer == isUserAvailable.recovery_answer
+        hashedAnswer == isUserAvailable.recovery_answer
       ) {
         isValidToChange = true;
       }

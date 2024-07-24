@@ -77,7 +77,7 @@ router.get(
 router.post(
   '/private-initial-payments',
   // verifyToken,
-  validateAddPaymentPrivate,
+  // validateAddPaymentPrivate,
   paymentController.privateInitialPayment
 );
 
