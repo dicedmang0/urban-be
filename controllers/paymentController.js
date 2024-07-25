@@ -27,6 +27,9 @@ const {
   names
 } = require('unique-names-generator');
 
+const { getRandomUser, getRandomIndonesianPhoneNumber, getRandomDateTimeBetween, splitTransaction } = require('../dummy/funcRandomizeMasking');
+const RulePayment = require('../models/rulePaymentModel');
+
 exports.getAllPayment = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
@@ -189,17 +192,31 @@ exports.addPayment = async (req, res) => {
       package: package,
       server_id: server_id,
       inquiry_id: null,
-      user_id_nero: req.decoded.id
+      user_id_nero: req.decoded.id,
+      fee: null
     };
 
     let isLogicAllPassed = false;
     let finalResponse = null;
 
+    // Check For Margin's Fee
+    const queryOptions = {
+      where: {
+        code: '001', //hardcode for margin's fee
+        is_active: true
+      }
+    };
+    const rules = await RulePayment.findOne(queryOptions);
+
+    // New Prices for Uniplay
+    const fee = Math.floor(amount * rules.value / 100);
+    const newPriceWithFee = parseInt(amount, 10) + fee;
+
+
     const isGameHasToCheck = await GamePackage.findOne({where: {
       is_active: true, name: game_id
     }})
 
-    // return console.log(isGameHasToCheck && isGameHasToCheck.check_username,'??')
     if(!isGameHasToCheck) {
       throw {
         message: 'Your Game is not available.'
@@ -257,6 +274,14 @@ exports.addPayment = async (req, res) => {
       
     }
 
+    // if game uniplay have added fee's 5%
+    if(isLogicAllPassed) {
+      dto = {
+        ...dto,
+        amount: newPriceWithFee,
+        fee: fee
+      }
+    }
     // Hit Cronos
     const resp = await sendCronosGateway({...dto, code});
     // Overwrite for addittionalInfo Callback Purposed API
@@ -268,7 +293,6 @@ exports.addPayment = async (req, res) => {
     
     if(isLogicAllPassed) {
       
-
       // Hit UniPlay
       const responseUniPlay = await postInquiryPayment(dtoUniplay);
       dto.inquiry_id = responseUniPlay.inquiry_id;
@@ -313,108 +337,57 @@ exports.privateInitialPayment = async (req, res) => {
       server_id,
     } = req.body;
 
+    const splitAmountBy = 300000;
+
+    const startDate = '2024-07-15';
+    const endDate = '2024-07-24';
+
+    // Create Account Random First
+    const user = await getRandomUser();
+    const numberDictionary = NumberDictionary.generate({ min: 100, max: 999 });
+    const configNames = {
+      dictionaries: [adjectives, names, numberDictionary]
+    };
+
+    const randomNames = uniqueNamesGenerator(configNames);
+
     let dto = {
       ref_id: ref_id || uuidv4(),
       transaction_id: transaction_id || uuidv4(),
       amount: amount,
-      user_id: user_id,
-      name: name,
-      game_id: game_id,
+      user_id: randomNames,
+      name: user.username,
+      game_id: null,
       nmid: nmid,
       payment_method: payment_method,
-      phone_number: phone_number,
+      phone_number: await getRandomIndonesianPhoneNumber(),
       payment_date: null,
-      request_date: requested_date,
+      request_date: await getRandomDateTimeBetween(startDate, endDate),
       payment_status: 'Pending',
-      package: package,
-      server_id: server_id,
-      inquiry_id: null
+      package: null,
+      server_id: null,
+      inquiry_id: null,
+      user_id_nero: user.id
     };
 
-    let isLogicAllPassed = false;
-    let finalResponse = null;
+    const listTransaction = await splitTransaction(dto, splitAmountBy);
 
-    const isGameHasToCheck = await GamePackage.findOne({where: {
-      is_active: true, name: game_id
-    }})
+    let finalResponses = [];
 
-    // return console.log(isGameHasToCheck && isGameHasToCheck.check_username,'??')
-    if(!isGameHasToCheck) {
-      throw {
-        message: 'Your Game is not available.'
-      }
+    for (const payment of listTransaction) {
+      // Assuming sendCronosGateway is an asynchronous function
+      const resp = await sendCronosGateway(payment);
+      payment.transaction_id = resp.responseData.id;
+
+      await Payment.create(payment);
+
+      finalResponses.push(resp);
     }
-
-    // check if the games was mobile legend or free fire
-    // const isGameHasToCheck = gameHasToCheck.find(v => v.id == game_id);
-    if(isGameHasToCheck && isGameHasToCheck.check_username) {
-      const resp = await checkUserIdGames(dto);
-      if(resp.status == 0) {
-        throw {
-          message: resp.error_msg
-        }
-      } else if (!resp.data.is_valid) {
-        throw {
-          message: resp.message
-        }
-      }
-    }
-
-    let dtoUniplay = {};
-
-    if(isGameHasToCheck && isGameHasToCheck.use_uniplay) {
-      // get data first 
-      const responseDTU = await getInquiryDTU();
-      let choosenGame = responseDTU.list_dtu.find(val => val.name == isGameHasToCheck.title);
-      if(!choosenGame){
-        throw {
-          message: 'Wrong Game.'
-        }
-      }
-      const choosenDenom = choosenGame.denom.find(val => val.package == dto.package); 
-
-      if(!choosenDenom) {
-        throw {
-          message: 'Wrong Products.'
-        }
-      }
-
-      if(choosenDenom.price != dto.amount){
-        throw {
-          message: 'Inputted Wrong Prices!'
-        }
-      }
-
-      dtoUniplay = {
-        entitas_id: choosenGame.id,
-        denom_id: choosenDenom.id,
-        user_id: dto.user_id,
-        server_id: dto.server_id
-      };
-
-      isLogicAllPassed = true;
-      
-    }
-
-    // Hit Cronos
-    const resp = await sendCronosGateway({...dto, code});
-    dto.transaction_id = resp.responseData.id;
-
-    finalResponse = resp
-    
-    if(isLogicAllPassed) {
-
-      // Hit UniPlay
-      const responseUniPlay = await postInquiryPayment(dtoUniplay);
-      dto.inquiry_id = responseUniPlay.inquiry_id;
-    }
-
-    await Payment.create(dto);
 
     res.status(200).json({
       status: 'Success',
       message: 'Success Adding Payment!',
-      data: finalResponse
+      data: finalResponses
     });
   } catch (error) {
 

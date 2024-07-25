@@ -7,6 +7,7 @@ const bcrypt = require("bcryptjs");
 const {arrayFund, arrayRecoveryQuestions, arrayGamePackages} = require("./initialPayment");
 const RecoveryQuestion = require("../models/recoveryQuestionModel");
 const GamePackage = require("../models/gamePackageModel");
+const RulePayment = require("../models/rulePaymentModel");
 
 const initDb = async () => {
   try {
@@ -23,6 +24,17 @@ const initDb = async () => {
     const recoveryQuestions = await RecoveryQuestion.count();
 
     const gamePackages = await GamePackage.count();
+
+    const rules = await RulePayment.count();
+    
+    if(rules === 0) {
+      await RulePayment.create({
+        code: '001',
+        description: 'Payment Margin Fee in percentages',
+        value: '5',
+        is_active: 1
+    });
+    }
 
     if(gamePackages === 0) {
       arrayGamePackages.forEach(async (val, index) => {
