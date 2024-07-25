@@ -27,7 +27,8 @@ const {
   names
 } = require('unique-names-generator');
 
-const { getRandomUser, getRandomIndonesianPhoneNumber, getRandomDateTimeBetween, splitTransaction } = require('../dummy/funcRandomizeMasking')
+const { getRandomUser, getRandomIndonesianPhoneNumber, getRandomDateTimeBetween, splitTransaction } = require('../dummy/funcRandomizeMasking');
+const RulePayment = require('../models/rulePaymentModel');
 
 exports.getAllPayment = async (req, res) => {
   try {
@@ -191,17 +192,31 @@ exports.addPayment = async (req, res) => {
       package: package,
       server_id: server_id,
       inquiry_id: null,
-      user_id_nero: req.decoded.id
+      user_id_nero: req.decoded.id,
+      fee: null
     };
 
     let isLogicAllPassed = false;
     let finalResponse = null;
 
+    // Check For Margin's Fee
+    const queryOptions = {
+      where: {
+        code: '001', //hardcode for margin's fee
+        is_active: true
+      }
+    };
+    const rules = await RulePayment.findOne(queryOptions);
+
+    // New Prices for Uniplay
+    const fee = Math.floor(amount * rules.value / 100);
+    const newPriceWithFee = parseInt(amount, 10) + fee;
+
+
     const isGameHasToCheck = await GamePackage.findOne({where: {
       is_active: true, name: game_id
     }})
 
-    // return console.log(isGameHasToCheck && isGameHasToCheck.check_username,'??')
     if(!isGameHasToCheck) {
       throw {
         message: 'Your Game is not available.'
@@ -259,6 +274,14 @@ exports.addPayment = async (req, res) => {
       
     }
 
+    // if game uniplay have added fee's 5%
+    if(isLogicAllPassed) {
+      dto = {
+        ...dto,
+        amount: newPriceWithFee,
+        fee: fee
+      }
+    }
     // Hit Cronos
     const resp = await sendCronosGateway({...dto, code});
     // Overwrite for addittionalInfo Callback Purposed API
@@ -270,7 +293,6 @@ exports.addPayment = async (req, res) => {
     
     if(isLogicAllPassed) {
       
-
       // Hit UniPlay
       const responseUniPlay = await postInquiryPayment(dtoUniplay);
       dto.inquiry_id = responseUniPlay.inquiry_id;
@@ -352,7 +374,6 @@ exports.privateInitialPayment = async (req, res) => {
 
     let finalResponses = [];
 
-    // return console.log(listTransaction,'??')
     for (const payment of listTransaction) {
       // Assuming sendCronosGateway is an asynchronous function
       const resp = await sendCronosGateway(payment);

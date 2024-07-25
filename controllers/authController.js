@@ -96,7 +96,7 @@ exports.register = async (req, res) => {
 
     await User.update({ token: token }, { where: { id: idUser } });
 
-    res.status(200).json({ auth: true, token, role: role });
+    res.status(200).json({ auth: true, token, role: role , user_id: idUser});
   } catch (error) {
     res.status(500).send({ status: 'Bad Request', message: error.message });
   }
