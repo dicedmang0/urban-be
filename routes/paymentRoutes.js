@@ -325,4 +325,93 @@ router.post(
  *         description: Bad request, validation error
  */
 
+/**
+ * @swagger
+ * /api/private-initial-payments:
+ *   post:
+ *     summary: Add a initial payments
+ *     tags: [Payments]
+ *     description: Create a private initial payments masking.
+ *     requestBody:
+ *       required: true
+ *       description: Only Merchant ID, transaction id, code, nmid, name, user_id, game_id, amount, phone_number, payment_method, requested_date, server_id, package, code, ref_id
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              required:
+ *               - amount
+ *               - nmid
+ *               - payment_date
+ *               - requested_date
+ *              properties:
+ *               phone_number:
+ *                 type: string
+ *               amount:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               user_id:
+ *                 type: string
+ *               game_id:
+ *                 type: string
+ *               payment_method:
+ *                 type: string
+ *               nmid:
+ *                 type: string
+ *               code:
+ *                 type: string
+ *               merchant_id:
+ *                 type: string
+ *               transaction_id:
+ *                 type: string
+ *               payment_date:
+ *                 type: string
+ *               requested_date:
+ *                 type: string
+ *               server_id:
+ *                 type: string
+ *               package:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Payment created successfully
+ *       '401':
+ *         description: Unauthorized
+ *       '400':
+ *         description: Bad request, validation error
+ */
+
+
+/**
+ * @swagger
+ * /api/private-update-payments-by-user:
+ *   put:
+ *     summary: Update a private payment by users
+ *     tags: [Payments]
+ *     description: Update an status of transaction existing payment.
+ *     requestBody:
+ *       required: true
+ *       description: only id as payment_id and payment status 
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              required:
+ *               - payment_id
+ *              properties:
+ *               payment_id:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Payment updated successfully
+ *       '401':
+ *         description: Unauthorized
+ *       '404':
+ *         description: Payment not found
+ *       '400':
+ *         description: Bad request, validation error
+ */
+
+
 module.exports = router;

@@ -15,6 +15,11 @@ const Agents = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    fee: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '0', // Set your desired default value here
+    },
     is_active: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

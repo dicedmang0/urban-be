@@ -56,6 +56,10 @@ const Payment = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    fee_reff: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     package: {
       type: DataTypes.STRING,
       allowNull: true,
