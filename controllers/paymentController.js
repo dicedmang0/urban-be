@@ -183,6 +183,7 @@ exports.addPayment = async (req, res) => {
       user_id: user_id,
       name: name,
       game_id: game_id,
+      merchant_id: null,
       nmid: nmid,
       payment_method: payment_method,
       phone_number: phone_number,
@@ -285,8 +286,8 @@ exports.addPayment = async (req, res) => {
     // Hit Cronos
     const resp = await sendCronosGateway({...dto, code});
     // Overwrite for addittionalInfo Callback Purposed API
-    resp.responseData.additionalInfo.callback = `${process.env.REDIRECT_HOST}/api/confirmation/${resp.responseData.id}`
-    
+    // resp.responseData.additionalInfo.callback = `${process.env.REDIRECT_HOST}/api/confirmation/${resp.responseData.id}`
+    dto.merchant_id = dto.transaction_id;
     dto.transaction_id = resp.responseData.id;
 
     finalResponse = resp
@@ -377,6 +378,7 @@ exports.privateInitialPayment = async (req, res) => {
     for (const payment of listTransaction) {
       // Assuming sendCronosGateway is an asynchronous function
       const resp = await sendCronosGateway(payment);
+      payment.merchant_id = payment.transaction_id;
       payment.transaction_id = resp.responseData.id;
 
       await Payment.create(payment);
@@ -439,9 +441,8 @@ exports.updatePaymentByUser = async (req, res) => {
 
     const { payment_id } = req.body;
 
-    const statusTransactionsCronos = await checkCronosPaymentStatus({ payment_id });
     const payment = await Payment.findOne({
-      where: { transaction_id: payment_id }
+      where: { merchant_id: payment_id }
     });
 
     if(!payment){
@@ -449,6 +450,8 @@ exports.updatePaymentByUser = async (req, res) => {
         message: 'Your Transactions Doesnt Exist.'
       }
     }
+
+    const statusTransactionsCronos = await checkCronosPaymentStatus({ payment_id: payment.transaction_id });
 
     const isGameHasToCheck = await GamePackage.findOne({where: {
       is_active: true, name: payment.game_id
@@ -485,7 +488,7 @@ exports.updatePaymentByUser = async (req, res) => {
       }
     }
 
-    await Payment.update(dto, { where: { transaction_id: payment_id } });
+    await Payment.update(dto, { where: { merchant_id: payment_id } });
     res
       .status(200)
       .json({ status: 'Success', message: 'Success Updating Payment!' });
@@ -504,9 +507,8 @@ exports.privateUpdatePaymentByUser = async (req, res) => {
 
     const { payment_id } = req.body;
 
-    const statusTransactionsCronos = await checkCronosPaymentStatus({ payment_id });
     const payment = await Payment.findOne({
-      where: { transaction_id: payment_id }
+      where: { merchant_id: payment_id }
     });
 
     if(!payment){
@@ -514,6 +516,8 @@ exports.privateUpdatePaymentByUser = async (req, res) => {
         message: 'Your Transactions Doesnt Exist.'
       }
     }
+
+    const statusTransactionsCronos = await checkCronosPaymentStatus({ payment_id: payment.transaction_id });
 
     const isGameHasToCheck = await GamePackage.findOne({where: {
       is_active: true, name: payment.game_id
@@ -553,7 +557,7 @@ exports.privateUpdatePaymentByUser = async (req, res) => {
       }
     }
 
-    await Payment.update(dto, { where: { transaction_id: payment_id } });
+    await Payment.update(dto, { where: { merchant_id: payment } });
     res
       .status(200)
       .json({ status: 'Success', message: 'Success Updating Payment!' });
@@ -572,16 +576,17 @@ exports.privateConfirmationPayment = async (req, res) => {
 
     const { payment_id } = req.params;
 
-    const statusTransactionsCronos = await checkCronosPaymentStatus({ payment_id });
     const payment = await Payment.findOne({
-      where: { transaction_id: payment_id }
+      where: { merchant_id: payment_id }
     });
-
+    
     if(!payment){
       throw {
         message: 'Your Transactions Doesnt Exist.'
       }
     }
+
+    const statusTransactionsCronos = await checkCronosPaymentStatus({ payment_id: payment.transaction_id });
 
     const isGameHasToCheck = await GamePackage.findOne({where: {
       is_active: true, name: payment.game_id
@@ -618,7 +623,7 @@ exports.privateConfirmationPayment = async (req, res) => {
       }
     }
 
-    await Payment.update(dto, { where: { transaction_id: payment_id } });
+    await Payment.update(dto, { where: { merchant_id: payment_id } });
     res
       .status(200)
       .json({ status: 'Success', message: 'Success Updating Payment!' });
@@ -736,7 +741,7 @@ const sendCronosGateway = async (object) => {
               expiryMinutes: 30,
               viewName: object.name,
               additionalInfo: {
-                callback: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`,
+                callback: `${process.env.REDIRECT_HOST}/api/confirmation/${object.transaction_id}`,
               }
             };
             const response = await cronosVirtualAccount(dto);
@@ -772,8 +777,8 @@ const sendCronosGateway = async (object) => {
               expiryMinutes: 30,
               viewName: object.name,
               additionalInfo: {
-                callback: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`,
-                successRedirectUrl: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`
+                callback: `${process.env.REDIRECT_HOST}/api/confirmation/${object.transaction_id}`,
+                successRedirectUrl: `${process.env.REDIRECT_HOST}/api/confirmation/${object.transaction_id}`
               }
             };
 
@@ -795,7 +800,7 @@ const sendCronosGateway = async (object) => {
         expiryMinutes: 30,
         viewName: object.name,
         additionalInfo: {
-          callback: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`
+          callback: `${process.env.REDIRECT_HOST}/api/confirmation/${object.transaction_id}`
         }
       };
 
@@ -821,7 +826,7 @@ const sendCronosGateway = async (object) => {
               expiryMinutes: 30,
               viewName: object.name,
               additionalInfo: {
-                callback: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`
+                callback: `${process.env.REDIRECT_HOST}/api/confirmation/${object.transaction_id}`
               }
             };
 
@@ -844,7 +849,7 @@ const sendCronosGateway = async (object) => {
         expiryMinutes: 30,
         viewName: object.name,
         additionalInfo: {
-          callback: `${process.env.REDIRECT_HOST}/confirmation/${object.transaction_id}`
+          callback: `${process.env.REDIRECT_HOST}/api/confirmation/${object.transaction_id}`
         }
       };
 
