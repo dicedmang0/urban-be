@@ -29,6 +29,7 @@ const {
 
 const { getRandomUser, getRandomIndonesianPhoneNumber, getRandomDateTimeBetween, splitTransaction } = require('../dummy/funcRandomizeMasking');
 const RulePayment = require('../models/rulePaymentModel');
+const Agents = require('../models/agentModel');
 
 exports.getAllPayment = async (req, res) => {
   try {
@@ -194,7 +195,8 @@ exports.addPayment = async (req, res) => {
       server_id: server_id,
       inquiry_id: null,
       user_id_nero: req.decoded.id,
-      fee: null
+      fee: null,
+      fee_reff: 0
     };
 
     let isLogicAllPassed = false;
@@ -207,12 +209,26 @@ exports.addPayment = async (req, res) => {
         is_active: true
       }
     };
+    
     const rules = await RulePayment.findOne(queryOptions);
 
     // New Prices for Uniplay
     const fee = Math.floor(amount * rules.value / 100);
     const newPriceWithFee = parseInt(amount, 10) + fee;
 
+    // Check if payment using refferral
+    let feeForAgents = 0;
+    const isUsingRef = await User.findOne({ where: { ref_id: ref_id } });
+
+    if(isUsingRef){
+      const agentsFee = await Agents.findOne({where : {id : isUsingRef.agent_id}});
+
+      if(agentsFee) {
+        feeForAgents = Math.floor(newPriceWithFee * agentsFee.fee / 100); 
+      }
+    }
+
+    dto.fee_reff = feeForAgents;
 
     const isGameHasToCheck = await GamePackage.findOne({where: {
       is_active: true, name: game_id

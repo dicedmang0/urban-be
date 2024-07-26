@@ -4,10 +4,10 @@ const { Op } = require("sequelize"); // Import Op from Sequelize
 
 // Create a new Agent
 exports.createAgent = async (req, res) => {
-  const { name, expired_at, is_active } = req.body;
+  const { name, fee, is_active } = req.body;
 
   try {
-    const agent = await Agent.create({ name, expired_at, is_active });
+    const agent = await Agent.create({ name, fee, is_active });
     return res.status(201).json(agent);
   } catch (error) {
     return res.status(500).json({ error: "Failed to create agent" });
@@ -48,11 +48,11 @@ exports.getAgents = async (req, res) => {
     }
 
     // If a date range is provided, add it to the query options
-    if (startDate && endDate) {
-      queryOptions.where.expired_at = {
-        [Op.between]: [new Date(startDate), new Date(endDate)],
-      };
-    }
+    // if (startDate && endDate) {
+    //   queryOptions.where.expired_at = {
+    //     [Op.between]: [new Date(startDate), new Date(endDate)],
+    //   };
+    // }
     const agents = await Agent.findAll(queryOptions);
 
     // Count total items without limit and offset
@@ -69,7 +69,7 @@ exports.getAgents = async (req, res) => {
 // Update an Agent
 exports.updateAgent = async (req, res) => {
   const { id } = req.params;
-  const { name, expired_at, is_active } = req.body;
+  const { name, fee, is_active } = req.body;
 
   try {
     const agent = await Agent.findByPk(id);
@@ -78,7 +78,7 @@ exports.updateAgent = async (req, res) => {
     }
 
     agent.name = name;
-    agent.expired_at = expired_at;
+    agent.fee = fee;
     agent.is_active = is_active;
     await agent.save();
 
