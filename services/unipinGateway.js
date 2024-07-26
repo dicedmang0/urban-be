@@ -69,7 +69,6 @@ exports.postConfirmPayment = async (dto, token) => {
       throw responseToken
     }
     const response = await API.postUnipin(`/confirm-payment`, dto, responseToken.access_token);
-
     return response;
   } catch (error) {
     throw { message: error.message };
