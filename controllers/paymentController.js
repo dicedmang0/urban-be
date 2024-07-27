@@ -312,6 +312,11 @@ exports.addPayment = async (req, res) => {
       
       // Hit UniPlay
       const responseUniPlay = await postInquiryPayment(dtoUniplay);
+      if(!responseUniPlay.inquiry_id){
+        throw {
+          message: responseUniPlay.message
+        }
+      }
       dto.inquiry_id = responseUniPlay.inquiry_id;
     }
 
@@ -494,7 +499,17 @@ exports.updatePaymentByUser = async (req, res) => {
     };
     if(isGameHasToCheck && isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
       // GAME UNIPLAY
-      await postConfirmPayment({inquiry_id: payment.inquiry_id, pincode: process.env.PINCODE_UNIPIN});
+      const resp = await postConfirmPayment({inquiry_id: payment.inquiry_id, pincode: process.env.PINCODE_UNIPIN});
+      if(resp.status == '200') {
+        const dtos = {
+          order_id_uniplay: resp.order_id
+        };
+        await Payment.update(dtos, { where: { merchant_id: payment_id } });
+      } else {
+        throw {
+          message: resp.message
+        }
+      }
     } else if (isGameHasToCheck && !isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
       // Hit Amount Coin in Nero Games
       await gameController.incrementCoin(payment.game_id, payment.user_id, payment.amount);
