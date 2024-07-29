@@ -16,7 +16,7 @@ exports.validateRegister = [
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
   body("recovery_question").isUUID().withMessage("recovery question is not valid"),
   body("recovery_answer").notEmpty().withMessage("recovery answer is required"),
-  body('phone_number').optional().isMobilePhone(['id-ID']).withMessage('Mobile phone number is invalid'),
+  // body('phone_number').optional().isMobilePhone(['id-ID']).withMessage('Mobile phone number is invalid'),
   body('nik', 'nik is not valid').isInt().optional(),
   (req, res, next) => {
     const errors = validationResult(req);
@@ -94,7 +94,7 @@ exports.validateAddUsers = [
   checkSchema(Schema),
   // body('email', 'email is not valid').isEmail(),
   body('ref_id', 'ref_id is not valid').isString().optional(),
-  body('phone_number').optional().isMobilePhone('id-ID').withMessage('Mobile phone number is invalid'),
+  // body('phone_number').optional().isMobilePhone('id-ID').withMessage('Mobile phone number is invalid'),
   body('is_active', 'is_active is not valid').isBoolean(),
   body('agent_id', 'agent_id is not valid').isString().optional(),
   body('nik', 'nik is not valid').isInt().optional(),
@@ -112,7 +112,7 @@ exports.validateUpdateUsers = [
   body('username').notEmpty().withMessage('Username is required'),
   body('password').notEmpty().withMessage('Password is required'),
   body('id', 'id is not valid').isUUID(),
-  body('phone_number').optional().isMobilePhone(['id-ID']).withMessage('Mobile phone number is invalid'),
+  // body('phone_number').optional().isMobilePhone(['id-ID']).withMessage('Mobile phone number is invalid'),
   body('agent_id', 'agent_id is not valid').isString().optional(),
   body('ref_id', 'ref_id is not valid').isString().optional(),
   body('nik', 'nik is not valid').isInt().optional(),
