@@ -119,7 +119,7 @@ exports.getPayment = async (req, res) => {
     }
 
     if (startDate && endDate) {
-      queryOptions.where.payment_date = {
+      queryOptions.where.request_date = {
         [Op.between]: [new Date(startDate), new Date(endDate)]
       };
     }
