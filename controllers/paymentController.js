@@ -3,6 +3,7 @@ const Payment = require('../models/paymentModel');
 const PaymentMethodDetail = require('../models/paymentMethodDetailModel');
 const PaymentMethod = require('../models/paymentMethodModel');
 const AgentDetail = require('../models/agentDetailModel');
+const moment = require('moment');
 const { Op } = require('sequelize'); // Import Op from Sequelize
 const { v4: uuidv4 } = require('uuid');
 const {
@@ -14,7 +15,13 @@ const {
 const gameController = require('./gameController');
 const User = require('../models/userModel');
 const { checkUserIdGames } = require('../services/apigamesGateway');
-const { getInquiryDTU, getInquirySaldo, getCheckOrder, postInquiryPayment, postConfirmPayment } = require('../services/unipinGateway');
+const {
+  getInquiryDTU,
+  getInquirySaldo,
+  getCheckOrder,
+  postInquiryPayment,
+  postConfirmPayment
+} = require('../services/unipinGateway');
 const GamePackage = require('../models/gamePackageModel');
 const { registerRandomUser } = require('./authController');
 const jwt = require('jsonwebtoken');
@@ -27,7 +34,12 @@ const {
   names
 } = require('unique-names-generator');
 
-const { getRandomUser, getRandomIndonesianPhoneNumber, getRandomDateTimeBetween, splitTransaction } = require('../dummy/funcRandomizeMasking');
+const {
+  getRandomUser,
+  getRandomIndonesianPhoneNumber,
+  getRandomDateTimeBetween,
+  splitTransaction
+} = require('../dummy/funcRandomizeMasking');
 const RulePayment = require('../models/rulePaymentModel');
 const Agents = require('../models/agentModel');
 
@@ -41,13 +53,45 @@ exports.getAllPayment = async (req, res) => {
     };
 
     if (startDate && endDate) {
-      queryOptions.where.payment_date = {
-        [Op.between]: [new Date(startDate), new Date(endDate)]
+      const endDatePlusOne = new Date(
+        new Date(endDate).setDate(new Date(endDate).getDate() + 1)
+      );
+
+      queryOptions.where.request_date = {
+        [Op.between]: [new Date(startDate), endDatePlusOne]
       };
     }
 
     const payment = await Payment.findAll(queryOptions);
-    res.status(200).json(payment);
+    let groupedDataArray = [];
+    let totalUniqueDates = 0;
+    let totalDataEntries = 0;
+
+    if (payment.length) {
+      const formattedData = payment.reduce((acc, item) => {
+        const date = moment(item.request_date).format('YYYY-MM-DD');
+        if (!acc[date]) {
+          acc[date] = {
+            date,
+            data: []
+          };
+        }
+        acc[date].data.push(item);
+        return acc;
+      }, {});
+
+      groupedDataArray = Object.values(formattedData);
+      totalUniqueDates = groupedDataArray.length;
+      totalDataEntries = payment.length;
+    }
+
+    const result = {
+      totalUniqueDates,
+      totalDataEntries,
+      groupedDataArray
+    };
+
+    res.status(200).json(result);
   } catch (error) {
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
@@ -119,8 +163,12 @@ exports.getPayment = async (req, res) => {
     }
 
     if (startDate && endDate) {
+      const endDatePlusOne = new Date(
+        new Date(endDate).setDate(new Date(endDate).getDate() + 1)
+      );
+
       queryOptions.where.request_date = {
-        [Op.between]: [new Date(startDate), new Date(endDate)]
+        [Op.between]: [new Date(startDate), endDatePlusOne]
       };
     }
 
@@ -135,7 +183,7 @@ exports.getPayment = async (req, res) => {
         queryOptions.where[Op.or].push({ ref_id: isThisAgentWithRef });
       }
     }
-    
+
     const payments = await Payment.findAll(queryOptions);
 
     // Count total items without limit and offset
@@ -209,75 +257,84 @@ exports.addPayment = async (req, res) => {
         is_active: true
       }
     };
-    
+
     const rules = await RulePayment.findOne(queryOptions);
 
     // New Prices for Uniplay
-    const fee = Math.floor(amount * rules.value / 100);
+    const fee = Math.floor((amount * rules.value) / 100);
     const newPriceWithFee = parseInt(amount, 10) + fee;
 
     // Check if payment using refferral
     let feeForAgents = 0;
     const isUsingRef = await User.findOne({ where: { ref_id: ref_id } });
 
-    if(isUsingRef){
-      const agentsFee = await Agents.findOne({where : {id : isUsingRef.agent_id}});
+    if (isUsingRef) {
+      const agentsFee = await Agents.findOne({
+        where: { id: isUsingRef.agent_id }
+      });
 
-      if(agentsFee) {
-        feeForAgents = Math.floor(newPriceWithFee * agentsFee.fee / 100); 
+      if (agentsFee) {
+        feeForAgents = Math.floor((newPriceWithFee * agentsFee.fee) / 100);
       }
     }
 
     dto.fee_reff = feeForAgents;
 
-    const isGameHasToCheck = await GamePackage.findOne({where: {
-      is_active: true, name: game_id
-    }})
+    const isGameHasToCheck = await GamePackage.findOne({
+      where: {
+        is_active: true,
+        name: game_id
+      }
+    });
 
-    if(!isGameHasToCheck) {
+    if (!isGameHasToCheck) {
       throw {
         message: 'Your Game is not available.'
-      }
+      };
     }
 
     // check if the games was mobile legend or free fire
     // const isGameHasToCheck = gameHasToCheck.find(v => v.id == game_id);
-    if(isGameHasToCheck && isGameHasToCheck.check_username) {
+    if (isGameHasToCheck && isGameHasToCheck.check_username) {
       const resp = await checkUserIdGames(dto);
-      if(resp.status == 0) {
+      if (resp.status == 0) {
         throw {
           message: resp.error_msg
-        }
+        };
       } else if (!resp.data.is_valid) {
         throw {
           message: resp.message
-        }
+        };
       }
     }
 
     let dtoUniplay = {};
 
-    if(isGameHasToCheck && isGameHasToCheck.use_uniplay) {
-      // get data first 
+    if (isGameHasToCheck && isGameHasToCheck.use_uniplay) {
+      // get data first
       const responseDTU = await getInquiryDTU();
-      let choosenGame = responseDTU.list_dtu.find(val => val.name == isGameHasToCheck.title);
-      if(!choosenGame){
+      let choosenGame = responseDTU.list_dtu.find(
+        (val) => val.name == isGameHasToCheck.title
+      );
+      if (!choosenGame) {
         throw {
           message: 'Wrong Game.'
-        }
+        };
       }
-      const choosenDenom = choosenGame.denom.find(val => val.package == dto.package); 
+      const choosenDenom = choosenGame.denom.find(
+        (val) => val.package == dto.package
+      );
 
-      if(!choosenDenom) {
+      if (!choosenDenom) {
         throw {
           message: 'Wrong Products.'
-        }
+        };
       }
 
-      if(choosenDenom.price != dto.amount){
+      if (choosenDenom.price != dto.amount) {
         throw {
           message: 'Inputted Wrong Prices!'
-        }
+        };
       }
 
       dtoUniplay = {
@@ -288,34 +345,32 @@ exports.addPayment = async (req, res) => {
       };
 
       isLogicAllPassed = true;
-      
     }
 
     // if game uniplay have added fee's 5%
-    if(isLogicAllPassed) {
+    if (isLogicAllPassed) {
       dto = {
         ...dto,
         amount: newPriceWithFee,
         fee: fee
-      }
+      };
     }
     // Hit Cronos
-    const resp = await sendCronosGateway({...dto, code});
+    const resp = await sendCronosGateway({ ...dto, code });
     // Overwrite for addittionalInfo Callback Purposed API
     // resp.responseData.additionalInfo.callback = `${process.env.REDIRECT_HOST}/api/confirmation/${resp.responseData.id}`
     dto.merchant_id = dto.transaction_id;
     dto.transaction_id = resp.responseData.id;
 
-    finalResponse = resp
-    
-    if(isLogicAllPassed) {
-      
+    finalResponse = resp;
+
+    if (isLogicAllPassed) {
       // Hit UniPlay
       const responseUniPlay = await postInquiryPayment(dtoUniplay);
-      if(!responseUniPlay.inquiry_id){
+      if (!responseUniPlay.inquiry_id) {
         throw {
           message: responseUniPlay.message
-        }
+        };
       }
       dto.inquiry_id = responseUniPlay.inquiry_id;
     }
@@ -356,7 +411,7 @@ exports.privateInitialPayment = async (req, res) => {
       nmid,
       code,
       package,
-      server_id,
+      server_id
     } = req.body;
 
     const splitAmountBy = 300000;
@@ -413,7 +468,6 @@ exports.privateInitialPayment = async (req, res) => {
       data: finalResponses
     });
   } catch (error) {
-
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };
@@ -458,7 +512,7 @@ exports.updatePaymentByUser = async (req, res) => {
     //   {name: "PUBG Mobile (Indonesia)", id:"PUBG Mobile (Indonesia)", checkUsername: false, useUniplay: true},
     //   {name: "PUBG Mobile (Global)", id:"PUBG Mobile (Global)", checkUsername: false, useUniplay: true},
     //   {name: "Mobile Legends", id:"mobilelegend", checkUsername: true, useUniplay: true}
-    // ];   
+    // ];
 
     const { payment_id } = req.body;
 
@@ -466,41 +520,55 @@ exports.updatePaymentByUser = async (req, res) => {
       where: { merchant_id: payment_id }
     });
 
-    if(!payment){
+    if (!payment) {
       throw {
         message: 'Your Transactions Doesnt Exist.'
-      }
+      };
     }
 
-    const statusTransactionsCronos = await checkCronosPaymentStatus({ payment_id: payment.transaction_id });
+    const statusTransactionsCronos = await checkCronosPaymentStatus({
+      payment_id: payment.transaction_id
+    });
 
-    const isGameHasToCheck = await GamePackage.findOne({where: {
-      is_active: true, name: payment.game_id
-    }})
+    const isGameHasToCheck = await GamePackage.findOne({
+      where: {
+        is_active: true,
+        name: payment.game_id
+      }
+    });
 
-     // check if the games was mobile legend or free fire
+    // check if the games was mobile legend or free fire
     //  const isGameHasToCheck = gameHasToCheck.find(v => v.id == payment.game_id);
 
-    if(!isGameHasToCheck) {
+    if (!isGameHasToCheck) {
       throw {
         message: 'Your Game is not available.'
-      }
+      };
     }
 
     if (!payment) {
       return res
         .status(400)
         .send({ status: 'Bad Request', message: 'Payment Not Found' });
-      }
+    }
 
     let dto = {
-      payment_status: await updatePaymentStatus(statusTransactionsCronos.status),
+      payment_status: await updatePaymentStatus(
+        statusTransactionsCronos.status
+      ),
       payment_date: statusTransactionsCronos.paidDate
     };
-    if(isGameHasToCheck && isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
+    if (
+      isGameHasToCheck &&
+      isGameHasToCheck.use_uniplay &&
+      dto.payment_status == 'Success'
+    ) {
       // GAME UNIPLAY
-      const resp = await postConfirmPayment({inquiry_id: payment.inquiry_id, pincode: process.env.PINCODE_UNIPIN});
-      if(resp.status == '200') {
+      const resp = await postConfirmPayment({
+        inquiry_id: payment.inquiry_id,
+        pincode: process.env.PINCODE_UNIPIN
+      });
+      if (resp.status == '200') {
         const dtos = {
           order_id_uniplay: resp.order_id
         };
@@ -508,15 +576,26 @@ exports.updatePaymentByUser = async (req, res) => {
       } else {
         throw {
           message: resp.message
-        }
+        };
       }
-    } else if (isGameHasToCheck && !isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
+    } else if (
+      isGameHasToCheck &&
+      !isGameHasToCheck.use_uniplay &&
+      dto.payment_status == 'Success'
+    ) {
       // Hit Amount Coin in Nero Games
-      await gameController.incrementCoin(payment.game_id, payment.user_id, payment.amount);
-    } else if (dto.payment_status == "Pending" || dto.payment_status == 'Failed') {
+      await gameController.incrementCoin(
+        payment.game_id,
+        payment.user_id,
+        payment.amount
+      );
+    } else if (
+      dto.payment_status == 'Pending' ||
+      dto.payment_status == 'Failed'
+    ) {
       throw {
         message: 'You havent paid.'
-      }
+      };
     }
 
     await Payment.update(dto, { where: { merchant_id: payment_id } });
@@ -534,7 +613,7 @@ exports.privateUpdatePaymentByUser = async (req, res) => {
     //   {name: "PUBG Mobile (Indonesia)", id:"PUBG Mobile (Indonesia)", checkUsername: false, useUniplay: true},
     //   {name: "PUBG Mobile (Global)", id:"PUBG Mobile (Global)", checkUsername: false, useUniplay: true},
     //   {name: "Mobile Legends", id:"mobilelegend", checkUsername: true, useUniplay: true}
-    // ];   
+    // ];
 
     const { payment_id } = req.body;
 
@@ -542,50 +621,75 @@ exports.privateUpdatePaymentByUser = async (req, res) => {
       where: { merchant_id: payment_id }
     });
 
-    if(!payment){
+    if (!payment) {
       throw {
         message: 'Your Transactions Doesnt Exist.'
-      }
+      };
     }
 
-    const statusTransactionsCronos = await checkCronosPaymentStatus({ payment_id: payment.transaction_id });
+    const statusTransactionsCronos = await checkCronosPaymentStatus({
+      payment_id: payment.transaction_id
+    });
 
-    const isGameHasToCheck = await GamePackage.findOne({where: {
-      is_active: true, name: payment.game_id
-    }})
+    const isGameHasToCheck = await GamePackage.findOne({
+      where: {
+        is_active: true,
+        name: payment.game_id
+      }
+    });
 
-     // check if the games was mobile legend or free fire
+    // check if the games was mobile legend or free fire
     //  const isGameHasToCheck = gameHasToCheck.find(v => v.id == payment.game_id);
 
-    if(!isGameHasToCheck) {
+    if (!isGameHasToCheck) {
       throw {
         message: 'Your Game is not available.'
-      }
+      };
     }
 
     if (!payment) {
       return res
         .status(400)
         .send({ status: 'Bad Request', message: 'Payment Not Found' });
-      }
+    }
 
     let dto = {
-      payment_status: await updatePaymentStatus(statusTransactionsCronos.status),
+      payment_status: await updatePaymentStatus(
+        statusTransactionsCronos.status
+      ),
       payment_date: statusTransactionsCronos.paidDate
     };
-    if(isGameHasToCheck && isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
+    if (
+      isGameHasToCheck &&
+      isGameHasToCheck.use_uniplay &&
+      dto.payment_status == 'Success'
+    ) {
       // GAME UNIPLAY
-      await postConfirmPayment({inquiry_id: payment.inquiry_id, pincode: process.env.PINCODE_UNIPIN});
-    } else if (isGameHasToCheck && !isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
+      await postConfirmPayment({
+        inquiry_id: payment.inquiry_id,
+        pincode: process.env.PINCODE_UNIPIN
+      });
+    } else if (
+      isGameHasToCheck &&
+      !isGameHasToCheck.use_uniplay &&
+      dto.payment_status == 'Success'
+    ) {
       // Create User Random Generate
       const response = await generateRandomUserFunc();
 
       // Hit Amount Coin in Nero Games
-      await gameController.incrementCoin(payment.game_id, response.idUser, payment.amount);
-    } else if (dto.payment_status == "Pending" || dto.payment_status == 'Failed') {
+      await gameController.incrementCoin(
+        payment.game_id,
+        response.idUser,
+        payment.amount
+      );
+    } else if (
+      dto.payment_status == 'Pending' ||
+      dto.payment_status == 'Failed'
+    ) {
       throw {
         message: 'You havent paid.'
-      }
+      };
     }
 
     await Payment.update(dto, { where: { merchant_id: payment } });
@@ -603,55 +707,80 @@ exports.privateConfirmationPayment = async (req, res) => {
     //   {name: "PUBG Mobile (Indonesia)", id:"PUBG Mobile (Indonesia)", checkUsername: false, useUniplay: true},
     //   {name: "PUBG Mobile (Global)", id:"PUBG Mobile (Global)", checkUsername: false, useUniplay: true},
     //   {name: "Mobile Legends", id:"mobilelegend", checkUsername: true, useUniplay: true}
-    // ];   
+    // ];
 
     const { payment_id } = req.params;
 
     const payment = await Payment.findOne({
       where: { merchant_id: payment_id }
     });
-    
-    if(!payment){
+
+    if (!payment) {
       throw {
         message: 'Your Transactions Doesnt Exist.'
-      }
+      };
     }
 
-    const statusTransactionsCronos = await checkCronosPaymentStatus({ payment_id: payment.transaction_id });
+    const statusTransactionsCronos = await checkCronosPaymentStatus({
+      payment_id: payment.transaction_id
+    });
 
-    const isGameHasToCheck = await GamePackage.findOne({where: {
-      is_active: true, name: payment.game_id
-    }})
+    const isGameHasToCheck = await GamePackage.findOne({
+      where: {
+        is_active: true,
+        name: payment.game_id
+      }
+    });
 
-     // check if the games was mobile legend or free fire
+    // check if the games was mobile legend or free fire
     //  const isGameHasToCheck = gameHasToCheck.find(v => v.id == payment.game_id);
 
-    if(!isGameHasToCheck) {
+    if (!isGameHasToCheck) {
       throw {
         message: 'Your Game is not available.'
-      }
+      };
     }
 
     if (!payment) {
       return res
         .status(400)
         .send({ status: 'Bad Request', message: 'Payment Not Found' });
-      }
+    }
 
     let dto = {
-      payment_status: await updatePaymentStatus(statusTransactionsCronos.status),
+      payment_status: await updatePaymentStatus(
+        statusTransactionsCronos.status
+      ),
       payment_date: statusTransactionsCronos.paidDate
     };
-    if(isGameHasToCheck && isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
+    if (
+      isGameHasToCheck &&
+      isGameHasToCheck.use_uniplay &&
+      dto.payment_status == 'Success'
+    ) {
       // GAME UNIPLAY
-      await postConfirmPayment({inquiry_id: payment.inquiry_id, pincode: process.env.PINCODE_UNIPIN});
-    } else if (isGameHasToCheck && !isGameHasToCheck.use_uniplay && dto.payment_status == "Success") {
+      await postConfirmPayment({
+        inquiry_id: payment.inquiry_id,
+        pincode: process.env.PINCODE_UNIPIN
+      });
+    } else if (
+      isGameHasToCheck &&
+      !isGameHasToCheck.use_uniplay &&
+      dto.payment_status == 'Success'
+    ) {
       // Hit Amount Coin in Nero Games
-      await gameController.incrementCoin(payment.game_id, payment.user_id, payment.amount);
-    } else if (dto.payment_status == "Pending" || dto.payment_status == 'Failed') {
+      await gameController.incrementCoin(
+        payment.game_id,
+        payment.user_id,
+        payment.amount
+      );
+    } else if (
+      dto.payment_status == 'Pending' ||
+      dto.payment_status == 'Failed'
+    ) {
       throw {
         message: 'You havent paid.'
-      }
+      };
     }
 
     await Payment.update(dto, { where: { merchant_id: payment_id } });
@@ -673,7 +802,6 @@ exports.checkStatusPaymentsCronos = async (req, res) => {
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };
-
 
 exports.getDTU = async (req, res) => {
   try {
@@ -712,42 +840,44 @@ const checkCronosPaymentStatus = async (object) => {
 };
 
 const generateRandomUserFunc = async () => {
-    let idUser = '';
-    let role = '';
-    const numberDictionary = NumberDictionary.generate({ min: 100, max: 999 });
-    const configNames = {
-      dictionaries: [adjectives, names, numberDictionary]
-    };
+  let idUser = '';
+  let role = '';
+  const numberDictionary = NumberDictionary.generate({ min: 100, max: 999 });
+  const configNames = {
+    dictionaries: [adjectives, names, numberDictionary]
+  };
 
-    const randomNames = uniqueNamesGenerator(configNames);
-    const defaultPassword = process.env.DEFAULT_PASSWORD;
+  const randomNames = uniqueNamesGenerator(configNames);
+  const defaultPassword = process.env.DEFAULT_PASSWORD;
 
-    const isUserAvailable = await User.findOne({ where: { username: randomNames } });
-    idUser = isUserAvailable?.id;
-    role = isUserAvailable?.role;
+  const isUserAvailable = await User.findOne({
+    where: { username: randomNames }
+  });
+  idUser = isUserAvailable?.id;
+  role = isUserAvailable?.role;
 
-    if (!isUserAvailable) {
-      const hashedPassword = await bcrypt.hash(defaultPassword, 8);
-      const user = await User.create({
-        username: randomNames,
-        password: hashedPassword,
-        role: 'user',
-        // email: '-',
-        ref_id: null,
-        is_active: 1
-      });
-      idUser = user.id;
-      role = user.role;
-    }
-
-    const token = jwt.sign({ id: idUser }, process.env.SECRET_KEY_APPLICATION, {
-      expiresIn: process.env.EXPIRED_TIME
+  if (!isUserAvailable) {
+    const hashedPassword = await bcrypt.hash(defaultPassword, 8);
+    const user = await User.create({
+      username: randomNames,
+      password: hashedPassword,
+      role: 'user',
+      // email: '-',
+      ref_id: null,
+      is_active: 1
     });
+    idUser = user.id;
+    role = user.role;
+  }
 
-    await User.update({ token: token }, { where: { id: idUser } });
+  const token = jwt.sign({ id: idUser }, process.env.SECRET_KEY_APPLICATION, {
+    expiresIn: process.env.EXPIRED_TIME
+  });
 
-    return {username: randomNames, idUser, role};
-}
+  await User.update({ token: token }, { where: { id: idUser } });
+
+  return { username: randomNames, idUser, role };
+};
 
 const sendCronosGateway = async (object) => {
   try {
@@ -772,7 +902,7 @@ const sendCronosGateway = async (object) => {
               expiryMinutes: 30,
               viewName: object.name,
               additionalInfo: {
-                callback: `${process.env.REDIRECT_HOST}/api/confirmation/${object.transaction_id}`,
+                callback: `${process.env.REDIRECT_HOST}/api/confirmation/${object.transaction_id}`
               }
             };
             const response = await cronosVirtualAccount(dto);
