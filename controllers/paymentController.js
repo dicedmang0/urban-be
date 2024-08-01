@@ -665,10 +665,21 @@ exports.privateUpdatePaymentByUser = async (req, res) => {
       dto.payment_status == 'Success'
     ) {
       // GAME UNIPLAY
-      await postConfirmPayment({
+      const resp = await postConfirmPayment({
         inquiry_id: payment.inquiry_id,
         pincode: process.env.PINCODE_UNIPIN
       });
+
+      if (resp.status == '200') {
+        const dtos = {
+          order_id_uniplay: resp.order_id
+        };
+        await Payment.update(dtos, { where: { merchant_id: payment_id } });
+      } else {
+        throw {
+          message: resp.message
+        };
+      }
     } else if (
       isGameHasToCheck &&
       !isGameHasToCheck.use_uniplay &&
@@ -759,10 +770,21 @@ exports.privateConfirmationPayment = async (req, res) => {
       dto.payment_status == 'Success'
     ) {
       // GAME UNIPLAY
-      await postConfirmPayment({
+      const resp = await postConfirmPayment({
         inquiry_id: payment.inquiry_id,
         pincode: process.env.PINCODE_UNIPIN
       });
+
+      if (resp.status == '200') {
+        const dtos = {
+          order_id_uniplay: resp.order_id
+        };
+        await Payment.update(dtos, { where: { merchant_id: payment_id } });
+      } else {
+        throw {
+          message: resp.message
+        };
+      }
     } else if (
       isGameHasToCheck &&
       !isGameHasToCheck.use_uniplay &&
