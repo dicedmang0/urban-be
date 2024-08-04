@@ -1,18 +1,18 @@
 const API = require("./moduleAxiosFunc");
 exports.cronosVirtualAccount = async (body) => {
   try {
-    const sampleBody = {
-      bankCode: "014",
-      singleUse: true,
-      type: "ClosedAmount",
-      reference: "123",
-      amount: 10000,
-      expiryMinutes: 30,
-      viewName: "Mr. Gentur",
-      additionalInfo: {
-        callback: "http://your-site-callback.com/notify",
-      },
-    };
+    // const sampleBody = {
+    //   bankCode: "014",
+    //   singleUse: true,
+    //   type: "ClosedAmount",
+    //   reference: "123",
+    //   amount: 10000,
+    //   expiryMinutes: 30,
+    //   viewName: "Mr. Gentur",
+    //   additionalInfo: {
+    //     callback: "http://your-site-callback.com/notify",
+    //   },
+    // };
 
     const response = await API.post("/virtual-account", body);
     return response;
@@ -105,16 +105,16 @@ exports.cronosCreditCard = async (body) => {
 
 exports.cronosAllTransactions = async (dto) => {
   try {
-    const sampleBody = {
-      reference: "123456",
-      phoneNumber: "082195395779",
-      amount: 10000,
-      expiryMinutes: 30,
-      viewName: "Mr. Gentur",
-      additionalInfo: {
-        callback: "http://your-site-callback.com/notify",
-      },
-    };
+    // const sampleBody = {
+    //   reference: "123456",
+    //   phoneNumber: "082195395779",
+    //   amount: 10000,
+    //   expiryMinutes: 30,
+    //   viewName: "Mr. Gentur",
+    //   additionalInfo: {
+    //     callback: "http://your-site-callback.com/notify",
+    //   },
+    // };
 
     const response = await API.get(
       "/transactions?page=1&status=success&date=2023-08-23&type=cashIn"
@@ -125,11 +125,11 @@ exports.cronosAllTransactions = async (dto) => {
   }
 };
 
-exports.cronosSingleTransactions = async (id) => {
+exports.cronosSingleTransactions = async (object) => {
   try {
-    const response = await API.get("/check/123?resendCallback=true");
+    const response = await API.get(`/check/${object.payment_id}`);
     return response;
   } catch (error) {
-    throw { message: error.responseMessage };
+    throw { message: error.responseMessage || error.message };
   }
 };

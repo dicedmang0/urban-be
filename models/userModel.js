@@ -12,6 +12,16 @@ const User = sequelize.define('User', {
   ref_id: {
     type: DataTypes.STRING,
     allowNull: true,
+    unique: true,
+  },
+  nik: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true,
+  },
+  phone_number: {
+    type: DataTypes.STRING,
+    allowNull: true,
   },
   username: {
     type: DataTypes.STRING,
@@ -41,6 +51,14 @@ const User = sequelize.define('User', {
   role: {
     type: DataTypes.STRING,
     allowNull: false,
+  },
+  recovery_question: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  recovery_answer: {
+    type: DataTypes.STRING,
+    allowNull: true,
   },
   is_active: {
     type: DataTypes.BOOLEAN,

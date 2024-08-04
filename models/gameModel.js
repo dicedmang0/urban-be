@@ -5,7 +5,7 @@ function getGameModel(gameId) {
   return sequelize.define(gameId, {
     user_id: {
       primaryKey: true,
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     save_data: {

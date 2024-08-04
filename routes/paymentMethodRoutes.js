@@ -10,6 +10,7 @@ const {
 } = require('../middlewares/validatorPaymentMethods');
 const verifyToken = require('../middlewares/authJwt').verifyToken;
 
+// TODO: Swagger this Payment Method
 router.get(
   '/payment-methods',
   verifyToken,

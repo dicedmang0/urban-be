@@ -11,7 +11,11 @@ const {
   validateUpdateUsers,
   validateUsers,
   validateGetUsers,
-  validateRegisterUserRandom
+  validateRegisterUserRandom,
+  validateForgotPassword,
+  validateAnswerCheck,
+  validateUserCheck,
+  validateUpdateProfileUsers
 } = require('../middlewares/validatorUsers');
 
 router.get('/all-users', verifyToken, userController.getUsersAll);
@@ -27,6 +31,17 @@ router.delete(
 
 router.post('/login', validateLogin, authController.login);
 router.post('/register', validateRegister, authController.register);
+
+//TODO: Swagger API Answer Check and Change Password
+// TODO: Create API Update Profile
+
+router.put('/profile-user', validateUpdateProfileUsers, userController.updateProfileUser);
+
+router.post('/answer-check', validateAnswerCheck, authController.checkAnswerUser)
+router.post('/user-check', validateUserCheck, authController.checkUserCheck)
+router.post('/refferral-check', authController.refferralCheck)
+router.post('/reset-password', validateForgotPassword, authController.changePasswordRecovery)
+
 router.post(
   '/user-regist-random',
   validateRegisterUserRandom,
@@ -44,7 +59,10 @@ router.post(
  *         - username
  *         - password
  *         - role
+ *         - ref_id
+ *         - nik
  *         - is_active
+ *         - phone_number
  *       properties:
  *         id:
  *           type: string
@@ -52,7 +70,7 @@ router.post(
  *           description: The unique identifier for the user.
  *         ref_id:
  *           type: string
- *           description: Optional reference ID.
+ *           description: Optional refferral ID.
  *         username:
  *           type: string
  *           description: The username for the user. Unique and required.
@@ -72,6 +90,12 @@ router.post(
  *         role:
  *           type: string
  *           description: The role of the user. Required.
+ *         nik:
+ *           type: string
+ *           description: The nik of the user. Optional.
+ *         phone_number:
+ *           type: string
+ *           description: The phone number of the user. Optional.
  *         is_active:
  *           type: boolean
  *           description: Indicates whether the user account is active or not. Required.
@@ -135,12 +159,18 @@ router.post(
  *               - username
  *               - email
  *               - password
+ *               - phone_number
+ *               - nik
  *             properties:
  *               username:
  *                 type: string
  *               email:
  *                 type: string
  *               password:
+ *                 type: string
+ *               phone_number:
+ *                 type: string
+ *               nik: 
  *                 type: string
  *     responses:
  *       '200':
@@ -202,8 +232,8 @@ router.post(
  *         required: true
  *         description: The token for authentication
  *     requestBody:
- *       description: Only Username, Password, Role, Email, Is Active, Agent Id
- *       required: true
+ *       description: Only Username, Password, Role, Email, Is Active, Agent Id, Ref id, NIK
+ *       required: false
  *       content:
  *         application/json:
  *           schema:

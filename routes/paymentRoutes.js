@@ -5,12 +5,19 @@ const paymentController = require('../controllers/paymentController');
 const {
   validateAddPayment,
   validateGetPayment,
-  validateUpdatePayment
+  validateUpdatePayment,
+  validateCheckPayment,
+  validateUpdatePaymentByUser,
+  validateAddPaymentPrivate
 } = require('../middlewares/validatorPayments');
 const {
-  cronosVirtualAccount,
-  cronosAllTransactions
-} = require('../services/cronosGateway');
+  getAccessToken,
+  getInquirySaldo,
+  getInquiryDTU,
+  getInquiryVoucher,
+  postConfirmPayment,
+  getCheckOrder
+} = require('../services/unipinGateway');
 const verifyToken = require('../middlewares/authJwt').verifyToken;
 
 router.get('/all-payments', verifyToken, paymentController.getAllPayment);
@@ -33,8 +40,67 @@ router.put(
   paymentController.updatePayment
 );
 
-// router.get('/test', cronosVirtualAccount)
-// router.get('/test2', cronosAllTransactions)
+// TODO: Swagger For Checking Transactions
+
+router.get(
+  '/check-payments/:payment_id',
+  verifyToken,
+  validateCheckPayment,
+  paymentController.checkStatusPaymentsCronos
+);
+
+router.put(
+  '/update-payments-by-user',
+  verifyToken,
+  validateUpdatePaymentByUser,
+  paymentController.updatePaymentByUser
+);
+
+router.get(
+  '/retrieveDTU',
+  verifyToken,
+  paymentController.getDTU
+)
+
+router.get(
+  '/retrieveSaldo',
+  verifyToken,
+  paymentController.getSaldoUni
+)
+
+router.get(
+  '/checkOrderOnUniPlay/:order_id',
+  verifyToken,
+  paymentController.checkOrderOnUniPlay
+)
+
+router.post(
+  '/private-initial-payments',
+  // verifyToken,
+  // validateAddPaymentPrivate,
+  paymentController.privateInitialPayment
+);
+
+router.put(
+  '/private-update-payments-by-user',
+  // verifyToken,
+  validateUpdatePaymentByUser,
+  paymentController.privateUpdatePaymentByUser
+);
+
+router.post(
+  '/confirmation/:payment_id',
+  // verifyToken,
+  // validateUpdatePaymentByUser,
+  paymentController.privateConfirmationPayment
+);
+
+// router.get('/test', getAccessToken)
+// router.get('/test2', getInquirySaldo)
+// router.get('/test3', getInquiryDTU)
+// router.get('/test4', getInquiryVoucher)
+// router.get('/test5', postConfirmPayment)
+// router.get('/test6', getCheckOrder)
 
 /**
  * @swagger
@@ -91,9 +157,18 @@ router.put(
  *           type: string
  *           format: date-time
  *           description: The date when the payment request was made. Required.
- *         payment_status:
+ *         server_id:
  *           type: string
- *           description: The status of the payment (e.g., pending, success, failed). Required.
+ *           description: The server (e.g., JAPAN, ID, etc). Optional.
+ *         package:
+ *           type: string
+ *           description: The package (e.g., 60 + 5 Tokens, etc). Optional.
+ *         ref_id:
+ *           type: string
+ *           description: refferral user/agents (e.g., Hyungg, etc). Optional.
+ *         code:
+ *           type: string
+ *           description: code is for payment method like bank (e.g., 014, 015, ovo, bca, etc). Optional.
  */
 
 /**
@@ -143,7 +218,7 @@ router.put(
  *         description: Bearer token for authentication
  *     requestBody:
  *       required: true
- *       description: Only Merchant ID, transaction id, code, nmid, name, user_id, game_id, amount, phone_number, payment_method, requested_date
+ *       description: Only Merchant ID, transaction id, code, nmid, name, user_id, game_id, amount, phone_number, payment_method, requested_date, server_id, package, code, ref_id
  *       content:
  *         application/json:
  *           schema:
@@ -198,5 +273,145 @@ router.put(
  *       '400':
  *         description: Bad request, validation error
  */
+
+/**
+ * @swagger
+ * /api/update-payments-by-user:
+ *   put:
+ *     summary: Update a payment by users
+ *     tags: [Payments]
+ *     description: Update an status of transaction existing payment.
+ *     security:
+ *       - accessToken: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     requestBody:
+ *       required: true
+ *       description: only id as payment_id and payment status 
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              required:
+ *               - payment_id
+ *              properties:
+ *               payment_id:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Payment updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                - status
+ *                - message
+ *               properties:
+ *                status:
+ *                 type: string
+ *                message:
+ *                 type: string
+ *       '401':
+ *         description: Unauthorized
+ *       '404':
+ *         description: Payment not found
+ *       '400':
+ *         description: Bad request, validation error
+ */
+
+/**
+ * @swagger
+ * /api/private-initial-payments:
+ *   post:
+ *     summary: Add a initial payments
+ *     tags: [Payments]
+ *     description: Create a private initial payments masking.
+ *     requestBody:
+ *       required: true
+ *       description: Only Merchant ID, transaction id, code, nmid, name, user_id, game_id, amount, phone_number, payment_method, requested_date, server_id, package, code, ref_id
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              required:
+ *               - amount
+ *               - nmid
+ *               - payment_date
+ *               - requested_date
+ *              properties:
+ *               phone_number:
+ *                 type: string
+ *               amount:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               user_id:
+ *                 type: string
+ *               game_id:
+ *                 type: string
+ *               payment_method:
+ *                 type: string
+ *               nmid:
+ *                 type: string
+ *               code:
+ *                 type: string
+ *               merchant_id:
+ *                 type: string
+ *               transaction_id:
+ *                 type: string
+ *               payment_date:
+ *                 type: string
+ *               requested_date:
+ *                 type: string
+ *               server_id:
+ *                 type: string
+ *               package:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Payment created successfully
+ *       '401':
+ *         description: Unauthorized
+ *       '400':
+ *         description: Bad request, validation error
+ */
+
+
+/**
+ * @swagger
+ * /api/private-update-payments-by-user:
+ *   put:
+ *     summary: Update a private payment by users
+ *     tags: [Payments]
+ *     description: Update an status of transaction existing payment.
+ *     requestBody:
+ *       required: true
+ *       description: only id as payment_id and payment status 
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              required:
+ *               - payment_id
+ *              properties:
+ *               payment_id:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Payment updated successfully
+ *       '401':
+ *         description: Unauthorized
+ *       '404':
+ *         description: Payment not found
+ *       '400':
+ *         description: Bad request, validation error
+ */
+
 
 module.exports = router;

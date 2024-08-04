@@ -8,6 +8,9 @@ const paymentMethodRoutes = require('./routes/paymentMethodRoutes');
 const gameRoutes = require('./routes/gameRoutes');
 const sequelize = require('./config/database');
 const agentRoutes = require("./routes/agentRoutes");
+const recoveryQuestionsRoutes = require("./routes/recoveryQuestionsRoutes");
+const rulePaymentRoutes = require("./routes/rulePaymentRoutes");
+const gamePackageRoutes = require("./routes/gamePackageRoutes");
 const initDB = require('./config/initializeDB');
 // const swaggerUi = require('swagger-ui-express');
 const { swaggerUi, specs } = require('./swagger/swagger');
@@ -37,8 +40,11 @@ const corsOptions = {
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'http://localhost:3006',
-    'http://127.0.0.1:3006'
-  ], // Replace with your desired origin
+    'http://127.0.0.1:3006',
+    'https://nerogames.id',
+    'https://advance-genre-425305-g1.web.app',
+    'https://dashboard.nerogames.id'
+  ], // Replace with your desired origin & add FE URL
   methods: 'GET,PUT,POST,DELETE',
   allowedHeaders: ['Content-Type', 'X-Access-Token']
 };
@@ -55,6 +61,9 @@ app.use('/api', paymentRoutes);
 app.use('/api', paymentMethodRoutes);
 app.use('/api', gameRoutes);
 app.use("/api", agentRoutes);
+app.use("/api", recoveryQuestionsRoutes);
+app.use("/api", gamePackageRoutes);
+app.use("/api", rulePaymentRoutes);
 
 // Error handling middleware
 app.use(errorHandler);
@@ -64,7 +73,7 @@ const startServer = async () => {
   try {
     // Initialize the game table
     initGameModel();
-
+    // console.log(process.env,'???')
     if (process.env.NODE_ENV !== 'production') {
       // Sync database with force true in non-production environments
       await initDB();

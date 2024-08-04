@@ -31,10 +31,14 @@ exports.validateGetPayment = [
   query("limit")
     .isInt({ min: 1, max: 1000 })
     .withMessage("Limit must be an integer between 1 and 1000"),
+  param("user_id_nero", "user_id_nero is not valid").isString().optional(),
+  param("ref_id", "ref_id is not valid").isString().optional(),
+  param("nmid", "nmid is not valid").isString().optional(),
   query("offset")
     .isInt({ min: 0 })
     .withMessage("Offset must be an integer of at least 0"),
   query("id").isUUID().withMessage("ID is not valid").optional(),
+  query("user_id_nero").isUUID().withMessage("user id nero is not valid").optional(),
   query("paymentStatus")
     .isString()
     .withMessage("Payment status must be a string")
@@ -78,7 +82,29 @@ exports.validateAddPayment = [
   body("amount").notEmpty().withMessage("amount is required"),
   body("user_id").notEmpty().withMessage("user_id is not empty"),
   body("name").notEmpty().withMessage("name is required"),
-  body("phone_number").notEmpty().withMessage("phone_number is required"),
+  // body('phone_number').isMobilePhone(['id-ID']).withMessage('Mobile phone number is invalid'),
+  body("game_id").notEmpty().withMessage("game_id is required"),
+  checkSchema(SchemaPaymentMethods), // payment methods
+  body("requested_date").notEmpty().withMessage("request_date is required"),
+  // body("code").notEmpty().withMessage("code is required"),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json({ status: "Bad Request", errors: errors.array() });
+    }
+    next();
+  },
+];
+
+exports.validateAddPaymentPrivate = [
+  // body("merchant_id").notEmpty().withMessage("merchant_id is required"),
+  // body("transaction_id").notEmpty().withMessage("transaction_id is required"),
+  body("amount").notEmpty().withMessage("amount is required"),
+  // body("user_id").notEmpty().withMessage("user_id is not empty"),
+  // body("name").notEmpty().withMessage("name is required"),
+  // body("phone_number").notEmpty().withMessage("phone_number is required"),
   body("game_id").notEmpty().withMessage("game_id is required"),
   checkSchema(SchemaPaymentMethods), // payment methods
   body("requested_date").notEmpty().withMessage("request_date is required"),
@@ -97,6 +123,32 @@ exports.validateAddPayment = [
 exports.validateUpdatePayment = [
   body("payment_id", "payment_id is not valid").isUUID(),
   checkSchema(Schema),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json({ status: "Bad Request", errors: errors.array() });
+    }
+    next();
+  },
+];
+
+exports.validateCheckPayment = [
+  param("payment_id", "payment_id is not valid").isString().notEmpty(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json({ status: "Bad Request", errors: errors.array() });
+    }
+    next();
+  },
+];
+
+exports.validateUpdatePaymentByUser = [
+  body("payment_id", "payment_id is not valid").isUUID(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

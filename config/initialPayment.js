@@ -99,4 +99,264 @@ const arrayFund = [
   },
 ];
 
-module.exports = arrayFund;
+const arrayRecoveryQuestions = [
+  {
+    text: "What was the name of your first pet?",
+    is_active: 1
+  },
+  {
+    text: "What is your mother’s maiden name?",
+    is_active: 1
+  },
+  {
+    text: "What was the name of your elementary school?",
+    is_active: 1
+  },
+  {
+    text: "What was the make and model of your first car?",
+    is_active: 1
+  },
+  {
+    text: "In what city were you born?",
+    is_active: 1
+  },
+  {
+    text: "What is the name of the street you grew up on?",
+    is_active: 1
+  },
+  {
+    text: "What is the name of your favorite childhood friend?",
+    is_active: 1
+  },
+  {
+    text: "What is your favorite food?",
+    is_active: 1
+  },
+  {
+    text: "What was the name of your first employer?",
+    is_active: 1
+  },
+  {
+    text: "What is your favorite movie?",
+    is_active: 1
+  },
+]
+
+const arrayGamePackages = [
+  {
+    name: 'sugarpuffs',
+    title: 'SUGAR',
+    description: 'Nero Game Sugarpuffs',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: false,
+    is_active: true
+  },
+  {
+    name: 'idlemarkets',
+    title: 'IDLE',
+    description: 'Nero Game Idle Markets',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: false,
+    is_active: true
+  },
+  {
+    name: 'mobilelegend',
+    title: 'Mobile Legends',
+    description: 'Game Mobile Legends',
+    image: null,
+    check_username: true,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'freefire',
+    title: 'Free Fire',
+    description: 'Game Free Fire',
+    image: null,
+    check_username: true,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'PUBG Mobile (Indonesia)',
+    title: 'PUBG Mobile (Indonesia)',
+    description: 'Game PUBG Mobile (Indonesia)',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'PUBG Mobile (Global)',
+    title: 'PUBG Mobile (Global)',
+    description: 'Game PUBG Mobile (Global)',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'Ace Racer',
+    title: 'Ace Racer',
+    description: 'Game Ace Racer',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'Arena Breakout',
+    title: 'Arena Breakout',
+    description: 'Game Arena Breakout',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'Arena Of Valor',
+    title: 'Arena Of Valor',
+    description: 'Game Arena Of Valor',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'Atlantica Online',
+    title: 'Atlantica Online',
+    description: 'Game Atlantica Online',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'Badlanders',
+    title: 'Badlanders',
+    description: 'Game Badlanders',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'Black Clover M',
+    title: 'Black Clover',
+    description: 'Game Black Clover',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'Blood Strike',
+    title: 'Blood Strike',
+    description: 'Game Blood Strike',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'Brawl Stars',
+    title: 'Brawl Stars',
+    description: 'Game Brawl Stars',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+  {
+    name: 'Boyaa Domino Qiu Qiu',
+    title: 'Boyaa Domino Qiu Qiu',
+    description: 'Game Boyaa Domino Qiu Qiu',
+    image: null,
+    check_username: false,
+    use_virtual_account: true,
+    use_qris: true,
+    use_ewallet: true,
+    use_credit_card: true,
+    use_retail: true,
+    use_uniplay: true,
+    is_active: true
+  },
+]
+
+module.exports = {
+  arrayFund: arrayFund,
+  arrayRecoveryQuestions: arrayRecoveryQuestions,
+  arrayGamePackages: arrayGamePackages
+};
