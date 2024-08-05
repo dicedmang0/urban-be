@@ -12,6 +12,23 @@ const {
 } = require('../middlewares/validatorGame');
 const { validateUsers } = require('../middlewares/validatorUsers');
 
+// Get game highscores
+router.get(
+  '/games/:gameId/highscores',
+  verifyToken,
+  validateGameId,
+  gameController.getHighscores
+);
+
+// Set user highscore
+router.post(
+  '/games/:gameId/users/:idUser/highscore',
+  verifyToken,
+  validateGameId,
+  validateUsers,
+  gameController.setHighscore
+);
+
 // Add new user to the game
 router.post(
   '/games/:gameId/users',
@@ -92,6 +109,82 @@ module.exports = router;
  * tags:
  *   name: Game
  *   description: API for managing Game data
+ */
+
+/**
+ * @swagger
+ * /games/{gameId}/highscores:
+ *   get:
+ *     summary: Get top 10 highscores from the game
+ *     tags: [Game]
+ *     description: Get top 10 highscores from the game
+ *     security:
+ *       - accessToken: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The token for authentication
+ *       - in: path
+ *         name: gameId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the game
+ *     responses:
+ *       '200':
+ *         description: Success Get Highscores
+ *       '400':
+ *         description: Bad Request
+ */
+
+/**
+ * @swagger
+ * /games/{gameId}/users/{idUser}/highscores:
+ *  post:
+ *     summary: Set user highscore
+ *     tags: [Game]
+ *     description: Set user highscore
+ *     security:
+ *       - accessToken: []
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The token for authentication
+ *       - in: path
+ *         name: gameId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the game
+ *       - in: path
+ *         name: idUser
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: The ID of the user
+ *     requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              required:
+ *                - highscore
+ *              properties:
+ *                highscore:
+ *                  type: integer
+ *     responses:
+ *       '200':
+ *         description: Success Get Highscores
+ *       '400':
+ *         description: Bad Request
  */
 
 /**

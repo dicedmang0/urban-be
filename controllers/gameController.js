@@ -9,6 +9,18 @@ async function createNewUser(game_id, user_id) {
   });
 }
 
+async function getHighscores(game_id) {
+  const gameModel = getGameModel(game_id);
+
+  const top10 = await gameModel.findAll({
+    order: [['highscore', 'DESC']],
+    limit: 10,
+    attributes: ['user_id', 'highscore']
+  });
+
+  return top10;
+}
+
 exports.incrementCoin = async (game_id, user_id, coin_amount) => {
   game_id = 'game_' + game_id;
   const gameModel = getGameModel(game_id);
@@ -19,6 +31,42 @@ exports.incrementCoin = async (game_id, user_id, coin_amount) => {
   }
 
   await game.increment('coin', { by: coin_amount });
+};
+
+exports.getHighscores = async (req, res) => {
+  try {
+    const game_id = 'game_' + req.params.gameId;
+
+    const highscores = await getHighscores(game_id);
+
+    res.status(200).json({ status: 'Success', data: highscores });
+  } catch (error) {
+    res.status(400).send({ status: 'Bad Request', message: error.message });
+  }
+};
+
+exports.setHighscore = async (req, res) => {
+  try {
+    const game_id = 'game_' + req.params.gameId;
+    const user_id = req.params.idUser;
+    const gameModel = getGameModel(game_id);
+
+    let game = await gameModel.findOne({ where: { user_id } });
+
+    if (!game) {
+      game = await createNewUser(game_id, user_id);
+    }
+
+    const { highscore } = req.body;
+
+    await game.update({ highscore });
+
+    res
+      .status(200)
+      .json({ status: 'Success', message: 'Success Set Highscore!' });
+  } catch (error) {
+    res.status(400).send({ status: 'Bad Request', message: error.message });
+  }
 };
 
 exports.addNewUser = async (req, res) => {
