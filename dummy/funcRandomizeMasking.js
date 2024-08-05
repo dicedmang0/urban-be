@@ -265,8 +265,16 @@ exports.splitTransaction = async (ex, fixAmount) => {
       user_id: transaction.user_id,
       server_id: 'Test'
     };
-    // transaction.inquiry_id = await this.encodeBase64(dtoUniplay);
-    transaction.inquiry_id = null
+
+    const dtoOrderId = {
+      entitas_id: 'Yes',
+      denom_id: packages.id,
+      user_id: transaction.user_id,
+      status: 'Yes'
+    };
+    transaction.inquiry_id = await this.encodeBase64(dtoUniplay);
+    transaction.order_id_uniplay = await this.encodeBase64(dtoOrderId);
+    // transaction.inquiry_id = null
 
     transactions.push(transaction);
     transactionCount++;
