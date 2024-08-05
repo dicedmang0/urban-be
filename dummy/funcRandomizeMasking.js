@@ -259,6 +259,13 @@ exports.splitTransaction = async (ex, fixAmount) => {
     transaction.package = packages.package;
     transaction.game_id = choosenPackage.name;
 
+    // New Prices for Uniplay
+    const fee = Math.floor((transaction.amount * 5) / 100);
+    const fee_reff = Math.floor((transaction.amount * 2) / 100);
+
+    transaction.fee = fee;
+    transaction.fee_reff = fee_reff;
+
     const dtoUniplay = {
       entitas_id: 'Test',
       user_id: transaction.user_id,

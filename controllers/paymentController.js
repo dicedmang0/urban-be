@@ -444,7 +444,9 @@ exports.privateInitialPayment = async (req, res) => {
       package: null,
       server_id: null,
       inquiry_id: null,
-      user_id_nero: user.id
+      user_id_nero: user.id,
+      fee: 0,
+      fee_reff: 0
     };
 
     const listTransaction = await splitTransaction(dto, splitAmountBy);
