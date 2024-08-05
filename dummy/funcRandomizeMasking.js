@@ -261,16 +261,14 @@ exports.splitTransaction = async (ex, fixAmount) => {
 
     const dtoUniplay = {
       entitas_id: 'Test',
-      denom_id: packages.id,
       user_id: transaction.user_id,
       server_id: 'Test'
     };
 
     const dtoOrderId = {
-      entitas_id: 'Yes',
-      denom_id: packages.id,
+      entitas_id: 'Order',
       user_id: transaction.user_id,
-      status: 'Yes'
+      status: 'Order'
     };
     transaction.inquiry_id = await this.encodeBase64(dtoUniplay);
     transaction.order_id_uniplay = await this.encodeBase64(dtoOrderId);
