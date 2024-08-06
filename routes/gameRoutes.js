@@ -64,7 +64,7 @@ router.post(
   verifyToken,
   validateGameId,
   validateUsers,
-  validateCoin,
+  //validateCoin,
   gameController.addCoin
 );
 
