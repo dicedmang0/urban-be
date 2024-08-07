@@ -1,23 +1,28 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
 
 function getGameModel(gameId) {
   return sequelize.define(gameId, {
     user_id: {
       primaryKey: true,
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
     },
     save_data: {
       type: DataTypes.JSON,
       allowNull: false,
-      defaultValue: {},
+      defaultValue: {}
     },
     coin: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0,
+      defaultValue: 0
     },
+    highscore: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    }
   });
 }
 
