@@ -136,7 +136,8 @@ exports.getPayment = async (req, res) => {
     let queryOptions = {
       limit: parseInt(limit, 10) || 10, // Set default limit if not provided
       offset: parseInt(offset, 10) || 0, // Set default offset if not provided
-      where: {}
+      where: {},
+      order: [['request_date', 'DESC']],
     };
 
     if (id) {
