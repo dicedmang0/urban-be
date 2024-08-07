@@ -889,6 +889,30 @@ exports.getDTU = async (req, res) => {
   }
 };
 
+exports.getTotalBalances = async (req, res) => {
+  try {
+    const payments = await Payment.findAll({
+      attributes: ['amount', 'payment_status'],
+    });
+
+    const activeTotal = payments
+      .filter((item) => item.payment_status === 'Success')
+      .reduce((total, item) => total + parseFloat(item.amount), 0);
+
+    const pendingTotal = payments
+      .filter((item) => item.payment_status === 'Pending')
+      .reduce((total, item) => total + parseFloat(item.amount), 0);
+
+    res.status(200).json({
+      activeTotal,
+      pendingTotal,
+    });
+  } catch (error) {
+    res.status(400).send({ status: 'Bad Request', message: error.message });
+  }
+};
+
+
 exports.getSaldoUni = async (req, res) => {
   try {
     const response = await getInquirySaldo();

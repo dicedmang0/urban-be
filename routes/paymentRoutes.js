@@ -94,6 +94,11 @@ router.post(
   // validateUpdatePaymentByUser,
   paymentController.privateConfirmationPayment
 );
+router.get(
+  '/total-balances',
+  verifyToken,
+  paymentController.getTotalBalances
+);
 
 // router.get('/test', getAccessToken)
 // router.get('/test2', getInquirySaldo)
