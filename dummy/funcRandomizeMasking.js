@@ -19,9 +19,9 @@ const randomizePayment = [
   {
     id: 2,
     model: 'Virtual Account',
-    code: ['014', '008', '002', '009', '013', '011', '022']
+    code: ['008', '002', '009', '011', '022']
   },
-  { id: 3, model: 'E-Wallet', code: ['ovo', 'dana', 'shopeepay', 'linkaja'] }
+  { id: 3, model: 'E-Wallet', code: ['ovo', 'dana', 'shopeepay'] }
 ];
 
 const listUsername = [
@@ -207,13 +207,15 @@ function getRandomElement(array) {
 }
 
 exports.randomizeTransaction = (ex, randomizePayment) => {
-  let paymentMethod = getRandomElement(randomizePayment);
   let transaction = { ...ex };
+  
+  if(!transaction.payment_method) {
+    let paymentMethod = getRandomElement(randomizePayment);
+    transaction.payment_method = paymentMethod.model;
 
-  transaction.payment_method = paymentMethod.model;
-
-  if (paymentMethod.code.length > 0) {
-    transaction.code = getRandomElement(paymentMethod.code);
+    if (paymentMethod.code.length > 0) {
+      transaction.code = getRandomElement(paymentMethod.code);
+    }
   }
 
   return transaction;
