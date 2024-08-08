@@ -745,7 +745,7 @@ exports.privateConfirmationPayment = async (req, res) => {
     //   {name: "Mobile Legends", id:"mobilelegend", checkUsername: true, useUniplay: true}
     // ];
 
-    const { payment_id } = req.params;
+    const { payment_id } = req.body;
 
     const payment = await Payment.findOne({
       where: { merchant_id: payment_id }
@@ -771,11 +771,11 @@ exports.privateConfirmationPayment = async (req, res) => {
     // check if the games was mobile legend or free fire
     //  const isGameHasToCheck = gameHasToCheck.find(v => v.id == payment.game_id);
 
-    // if (!isGameHasToCheck) {
-    //   throw {
-    //     message: 'Your Game is not available.'
-    //   };
-    // }
+    if (!isGameHasToCheck) {
+      throw {
+        message: 'Your Game is not available.'
+      };
+    }
 
     if (!payment) {
       return res
@@ -794,52 +794,21 @@ exports.privateConfirmationPayment = async (req, res) => {
       isGameHasToCheck.use_uniplay &&
       dto.payment_status == 'Success'
     ) {
-      // Create Account Random First
-      const user = await getRandomUser();
-      const numberDictionary = NumberDictionary.generate({
-        min: 100,
-        max: 999
-      });
-      const configNames = {
-        dictionaries: [adjectives, names, numberDictionary]
-      };
-
-      const randomNames = uniqueNamesGenerator(configNames);
-
       // GAME UNIPLAY
-      // const resp = await postConfirmPayment({
-      //   inquiry_id: payment.inquiry_id,
-      //   pincode: process.env.PINCODE_UNIPIN
-      // });
-
-      // if (resp.status == '200') {
-      //   const dtos = {
-      //     order_id_uniplay: resp.order_id,
-      //     user_id_nero: user.id,
-      //     user_id: randomNames,
-      //     name: user.username
-      //   };
-      //   await Payment.update(dtos, { where: { merchant_id: payment_id } });
-      // } else {
-      //   throw {
-      //     message: resp.message
-      //   };
-      // }
-
-      const dtoOrderId = {
-        entitas_id: 'Order',
-        user_id: randomNames,
-        status: 'Order'
-      };
-      const uniplay = await encodeBase64(dtoOrderId);
-      dto = {
-        ...dto,
-        order_id_uniplay: uniplay,
-        user_id_nero: user.id,
-        user_id: randomNames,
-        name: user.username
-      };
-      await Payment.update(dto, { where: { merchant_id: payment_id } });
+      const resp = await postConfirmPayment({
+        inquiry_id: payment.inquiry_id,
+        pincode: process.env.PINCODE_UNIPIN
+      });
+      if (resp.status == '200') {
+        const dtos = {
+          order_id_uniplay: resp.order_id
+        };
+        await Payment.update(dtos, { where: { merchant_id: payment_id } });
+      } else {
+        throw {
+          message: resp.message
+        };
+      }
     } else if (
       isGameHasToCheck &&
       !isGameHasToCheck.use_uniplay &&
