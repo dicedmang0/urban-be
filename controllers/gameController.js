@@ -1,4 +1,6 @@
 const getGameModel = require('../models/gameModel');
+const User = require('../models/userModel');
+const sequelize = require('../config/database');
 
 async function createNewUser(game_id, user_id) {
   const gameModel = getGameModel(game_id);
@@ -10,15 +12,20 @@ async function createNewUser(game_id, user_id) {
 }
 
 async function getHighscores(game_id) {
-  const gameModel = getGameModel(game_id);
+  const query = `
+    SELECT u.username AS "user_id", g.highscore
+    FROM ${game_id}s AS g
+    JOIN public."Users" AS u ON g.user_id = u.id::text
+    ORDER BY g.highscore DESC
+    LIMIT 10;
+  `;
 
-  const top10 = await gameModel.findAll({
-    order: [['highscore', 'DESC']],
-    limit: 10,
-    attributes: ['user_id', 'highscore']
+  const results = await sequelize.query(query, {
+    type: sequelize.QueryTypes.SELECT
   });
 
-  return top10;
+  // only return where highscore is higher than 0
+  return results.filter((result) => result.highscore > 0);
 }
 
 exports.incrementCoin = async (game_id, user_id, coin_amount) => {
