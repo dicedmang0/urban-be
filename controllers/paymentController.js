@@ -833,9 +833,9 @@ exports.privateConfirmationPayment = async (req, res) => {
     await Payment.update(dto, { where: { merchant_id: payment_id } });
 
     // private transactions
-    // if(payment.nmid) {
-    //   await cronosUpdateCallbackTransactions({id: payment.transaction_id, status: dto.payment_status});
-    // }
+    if(payment.nmid) {
+      await cronosUpdateCallbackTransactions({id: payment.transaction_id, status: dto.payment_status});
+    }
 
     res
       .status(200)
