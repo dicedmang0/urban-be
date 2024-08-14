@@ -858,12 +858,37 @@ exports.checkStatusPaymentsCronos = async (req, res) => {
 
 exports.getDTU = async (req, res) => {
   try {
-    const response = await getInquiryDTU();
-    res.status(200).json({ response });
+    // Step 1: Retrieve current balance
+    const saldoResponse = await getInquirySaldo();
+    const currentBalance = parseFloat(saldoResponse.saldo);
+
+    if (isNaN(currentBalance)) {
+      return res.status(400).send({ status: 'Bad Request', message: 'Unable to retrieve balance' });
+    }
+
+    // Step 2: Retrieve DTU data
+    const dtuResponse = await getInquiryDTU();
+
+    if (dtuResponse.status !== '200') {
+      return res.status(400).send({ status: 'Bad Request', message: 'Failed to retrieve DTU data' });
+    }
+
+    // Step 3: Filter products based on balance
+    const affordableProducts = dtuResponse.list_dtu.map((product) => {
+      const affordableDenoms = product.denom.filter(denom => parseFloat(denom.price) <= currentBalance);
+      return {
+        ...product,
+        denom: affordableDenoms,
+      };
+    }).filter(product => product.denom.length > 0);
+
+    // Step 4: Return filtered products
+    res.status(200).json({ response: { status: '200', message: 'Successfully', list_dtu: affordableProducts } });
   } catch (error) {
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };
+
 
 exports.getTotalBalances = async (req, res) => {
   try {
