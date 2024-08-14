@@ -138,7 +138,7 @@ exports.getPayment = async (req, res) => {
       limit: parseInt(limit, 10) || 10, // Set default limit if not provided
       offset: parseInt(offset, 10) || 0, // Set default offset if not provided
       where: {},
-      order: [['request_date', 'DESC']],
+      order: [['request_date', 'DESC']]
     };
 
     if (id) {
@@ -795,20 +795,22 @@ exports.privateConfirmationPayment = async (req, res) => {
       isGameHasToCheck.use_uniplay &&
       dto.payment_status == 'Success'
     ) {
-      // GAME UNIPLAY
-      const resp = await postConfirmPayment({
-        inquiry_id: payment.inquiry_id,
-        pincode: process.env.PINCODE_UNIPIN
-      });
-      if (resp.status == '200') {
-        const dtos = {
-          order_id_uniplay: resp.order_id
-        };
-        await Payment.update(dtos, { where: { merchant_id: payment_id } });
-      } else {
-        throw {
-          message: resp.message
-        };
+      if (!payment.nmid) {
+        // GAME UNIPLAY
+        const resp = await postConfirmPayment({
+          inquiry_id: payment.inquiry_id,
+          pincode: process.env.PINCODE_UNIPIN
+        });
+        if (resp.status == '200') {
+          const dtos = {
+            order_id_uniplay: resp.order_id
+          };
+          await Payment.update(dtos, { where: { merchant_id: payment_id } });
+        } else {
+          throw {
+            message: resp.message
+          };
+        }
       }
     } else if (
       isGameHasToCheck &&
@@ -833,8 +835,11 @@ exports.privateConfirmationPayment = async (req, res) => {
     await Payment.update(dto, { where: { merchant_id: payment_id } });
 
     // private transactions
-    if(payment.nmid) {
-      await cronosUpdateCallbackTransactions({id: payment.transaction_id, status: dto.payment_status});
+    if (payment.nmid) {
+      await cronosUpdateCallbackTransactions({
+        id: payment.transaction_id,
+        status: dto.payment_status
+      });
     }
 
     res
@@ -863,37 +868,55 @@ exports.getDTU = async (req, res) => {
     const currentBalance = parseFloat(saldoResponse.saldo);
 
     if (isNaN(currentBalance)) {
-      return res.status(400).send({ status: 'Bad Request', message: 'Unable to retrieve balance' });
+      return res
+        .status(400)
+        .send({ status: 'Bad Request', message: 'Unable to retrieve balance' });
     }
 
     // Step 2: Retrieve DTU data
     const dtuResponse = await getInquiryDTU();
 
     if (dtuResponse.status !== '200') {
-      return res.status(400).send({ status: 'Bad Request', message: 'Failed to retrieve DTU data' });
+      return res
+        .status(400)
+        .send({
+          status: 'Bad Request',
+          message: 'Failed to retrieve DTU data'
+        });
     }
 
     // Step 3: Filter products based on balance
-    const affordableProducts = dtuResponse.list_dtu.map((product) => {
-      const affordableDenoms = product.denom.filter(denom => parseFloat(denom.price) <= currentBalance);
-      return {
-        ...product,
-        denom: affordableDenoms,
-      };
-    }).filter(product => product.denom.length > 0);
+    const affordableProducts = dtuResponse.list_dtu
+      .map((product) => {
+        const affordableDenoms = product.denom.filter(
+          (denom) => parseFloat(denom.price) <= currentBalance
+        );
+        return {
+          ...product,
+          denom: affordableDenoms
+        };
+      })
+      .filter((product) => product.denom.length > 0);
 
     // Step 4: Return filtered products
-    res.status(200).json({ response: { status: '200', message: 'Successfully', list_dtu: affordableProducts } });
+    res
+      .status(200)
+      .json({
+        response: {
+          status: '200',
+          message: 'Successfully',
+          list_dtu: affordableProducts
+        }
+      });
   } catch (error) {
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };
 
-
 exports.getTotalBalances = async (req, res) => {
   try {
     const payments = await Payment.findAll({
-      attributes: ['amount', 'payment_status'],
+      attributes: ['amount', 'payment_status']
     });
 
     const activeTotal = payments
@@ -906,13 +929,12 @@ exports.getTotalBalances = async (req, res) => {
 
     res.status(200).json({
       activeTotal,
-      pendingTotal,
+      pendingTotal
     });
   } catch (error) {
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };
-
 
 exports.getSaldoUni = async (req, res) => {
   try {
