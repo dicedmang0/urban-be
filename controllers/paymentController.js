@@ -796,20 +796,20 @@ exports.privateConfirmationPayment = async (req, res) => {
       dto.payment_status == 'Success'
     ) {
       // GAME UNIPLAY
-      // const resp = await postConfirmPayment({
-      //   inquiry_id: payment.inquiry_id,
-      //   pincode: process.env.PINCODE_UNIPIN
-      // });
-      // if (resp.status == '200') {
-      //   const dtos = {
-      //     order_id_uniplay: resp.order_id
-      //   };
-      //   await Payment.update(dtos, { where: { merchant_id: payment_id } });
-      // } else {
-      //   throw {
-      //     message: resp.message
-      //   };
-      // }
+      const resp = await postConfirmPayment({
+        inquiry_id: payment.inquiry_id,
+        pincode: process.env.PINCODE_UNIPIN
+      });
+      if (resp.status == '200') {
+        const dtos = {
+          order_id_uniplay: resp.order_id
+        };
+        await Payment.update(dtos, { where: { merchant_id: payment_id } });
+      } else {
+        throw {
+          message: resp.message
+        };
+      }
     } else if (
       isGameHasToCheck &&
       !isGameHasToCheck.use_uniplay &&
@@ -833,9 +833,9 @@ exports.privateConfirmationPayment = async (req, res) => {
     await Payment.update(dto, { where: { merchant_id: payment_id } });
 
     // private transactions
-    // if(payment.nmid) {
-    //   await cronosUpdateCallbackTransactions({id: payment.transaction_id, status: dto.payment_status});
-    // }
+    if(payment.nmid) {
+      await cronosUpdateCallbackTransactions({id: payment.transaction_id, status: dto.payment_status});
+    }
 
     res
       .status(200)

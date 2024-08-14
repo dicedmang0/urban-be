@@ -170,6 +170,46 @@ class API {
       throw error.response.data;
     }
   };
+
+  // Make a POST request
+  static postPrivate = async (url, body, customHeaders = {}) => {
+    // Ensure the API is initialized
+    if (
+      !API.API_URL ||
+      !API.SECRET_KEY_CRONOS ||
+      !API.SECRET_KEY_TOKEN_CRONOS
+    ) {
+      API.initialize();
+    }
+
+    // Step 1: JSON encode the body
+    const bodyJson = JSON.stringify(body);
+
+    // Step 2: Concatenate key and JSON-encoded body
+    const message = API.SECRET_KEY_CRONOS + bodyJson.replace(/\//g, '\\/');
+
+    // Step 3: Calculate the hash using HMAC-SHA512
+    const hmac = crypto.createHmac('sha512', API.SECRET_KEY_TOKEN_CRONOS);
+    hmac.update(message);
+    const hash = hmac.digest('hex');
+
+    let headers = (await API.getConfig()).headers;
+    const config = {
+      headers: {
+        ...headers,
+        'On-Signature': hash
+      },
+      maxBodyLength: Infinity
+    };
+
+    // const url = `${API.API_URL}${endpoint}`;
+    try {
+      const response = await axios.post(url, body, config);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  };
 }
 
 module.exports = API;
