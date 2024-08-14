@@ -133,3 +133,13 @@ exports.cronosSingleTransactions = async (object) => {
     throw { message: error.responseMessage || error.message };
   }
 };
+
+
+exports.cronosUpdateCallbackTransactions = async (body) => {
+  try {
+    const response = await API.post(`https://callback.cronosengine.com/api/webhook/nero-qris`, body);
+    return response;
+  } catch (error) {
+    throw { message: error.responseMessage || error.message };
+  }
+}
