@@ -852,7 +852,9 @@ exports.privateConfirmationPayment = async (req, res) => {
     if (payment.nmid) {
       await cronosUpdateCallbackTransactions({
         id: payment.transaction_id,
-        status: dto.payment_status
+        status: dto.payment_status,
+        rrn: dto.rrn,
+        merchantRef: payment.merchant_id
       });
     }
 
