@@ -365,7 +365,9 @@ exports.addPayment = async (req, res) => {
     // resp.responseData.additionalInfo.callback = `${process.env.REDIRECT_HOST}/api/confirmation/${resp.responseData.id}`
     dto.merchant_id = dto.transaction_id;
     dto.transaction_id = resp.responseData.id;
-    dto.rrn = resp.responseData.additionalInfo.rrn || null;
+    dto.rrn = resp.responseData.additionalInfo 
+    ? (resp.responseData.additionalInfo.rrn || null) 
+    : null;
 
     finalResponse = resp;
 
@@ -557,7 +559,9 @@ exports.updatePaymentByUser = async (req, res) => {
         statusTransactionsCronos.status
       ),
       payment_date: statusTransactionsCronos.paidDate,
-      rrn: statusTransactionsCronos.rrn || null
+      rrn: statusTransactionsCronos 
+      ? (statusTransactionsCronos.rrn || null) 
+      : null
     };
     if (
       isGameHasToCheck &&
@@ -659,7 +663,9 @@ exports.privateUpdatePaymentByUser = async (req, res) => {
         statusTransactionsCronos.status
       ),
       payment_date: statusTransactionsCronos.paidDate,
-      rrn: statusTransactionsCronos.rrn || null
+      rrn: statusTransactionsCronos 
+      ? (statusTransactionsCronos.rrn || null) 
+      : null
     };
     if (
       isGameHasToCheck &&
@@ -794,7 +800,9 @@ exports.privateConfirmationPayment = async (req, res) => {
         statusTransactionsCronos.status
       ),
       payment_date: statusTransactionsCronos.paidDate,
-      rrn: statusTransactionsCronos.rrn || null
+      rrn: statusTransactionsCronos 
+      ? (statusTransactionsCronos.rrn || null) 
+      : null
     };
     if (
       isGameHasToCheck &&
