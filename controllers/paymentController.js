@@ -247,7 +247,8 @@ exports.addPayment = async (req, res) => {
       inquiry_id: null,
       user_id_nero: req.decoded.id,
       fee: null,
-      fee_reff: 0
+      fee_reff: 0,
+      rrn: null
     };
 
     let isLogicAllPassed = false;
@@ -364,6 +365,7 @@ exports.addPayment = async (req, res) => {
     // resp.responseData.additionalInfo.callback = `${process.env.REDIRECT_HOST}/api/confirmation/${resp.responseData.id}`
     dto.merchant_id = dto.transaction_id;
     dto.transaction_id = resp.responseData.id;
+    dto.rrn = resp.responseData.additionalInfo.rrn || null;
 
     finalResponse = resp;
 
@@ -386,6 +388,7 @@ exports.addPayment = async (req, res) => {
       data: finalResponse
     });
   } catch (error) {
+    console.log(error,'?')
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };
@@ -433,7 +436,8 @@ exports.privateInitialPayment = async (req, res) => {
       payment_method: payment_method,
       phone_number: await getRandomIndonesianPhoneNumber(),
       payment_date: null,
-      request_date: await getRandomDateTimeBetween(startDate, endDate),
+      // request_date: await getRandomDateTimeBetween(startDate, endDate),
+      request_date: moment().format('YYYY-MM-DD HH:mm:ss'),
       payment_status: 'Pending',
       package: null,
       server_id: null,
@@ -552,7 +556,8 @@ exports.updatePaymentByUser = async (req, res) => {
       payment_status: await updatePaymentStatus(
         statusTransactionsCronos.status
       ),
-      payment_date: statusTransactionsCronos.paidDate
+      payment_date: statusTransactionsCronos.paidDate,
+      rrn: statusTransactionsCronos.rrn || null
     };
     if (
       isGameHasToCheck &&
@@ -653,7 +658,8 @@ exports.privateUpdatePaymentByUser = async (req, res) => {
       payment_status: await updatePaymentStatus(
         statusTransactionsCronos.status
       ),
-      payment_date: statusTransactionsCronos.paidDate
+      payment_date: statusTransactionsCronos.paidDate,
+      rrn: statusTransactionsCronos.rrn || null
     };
     if (
       isGameHasToCheck &&
@@ -783,12 +789,12 @@ exports.privateConfirmationPayment = async (req, res) => {
         .status(400)
         .send({ status: 'Bad Request', message: 'Payment Not Found' });
     }
-
     let dto = {
       payment_status: await updatePaymentStatus(
         statusTransactionsCronos.status
       ),
-      payment_date: statusTransactionsCronos.paidDate
+      payment_date: statusTransactionsCronos.paidDate,
+      rrn: statusTransactionsCronos.rrn || null
     };
     if (
       isGameHasToCheck &&

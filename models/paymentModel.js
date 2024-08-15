@@ -92,6 +92,10 @@ const Payment = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    rrn: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,
