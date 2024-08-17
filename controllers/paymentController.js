@@ -422,6 +422,42 @@ exports.privateInitialPayment = async (req, res) => {
       server_id
     } = req.body;
 
+    let finalName = name;
+    let finalUserId = user_id;
+    let finalUserIdNero = null;
+    
+    
+if (!user_id) {
+  // If user_id is missing, generate a random user_id
+  const userIdLength = Math.random() < 0.5 ? 9 : 16;
+  finalUserId = Math.floor(Math.random() * Math.pow(10, userIdLength)).toString().padStart(userIdLength, '0');
+}
+
+// If user_id is missing or we need a user for user_id_nero, generate a new user
+if (!user_id || !user_id_nero) {
+  const randomUser = await getRandomUser();
+  finalUserIdNero = randomUser.id;  // Assign the generated idUser to user_id_nero
+}
+
+// If name is not provided, generate it using the adjective, names, numberDictionary format
+if (!name) {
+  const numberDictionary = NumberDictionary.generate({
+    min: 100,
+    max: 999
+  });
+  const configNames = {
+    dictionaries: [adjectives, names, numberDictionary]
+  };
+  finalName = uniqueNamesGenerator(configNames);
+}
+
+// If user_id_nero wasn't set, set it to user_id (this only happens if user_id was provided)
+if (!finalUserIdNero) {
+  finalUserIdNero = finalUserId;
+}
+
+    
+
     const splitAmountBy = 300000;
 
     const startDate = '2024-07-15';
@@ -431,8 +467,8 @@ exports.privateInitialPayment = async (req, res) => {
       ref_id: ref_id || uuidv4(),
       transaction_id: transaction_id || uuidv4(),
       amount: amount,
-      user_id: null,
-      name: '-',
+      user_id: finalUserId,
+      name: finalName,
       game_id: null,
       nmid: nmid,
       payment_method: payment_method,
@@ -444,7 +480,7 @@ exports.privateInitialPayment = async (req, res) => {
       package: null,
       server_id: null,
       inquiry_id: null,
-      user_id_nero: null,
+      user_id_nero: finalUserIdNero,
       fee: 0,
       fee_reff: 0
     };

@@ -20,6 +20,7 @@ exports.getUsers = async (req, res) => {
       limit: parseInt(limit, 10),
       offset: parseInt(offset, 10),
       where: {},
+      order: [['createdAt','DESC']]
     };
 
     if (id) {
