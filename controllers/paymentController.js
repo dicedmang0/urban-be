@@ -895,14 +895,18 @@ exports.privateConfirmationPayment = async (req, res) => {
 
     // private transactions
     if (payment.nmid) {
-      const callback =  await cronosUpdateCallbackTransactions({
+      const data = {
         id: payment.transaction_id,
         status: dto.payment_status,
         rrn: dto.rrn,
         merchantRef: payment.merchant_id
-      });
+      }
 
-      console.log(callback);
+      console.log('payload to cronoss', data)
+
+      const callback =  await cronosUpdateCallbackTransactions(data);
+
+      console.log("response callback", callback);
     }
 
     console.log("step 5");

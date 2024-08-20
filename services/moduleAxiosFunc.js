@@ -207,6 +207,7 @@ class API {
       const response = await axios.post(url, body, config);
       return response.data;
     } catch (error) {
+      console.log("error cronoss", error);
       throw error.response.data;
     }
   };

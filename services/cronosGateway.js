@@ -140,6 +140,8 @@ exports.cronosUpdateCallbackTransactions = async (body) => {
     const response = await API.postPrivate(`https://callback.cronosengine.com/api/webhook/nero-qris`, body);
     return response;
   } catch (error) {
+    console.log('error fetching callback', error);
+    
     throw { message: error.responseMessage || error.message };
   }
 }
