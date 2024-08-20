@@ -800,6 +800,9 @@ exports.privateConfirmationPayment = async (req, res) => {
       where: { merchant_id: payment_id }
     });
 
+    console.log("step 1");
+    
+
     if (!payment) {
       throw {
         message: 'Your Transactions Doesnt Exist.'
@@ -810,12 +813,16 @@ exports.privateConfirmationPayment = async (req, res) => {
       payment_id: payment.transaction_id
     });
 
+    console.log("step 2");
+
     const isGameHasToCheck = await GamePackage.findOne({
       where: {
         is_active: true,
         name: payment.game_id
       }
     });
+
+    console.log("step 3");
 
     // check if the games was mobile legend or free fire
     //  const isGameHasToCheck = gameHasToCheck.find(v => v.id == payment.game_id);
@@ -884,7 +891,7 @@ exports.privateConfirmationPayment = async (req, res) => {
 
     const paymentCheck = await Payment.update(dto, { where: { merchant_id: payment_id } });
 
-    console.log(paymentCheck);
+    console.log("step 4");
 
     // private transactions
     if (payment.nmid) {
@@ -898,11 +905,13 @@ exports.privateConfirmationPayment = async (req, res) => {
       console.log(callback);
     }
 
+    console.log("step 5");
+
     res
       .status(200)
       .json({ status: 'Success', message: 'Success Updating Payment!' });
   } catch (error) {
-    res.status(400).send({ status: 'Bad Request', message: error });
+    res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };
 
