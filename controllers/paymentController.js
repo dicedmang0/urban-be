@@ -800,8 +800,6 @@ exports.privateConfirmationPayment = async (req, res) => {
       where: { merchant_id: payment_id }
     });
 
-    console.log("step 1");
-    
 
     if (!payment) {
       throw {
@@ -813,7 +811,8 @@ exports.privateConfirmationPayment = async (req, res) => {
       payment_id: payment.transaction_id
     });
 
-    console.log("step 2");
+    console.log("statusTransactionsCronos", statusTransactionsCronos);
+    
 
     const isGameHasToCheck = await GamePackage.findOne({
       where: {
@@ -821,8 +820,6 @@ exports.privateConfirmationPayment = async (req, res) => {
         name: payment.game_id
       }
     });
-
-    console.log("step 3");
 
     // check if the games was mobile legend or free fire
     //  const isGameHasToCheck = gameHasToCheck.find(v => v.id == payment.game_id);
@@ -843,9 +840,7 @@ exports.privateConfirmationPayment = async (req, res) => {
         statusTransactionsCronos.status
       ),
       payment_date: statusTransactionsCronos.paidDate,
-      rrn: statusTransactionsCronos 
-      ? (statusTransactionsCronos.rrn || null) 
-      : null
+      rrn: statusTransactionsCronos?.rrn ?? null
     };
     if (
       isGameHasToCheck &&
@@ -889,9 +884,7 @@ exports.privateConfirmationPayment = async (req, res) => {
       };
     }
 
-    const paymentCheck = await Payment.update(dto, { where: { merchant_id: payment_id } });
-
-    console.log("step 4");
+    await Payment.update(dto, { where: { merchant_id: payment_id } });
 
     // private transactions
     if (payment.nmid) {
