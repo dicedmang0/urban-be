@@ -902,7 +902,7 @@ exports.privateConfirmationPayment = async (req, res) => {
       .status(200)
       .json({ status: 'Success', message: 'Success Updating Payment!' });
   } catch (error) {
-    res.status(400).send({ status: 'Bad Request', message: error.message });
+    res.status(400).send({ status: 'Bad Request', message: error });
   }
 };
 
