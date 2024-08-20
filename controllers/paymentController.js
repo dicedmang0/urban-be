@@ -882,12 +882,13 @@ exports.privateConfirmationPayment = async (req, res) => {
       };
     }
 
-    await Payment.update(dto, { where: { merchant_id: payment_id } });
+    const paymentCheck = await Payment.update(dto, { where: { merchant_id: payment_id } });
 
+    console.log(paymentCheck);
 
-    
+    // private transactions
     if (payment.nmid) {
-      const callback = await cronosUpdateCallbackTransactions({
+      const callback =  await cronosUpdateCallbackTransactions({
         id: payment.transaction_id,
         status: dto.payment_status,
         rrn: dto.rrn,
