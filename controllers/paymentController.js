@@ -811,7 +811,7 @@ exports.privateConfirmationPayment = async (req, res) => {
       payment_id: payment.transaction_id
     });
 
-    console.log("statusTransactionsCronos", statusTransactionsCronos);
+    console.log("statusTransactionsCronos", statusTransactionsCronos?.additionalInfo?.rrn);
     
 
     const isGameHasToCheck = await GamePackage.findOne({
@@ -836,11 +836,9 @@ exports.privateConfirmationPayment = async (req, res) => {
         .send({ status: 'Bad Request', message: 'Payment Not Found' });
     }
     let dto = {
-      payment_status: await updatePaymentStatus(
-        statusTransactionsCronos.status
-      ),
+      payment_status: statusTransactionsCronos.status,
       payment_date: statusTransactionsCronos.paidDate,
-      rrn: statusTransactionsCronos?.rrn ?? null
+      rrn: statusTransactionsCronos?.additionalInfo?.rrn ?? null
     };
     if (
       isGameHasToCheck &&
