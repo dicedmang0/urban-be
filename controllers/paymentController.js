@@ -500,9 +500,12 @@ if (!finalUserIdNero) {
       finalResponses.push(resp);
     }
 
-    finalResponses?.map(async (data) => {
-      await Payment.update({ nmid: data?.responseData?.additionalInfo?.nmid }, { where: data?.responseData?.id })
-    })
+    await Promise.all(finalResponses.map(async (data) => {
+      await Payment.update(
+        { nmid: data?.responseData?.additionalInfo?.nmid },
+        { where: { id: data?.responseData?.id } }
+      );
+    }));
 
     res.status(200).json({
       status: 'Success',
