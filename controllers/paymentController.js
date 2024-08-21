@@ -500,6 +500,10 @@ if (!finalUserIdNero) {
       finalResponses.push(resp);
     }
 
+    finalResponses?.map(async (data) => {
+      await Payment.update({ nmid: data?.responseData?.additionalInfo?.nmid }, { where: data?.responseData?.id })
+    })
+
     res.status(200).json({
       status: 'Success',
       message: 'Success Adding Payment!',
