@@ -500,18 +500,15 @@ if (!finalUserIdNero) {
       finalResponses.push(resp);  
     }
 
-    await Promise.all(finalResponses.map(async (data) => {
-      await Payment.update(
-        { nmid: data?.responseData?.additionalInfo?.nmid },
-        { where: { id: data?.responseData?.merchantRef } }
-      );
+    const result = await Promise.all(finalResponses.map(async (data) => {
+      console.log(await data);
+      console.log(data);
     }));
-
 
     res.status(200).json({
       status: 'Success',
       message: 'Success Adding Payment!',
-      data: finalResponses
+      data: result
     });
     
     console.log('this is finalresponse', finalResponses[0]?.responseData?.additionalInfo);
