@@ -497,13 +497,13 @@ if (!finalUserIdNero) {
 
       await Payment.create(payment);
 
-      finalResponses.push(resp);
+      finalResponses.push(resp);  
     }
 
     await Promise.all(finalResponses.map(async (data) => {
       await Payment.update(
         { nmid: data?.responseData?.additionalInfo?.nmid },
-        { where: { id: data?.responseData?.id } }
+        { where: { id: data?.responseData?.merchantRef } }
       );
     }));
 
