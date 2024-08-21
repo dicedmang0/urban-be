@@ -5,7 +5,7 @@ const dmm = {
     list_dtu: [
       {
         id: 'MTI2Y3BpU3Y2WEtjNC92N21CbnBCNi9FUWlYcjZjWUY2d3I3YVdyN3pQM09uV3BWYkNKK1IvVHRUNzkzYkFBdzRnWFJuL0U5YlVwUnlPK1ZKcDJLbGc9PQ==',
-        name: 'Mobile Legends',
+        name: 'mobilelegend',
         image:
           'https://semutganteng.fra1.digitaloceanspaces.com/UniPlay/ad1427f3fe23204d0c1c90c7087e52fc.png',
         publisher: 'Moonton',
@@ -295,7 +295,7 @@ const dmm = {
       },
       {
         id: 'eUloZ2hQdS9BazE3V3U4S25yOGZmcnNneTFraTZVS0puZUMyc1c2ZjJEc004SG9UV25sQkpHdTNCdEE3RVJld3hFRkdPZ0taRWlNQlFaVUdNZWliYXc9PQ==',
-        name: 'Free Fire',
+        name: 'freefire',
         image:
           'https://semutganteng.fra1.digitaloceanspaces.com/UniPlay/54a9960aadb5de1938dec57081bdb642.png',
         publisher: 'Garena',
