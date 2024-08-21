@@ -365,9 +365,9 @@ exports.addPayment = async (req, res) => {
     // resp.responseData.additionalInfo.callback = `${process.env.REDIRECT_HOST}/api/confirmation/${resp.responseData.id}`
     dto.merchant_id = dto.transaction_id;
     dto.transaction_id = resp.responseData.id;
-    dto.rrn = resp.responseData.additionalInfo 
-    ? (resp.responseData.additionalInfo.rrn || null) 
-    : null;
+    dto.rrn = resp.responseData.additionalInfo
+      ? resp.responseData.additionalInfo.rrn || null
+      : null;
 
     finalResponse = resp;
 
@@ -390,7 +390,7 @@ exports.addPayment = async (req, res) => {
       data: finalResponse
     });
   } catch (error) {
-    console.log(error,'?')
+    console.log(error, '?');
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };
@@ -425,38 +425,37 @@ exports.privateInitialPayment = async (req, res) => {
     let finalName = name;
     let finalUserId = user_id;
     let finalUserIdNero = null;
-    
-    
-if (!user_id) {
-  // If user_id is missing, generate a random user_id
-  const userIdLength = Math.random() < 0.5 ? 9 : 16;
-  finalUserId = Math.floor(Math.random() * Math.pow(10, userIdLength)).toString().padStart(userIdLength, '0');
-}
 
-// If user_id is missing or we need a user for user_id_nero, generate a new user
-if (!user_id || !user_id_nero) {
-  const randomUser = await getRandomUser();
-  finalUserIdNero = randomUser.id;  // Assign the generated idUser to user_id_nero
-}
+    if (!user_id) {
+      // If user_id is missing, generate a random user_id
+      const userIdLength = Math.random() < 0.5 ? 9 : 16;
+      finalUserId = Math.floor(Math.random() * Math.pow(10, userIdLength))
+        .toString()
+        .padStart(userIdLength, '0');
+    }
 
-// If name is not provided, generate it using the adjective, names, numberDictionary format
-if (!name) {
-  const numberDictionary = NumberDictionary.generate({
-    min: 100,
-    max: 999
-  });
-  const configNames = {
-    dictionaries: [adjectives, names, numberDictionary]
-  };
-  finalName = uniqueNamesGenerator(configNames);
-}
+    // If user_id is missing or we need a user for user_id_nero, generate a new user
+    if (!user_id || !user_id_nero) {
+      const randomUser = await getRandomUser();
+      finalUserIdNero = randomUser.id; // Assign the generated idUser to user_id_nero
+    }
 
-// If user_id_nero wasn't set, set it to user_id (this only happens if user_id was provided)
-if (!finalUserIdNero) {
-  finalUserIdNero = finalUserId;
-}
+    // If name is not provided, generate it using the adjective, names, numberDictionary format
+    if (name) {
+      const numberDictionary = NumberDictionary.generate({
+        min: 100,
+        max: 999
+      });
+      const configNames = {
+        dictionaries: [adjectives, names, numberDictionary]
+      };
+      finalName = uniqueNamesGenerator(configNames);
+    }
 
-    
+    // If user_id_nero wasn't set, set it to user_id (this only happens if user_id was provided)
+    if (!finalUserIdNero) {
+      finalUserIdNero = finalUserId;
+    }
 
     const splitAmountBy = 300000;
 
@@ -497,23 +496,33 @@ if (!finalUserIdNero) {
 
       await Payment.create(payment);
 
-      finalResponses.push(resp);  
+      finalResponses.push(resp);
     }
 
-    const result = await Promise.all(finalResponses.map(async (data) => {
-      await Payment.update(
-        { nmid: data?.responseData?.additionalInfo?.nmid },
-        { where: { merchant_id : data?.responseData?.merchantRef } }
-      );
-    }));
+    const result = await Promise.all(
+      finalResponses.map(async (data) => {
+        await Payment.update(
+          { nmid: data?.responseData?.additionalInfo?.nmid },
+          { where: { merchant_id: data?.responseData?.merchantRef } }
+        );
+        const updatedPayment = await Payment.findOne({
+          where: { merchant_id: data?.responseData?.merchantRef }
+        });
 
-  res.status(200).json({
+        return updatedPayment;
+      })
+    );
+
+    res.status(200).json({
       status: 'Success',
       message: 'Success Adding Payment!',
-      data: result
-    });
-    
-    console.log('this is finalresponse', finalResponses[0]?.responseData?.additionalInfo);
+      data: result
+    });
+
+    console.log(
+      'this is finalresponse',
+      finalResponses[0]?.responseData?.additionalInfo
+    );
   } catch (error) {
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
@@ -604,9 +613,9 @@ exports.updatePaymentByUser = async (req, res) => {
         statusTransactionsCronos.status
       ),
       payment_date: statusTransactionsCronos.paidDate,
-      rrn: statusTransactionsCronos 
-      ? (statusTransactionsCronos.rrn || null) 
-      : null
+      rrn: statusTransactionsCronos
+        ? statusTransactionsCronos.rrn || null
+        : null
     };
     if (
       isGameHasToCheck &&
@@ -708,9 +717,9 @@ exports.privateUpdatePaymentByUser = async (req, res) => {
         statusTransactionsCronos.status
       ),
       payment_date: statusTransactionsCronos.paidDate,
-      rrn: statusTransactionsCronos 
-      ? (statusTransactionsCronos.rrn || null) 
-      : null
+      rrn: statusTransactionsCronos
+        ? statusTransactionsCronos.rrn || null
+        : null
     };
     if (
       isGameHasToCheck &&
@@ -809,7 +818,6 @@ exports.privateConfirmationPayment = async (req, res) => {
       where: { merchant_id: payment_id }
     });
 
-
     if (!payment) {
       throw {
         message: 'Your Transactions Doesnt Exist.'
@@ -820,8 +828,10 @@ exports.privateConfirmationPayment = async (req, res) => {
       payment_id: payment.transaction_id
     });
 
-    console.log("statusTransactionsCronos", statusTransactionsCronos?.additionalInfo?.rrn);
-    
+    console.log(
+      'statusTransactionsCronos',
+      statusTransactionsCronos?.additionalInfo?.rrn
+    );
 
     const isGameHasToCheck = await GamePackage.findOne({
       where: {
@@ -900,16 +910,16 @@ exports.privateConfirmationPayment = async (req, res) => {
         status: dto.payment_status,
         rrn: dto.rrn,
         merchantRef: payment.merchant_id
-      }
+      };
 
-      console.log('payload to cronoss', data)
+      console.log('payload to cronoss', data);
 
-      const callback =  await cronosUpdateCallbackTransactions(data);
+      const callback = await cronosUpdateCallbackTransactions(data);
 
-      console.log("response callback", callback);
+      console.log('response callback', callback);
     }
 
-    console.log("step 5");
+    console.log('step 5');
 
     res
       .status(200)
@@ -946,12 +956,10 @@ exports.getDTU = async (req, res) => {
     const dtuResponse = await getInquiryDTU();
 
     if (dtuResponse.status !== '200') {
-      return res
-        .status(400)
-        .send({
-          status: 'Bad Request',
-          message: 'Failed to retrieve DTU data'
-        });
+      return res.status(400).send({
+        status: 'Bad Request',
+        message: 'Failed to retrieve DTU data'
+      });
     }
 
     // Step 3: Filter products based on balance
@@ -968,15 +976,13 @@ exports.getDTU = async (req, res) => {
       .filter((product) => product.denom.length > 0);
 
     // Step 4: Return filtered products
-    res
-      .status(200)
-      .json({
-        response: {
-          status: '200',
-          message: 'Successfully',
-          list_dtu: affordableProducts
-        }
-      });
+    res.status(200).json({
+      response: {
+        status: '200',
+        message: 'Successfully',
+        list_dtu: affordableProducts
+      }
+    });
   } catch (error) {
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
