@@ -507,11 +507,14 @@ if (!finalUserIdNero) {
       );
     }));
 
+
     res.status(200).json({
       status: 'Success',
       message: 'Success Adding Payment!',
       data: finalResponses
     });
+    
+    console.log('this is finalresponse', finalResponses[0]?.responseData?.additionalInfo);
   } catch (error) {
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
