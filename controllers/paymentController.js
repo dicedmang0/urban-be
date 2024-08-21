@@ -503,7 +503,7 @@ if (!finalUserIdNero) {
     const result = await Promise.all(finalResponses.map(async (data) => {
       await Payment.update(
         { nmid: data?.responseData?.additionalInfo?.nmid },
-        { where: { merchantRef : data?.responseData?.merchantRef } }
+        { where: { merchant_id : data?.responseData?.merchantRef } }
       );
     }));
 
