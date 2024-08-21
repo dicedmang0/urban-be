@@ -499,24 +499,17 @@ exports.privateInitialPayment = async (req, res) => {
       finalResponses.push(resp);
     }
 
-    const result = await Promise.all(
-      finalResponses.map(async (data) => {
-        await Payment.update(
-          { nmid: data?.responseData?.additionalInfo?.nmid },
-          { where: { merchant_id: data?.responseData?.merchantRef } }
-        );
-        const updatedPayment = await Payment.findOne({
-          where: { merchant_id: data?.responseData?.merchantRef }
-        });
-
-        return updatedPayment;
-      })
-    );
+    await Promise.all(finalResponses.map(async (data) => {
+      await Payment.update(
+        { nmid: data?.responseData?.additionalInfo?.nmid },
+        { where: { merchant_id: data?.responseData?.merchantRef } }
+      );
+    }));
 
     res.status(200).json({
       status: 'Success',
       message: 'Success Adding Payment!',
-      data: result
+      data: finalResponses
     });
 
     console.log(
