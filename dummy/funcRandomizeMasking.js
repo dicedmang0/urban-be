@@ -237,58 +237,43 @@ exports.randomizePackage = (budget, choosenPackage) => {
   return bestPackage;
 };
 
-exports.splitTransaction = async (ex, fixAmount) => {
+exports.splitTransaction = async (ex) => {
   let amount = parseInt(ex.amount);
-  let transactions = [];
-  let remainingAmount = amount;
-  let transactionCount = 1;
+  let transaction = { ...ex };
   let choosenPackage = getRandomElement(dummyPackage.response.list_dtu);
 
-  while (remainingAmount > 0) {
-    let transaction = { ...ex };
+  // Apply randomization and package selection to the transaction
+  transaction.transaction_id = uuidv4(); // Generate a new transaction ID
+  transaction = this.randomizeTransaction(transaction, randomizePayment); // Randomize payment details
+  const packages = this.randomizePackage(amount, choosenPackage); // Randomize package based on amount and chosen package
+  transaction.package = packages.package;
+  transaction.game_id = choosenPackage.name;
 
-    if (remainingAmount > fixAmount) {
-      transaction.amount = fixAmount.toString();
-      remainingAmount -= fixAmount;
-    } else {
-      transaction.amount = remainingAmount.toString();
-      remainingAmount = 0;
-    }
+  // Calculate fees for Uniplay
+  const fee = Math.floor((transaction.amount * 5) / 100);
+  const fee_reff = Math.floor((transaction.amount * 2) / 100);
 
-    transaction.transaction_id = uuidv4();
-    transaction = this.randomizeTransaction(transaction, randomizePayment);
-    const packages = this.randomizePackage(fixAmount, choosenPackage);
-    transaction.package = packages.package;
-    transaction.game_id = choosenPackage.name;
+  transaction.fee = fee;
+  transaction.fee_reff = fee_reff;
 
-    // New Prices for Uniplay
-    const fee = Math.floor((transaction.amount * 5) / 100);
-    const fee_reff = Math.floor((transaction.amount * 2) / 100);
+  const dtoUniplay = {
+    entitas_id: 'Test',
+    user_id: transaction.user_id,
+    server_id: 'Test'
+  };
 
-    transaction.fee = fee;
-    transaction.fee_reff = fee_reff;
+  const dtoOrderId = {
+    entitas_id: 'Order',
+    user_id: transaction.user_id,
+    status: 'Order'
+  };
 
-    const dtoUniplay = {
-      entitas_id: 'Test',
-      user_id: transaction.user_id,
-      server_id: 'Test'
-    };
+  transaction.inquiry_id = await this.encodeBase64(dtoUniplay); // Generate inquiry ID
+  transaction.order_id_uniplay = await this.encodeBase64(dtoOrderId); // Generate order ID
 
-    const dtoOrderId = {
-      entitas_id: 'Order',
-      user_id: transaction.user_id,
-      status: 'Order'
-    };
-    transaction.inquiry_id = await this.encodeBase64(dtoUniplay);
-    transaction.order_id_uniplay = await this.encodeBase64(dtoOrderId);
-    // transaction.inquiry_id = null
-
-    transactions.push(transaction);
-    transactionCount++;
-  }
-
-  return transactions;
+  return [transaction]; // Return the modified transaction as an array
 };
+
 
 exports.findBestPackage = (denom, budget) => {
   let bestPackage = null;
