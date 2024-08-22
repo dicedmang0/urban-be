@@ -457,7 +457,7 @@ exports.privateInitialPayment = async (req, res) => {
       finalUserIdNero = finalUserId;
     }
 
-    const splitAmountBy = 300000;
+    const splitAmountBy = 0;
 
     const startDate = '2024-07-15';
     const endDate = '2024-07-24';
