@@ -2,6 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoutes');
+const usersRoutes = require('./routes/user.route');
 const coinRoutes = require('./routes/coinRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const paymentMethodRoutes = require('./routes/paymentMethodRoutes');
@@ -65,6 +66,9 @@ app.use("/api", agentRoutes);
 app.use("/api", recoveryQuestionsRoutes);
 app.use("/api", gamePackageRoutes);
 app.use("/api", rulePaymentRoutes);
+
+// Update
+app.use('/api', usersRoutes)
 
 // Error handling middleware
 app.use(errorHandler);

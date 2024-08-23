@@ -13,6 +13,7 @@ exports.verifyToken = async (req, res, next) => {
     }
 
     req.decoded = decoded;
+    req.user = decoded;
     next();
   });
 };
