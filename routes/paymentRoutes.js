@@ -27,6 +27,8 @@ router.get(
   validateGetPayment,
   paymentController.getPayment
 );
+
+router.get('/payments/today', paymentController.getTotalTransactionsToday);
 router.post(
   '/payments',
   verifyToken,

@@ -99,6 +99,25 @@ exports.getAllPayment = async (req, res) => {
   }
 };
 
+exports.getTotalTransactionsToday = async (req, res) => {
+  try {
+    const today = moment().startOf('day').toDate();
+    const tomorrow = moment(today).add(1, 'days').toDate();
+
+    const totalTransactionsToday = await Payment.count({
+      where: {
+        request_date: {
+          [Op.between]: [today, tomorrow],
+        },
+      },
+    });
+
+    res.status(200).json({ totalTransactionsToday });
+  } catch (error) {
+    res.status(400).send({ status: 'Bad Request', message: error.message });
+  }
+};
+
 exports.getPayment = async (req, res) => {
   try {
     const {
@@ -988,7 +1007,7 @@ exports.getTotalBalances = async (req, res) => {
     });
 
     const activeTotal = payments
-      .filter((item) => item.payment_status === 'Success')
+      .filter((item) => item.payment_status === 'Success' || item.payment_status === 'success')
       .reduce((total, item) => total + parseFloat(item.amount), 0);
 
     const pendingTotal = payments
