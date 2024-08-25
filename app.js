@@ -41,6 +41,7 @@ const corsOptions = {
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'http://localhost:3006',
+    'http://localhost:4001',
     'http://127.0.0.1:3006',
     'https://nerogames.id',
     'https://advance-genre-425305-g1.web.app',
