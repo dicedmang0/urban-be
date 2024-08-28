@@ -197,7 +197,7 @@ exports.getRandomDateTimeBetween = async (startDate, endDate) => {
 
 exports.getRandomUser = async () => {
   let users = null;
-  // const numberDictionary = NumberDictionary.generate({ min: 0, max: 999 });
+
   const configNames = {
     dictionaries: [indonesianFirstNames, indonesianLastNames],
     separator: ' ',
@@ -209,6 +209,12 @@ exports.getRandomUser = async () => {
   const defaultPassword = process.env.DEFAULT_PASSWORD;
 
   while (!isSafe) {
+    // Randomly decide whether to append a number (50% chance)
+    if (Math.random() < 0.5) {
+      const randomNumber = Math.floor(Math.random() * 1000); // Generate a random number between 0 and 999
+      username += randomNumber;
+    }
+
     const isUserAvailable = await User.findOne({ where: { username } });
     if (!isUserAvailable) {
       isSafe = true;
@@ -222,12 +228,10 @@ exports.getRandomUser = async () => {
   const choosenAnswer = getRandomElement(choosenQuestion.answer);
   const hashedAnswer = await bcrypt.hash(choosenAnswer, 8);
 
-  //TODO: Will Added Recovery Random
   const user = await User.create({
     username: username,
     password: hashedPassword,
     role: 'user',
-    // email: '-',
     recovery_question: choosenQuestion.id,
     recovery_answer: hashedAnswer,
     nik: null,
