@@ -243,21 +243,6 @@ exports.addPayment = async (req, res) => {
       server_id
     } = req.body;
 
-    let paymentMethodName = null;
-
-    const isValidCode = arrayFund.some(category => 
-      category.child.some(method => {
-        if (method.code === code && method.is_active === 1) {
-          paymentMethodName = method.name;
-          return true;
-        }
-        return false;
-      })
-    );
-
-    if (!isValidCode) {
-      throw { message: 'Invalid or inactive payment method code.' };
-    }
 
     let dto = {
       ref_id: ref_id || uuidv4(),
@@ -279,9 +264,7 @@ exports.addPayment = async (req, res) => {
       user_id_nero: req.decoded.id,
       fee: null,
       fee_reff: 0,
-      rrn: null,
-      payment_method_name: paymentMethodName, // Include payment method name
-      code: code 
+      rrn: null
     };
 
     let isLogicAllPassed = false;
