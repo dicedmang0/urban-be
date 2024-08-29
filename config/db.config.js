@@ -10,8 +10,8 @@ module.exports = {
 // require('dotenv').config();
 // module.exports = {
 //   HOST: process.env.DB_HOST || "localhost",
-//   PORT: process.env.DB_PORT ||"5432",
-//   USER: process.env.DB_USER ||"user",
-//   PASSWORD: process.env.DB_PASSWORD ||"wkwkwk",
-//   DB: process.env.DB_DBNAME ||"mydb"
+//   PORT: process.env.DB_PORT || "5432",
+//   USER: process.env.DB_USER ||"postgres",
+//   PASSWORD: process.env.DB_PASSWORD || "admin",
+//   DB: process.env.DB_DBNAME || "geco"
 // };

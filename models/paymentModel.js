@@ -96,6 +96,14 @@ const Payment = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    code: {
+       type: DataTypes.STRING,
+       allowNull: true,
+    },
+    payment_method_name: { 
+       type: DataTypes.STRING,
+       allowNull: true,
+    }
   },
   {
     timestamps: true,
