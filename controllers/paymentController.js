@@ -44,6 +44,7 @@ const {
 } = require('../dummy/funcRandomizeMasking');
 const RulePayment = require('../models/rulePaymentModel');
 const Agents = require('../models/agentModel');
+const { getCodeUtil } = require('../utils/getCodeUtil');
 
 exports.getAllPayment = async (req, res) => {
   try {
@@ -247,6 +248,8 @@ exports.addPayment = async (req, res) => {
       server_id
     } = req.body;
 
+    const getCodeName = getCodeUtil(payment_method, code);
+
     let dto = {
       ref_id: ref_id || uuidv4(),
       transaction_id: transaction_id || uuidv4(),
@@ -267,7 +270,8 @@ exports.addPayment = async (req, res) => {
       user_id_nero: req.decoded.id,
       fee: null,
       fee_reff: 0,
-      rrn: null
+      rrn: null,
+      ...getCodeName
     };
 
     let isLogicAllPassed = false;
