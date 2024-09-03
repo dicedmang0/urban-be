@@ -44,6 +44,7 @@ const {
 } = require('../dummy/funcRandomizeMasking');
 const RulePayment = require('../models/rulePaymentModel');
 const Agents = require('../models/agentModel');
+const { arrayFund } = require('../config/initialPayment');
 
 exports.getAllPayment = async (req, res) => {
   try {
@@ -168,8 +169,10 @@ exports.getPayment = async (req, res) => {
       queryOptions.where.ref_id = ref_id;
     }
 
-    if (nmid) {
-      queryOptions.where.nmid = nmid;
+    if (nmid === 'null') {
+      queryOptions.where.nmid = null;
+    } else if (nmid === 'notNull') {
+      queryOptions.where.nmid = { [Op.ne]: null }; // Sequelize operator to check for non-null
     }
 
     if (user_id_nero) {
@@ -222,14 +225,7 @@ exports.getPayment = async (req, res) => {
 
 exports.addPayment = async (req, res) => {
   try {
-    // TODO: Create CRUD Games To Describe API Using Uniplay or not, and using api games or not
-    // const gameHasToCheck = [
-    //   {name: "PUBG Mobile (Indonesia)", id:"PUBG Mobile (Indonesia)", checkUsername: false, useUniplay: true},
-    //   {name: "PUBG Mobile (Global)", id:"PUBG Mobile (Global)", checkUsername: false, useUniplay: true},
-    //   {name: "Mobile Legends", id:"mobilelegend", checkUsername: true, useUniplay: true}
-    // ];
-
-    // TODO: Create Payment For Minimum Prices Transactions, E-Wallet 1k, Qris 5k, VA 10k
+    
 
     const {
       ref_id,
@@ -246,6 +242,7 @@ exports.addPayment = async (req, res) => {
       package,
       server_id
     } = req.body;
+
 
     let dto = {
       ref_id: ref_id || uuidv4(),
