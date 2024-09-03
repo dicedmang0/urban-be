@@ -63,7 +63,7 @@ class SPNGATEWAY {
         } catch (error) {
             // await t.rollback()
             throw new Error(error); 
-        }
+        } finally {}
     }
 
     static createSignature(body) {
