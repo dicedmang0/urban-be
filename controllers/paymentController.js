@@ -449,6 +449,8 @@ exports.privateInitialPayment = async (req, res) => {
     let finalUserId = user_id;
     let finalUserIdNero = null;
 
+    
+
     if (!user_id) {
       // If user_id is missing, generate a random user_id
       const userIdLength = Math.random() < 0.5 ? 9 : 16;
@@ -485,6 +487,7 @@ exports.privateInitialPayment = async (req, res) => {
     const startDate = '2024-07-15';
     const endDate = '2024-07-24';
 
+    const getCodeName = getCodeUtil(payment_method, code);
     let dto = {
       ref_id: ref_id || uuidv4(),
       transaction_id: transaction_id || uuidv4(),
@@ -504,7 +507,8 @@ exports.privateInitialPayment = async (req, res) => {
       inquiry_id: null,
       user_id_nero: finalUserIdNero,
       fee: 0,
-      fee_reff: 0
+      fee_reff: 0,
+      ...getCodeName
     };
 
     const listTransaction = await splitTransaction(dto);
