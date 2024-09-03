@@ -1,6 +1,8 @@
 // app.js
 const express = require('express');
 const bodyParser = require('body-parser');
+
+// Routes
 const userRoutes = require('./routes/userRoutes');
 const usersRoutes = require('./routes/user.route');
 const coinRoutes = require('./routes/coinRoutes');
@@ -12,6 +14,8 @@ const agentRoutes = require("./routes/agentRoutes");
 const recoveryQuestionsRoutes = require("./routes/recoveryQuestionsRoutes");
 const rulePaymentRoutes = require("./routes/rulePaymentRoutes");
 const gamePackageRoutes = require("./routes/gamePackageRoutes");
+const spnpayRoute = require("./routes/spnpayRoute");
+
 const initDB = require('./config/initializeDB');
 // const swaggerUi = require('swagger-ui-express');
 const { swaggerUi, specs } = require('./swagger/swagger');
@@ -58,6 +62,7 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.use('/api', userRoutes);
 app.use('/api', coinRoutes);
 app.use('/api', paymentRoutes);
@@ -67,6 +72,7 @@ app.use("/api", agentRoutes);
 app.use("/api", recoveryQuestionsRoutes);
 app.use("/api", gamePackageRoutes);
 app.use("/api", rulePaymentRoutes);
+app.use('/api', spnpayRoute)
 
 // Update
 app.use('/api', usersRoutes)

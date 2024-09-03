@@ -29,12 +29,12 @@ router.get(
 );
 
 router.get('/payments/today', paymentController.getTotalTransactionsToday);
-router.post(
-  '/payments',
-  verifyToken,
-  validateAddPayment,
-  paymentController.addPayment
-);
+// router.post(
+//   '/payments',
+//   verifyToken,
+//   validateAddPayment,
+//   paymentController.addPayment
+// );
 router.put(
   '/payments',
   verifyToken,
