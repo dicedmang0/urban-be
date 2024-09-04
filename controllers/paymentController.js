@@ -170,7 +170,13 @@ exports.getPayment = async (req, res) => {
     }
 
     if (nmid) {
-      queryOptions.where.nmid = nmid;
+      if (nmid === 'null') {
+        queryOptions.where.nmid = { [Op.is]: null };
+      } else if (nmid === 'notNull') {
+        queryOptions.where.nmid = { [Op.ne]: null };
+      } else {
+        queryOptions.where.nmid = nmid;
+      }
     }
 
     if (user_id_nero) {
