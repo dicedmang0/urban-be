@@ -12,6 +12,10 @@ const agentRoutes = require("./routes/agentRoutes");
 const recoveryQuestionsRoutes = require("./routes/recoveryQuestionsRoutes");
 const rulePaymentRoutes = require("./routes/rulePaymentRoutes");
 const gamePackageRoutes = require("./routes/gamePackageRoutes");
+
+// admin routes
+const dashboardAdmin = require("./routes/admins/dashboardAdminRoute");
+
 const initDB = require('./config/initializeDB');
 // const swaggerUi = require('swagger-ui-express');
 const { swaggerUi, specs } = require('./swagger/swagger');
@@ -67,6 +71,7 @@ app.use("/api", agentRoutes);
 app.use("/api", recoveryQuestionsRoutes);
 app.use("/api", gamePackageRoutes);
 app.use("/api", rulePaymentRoutes);
+app.use('/api', dashboardAdmin)
 
 // Update
 app.use('/api', usersRoutes)
