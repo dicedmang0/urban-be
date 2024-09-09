@@ -1,12 +1,12 @@
-exports.paymentMethodSpnpay = (url) => {
-    switch(url) {
-        case 'E-Wallet':
+exports.urlPathSpnpay = (url) => {
+    switch(url?.toLowerCase()) {
+        case 'e-wallet':
             return 'e-wallet'
-        case 'Virtual Account':
+        case 'virtual account':
             return 'virtual-account'
-        case 'Qris':
+        case 'qris':
             return 'qris'
-        case 'Credit Card':
+        case 'credit card':
             return 'credit-card'
         default:
             return ''

@@ -3,8 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 // Routes
-const userRoutes = require('./routes/userRoutes');
-const usersRoutes = require('./routes/user.route');
+const userRoutes = require('./routes/users/userRoutes');
+const usersRoutes = require('./routes/users/user.route');
 const coinRoutes = require('./routes/coinRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const paymentMethodRoutes = require('./routes/paymentMethodRoutes');
@@ -14,6 +14,11 @@ const agentRoutes = require("./routes/agentRoutes");
 const recoveryQuestionsRoutes = require("./routes/recoveryQuestionsRoutes");
 const rulePaymentRoutes = require("./routes/rulePaymentRoutes");
 const gamePackageRoutes = require("./routes/gamePackageRoutes");
+const spnpayRoute = require("./routes/payments/spnpayRoute");
+
+// admin routes
+const dashboardAdmin = require("./routes/admins/dashboardAdminRoute");
+
 const initDB = require('./config/initializeDB');
 // const swaggerUi = require('swagger-ui-express');
 const { swaggerUi, specs } = require('./swagger/swagger');
@@ -70,6 +75,8 @@ app.use("/api", agentRoutes);
 app.use("/api", recoveryQuestionsRoutes);
 app.use("/api", gamePackageRoutes);
 app.use("/api", rulePaymentRoutes);
+app.use('/api', spnpayRoute)
+app.use('/api', dashboardAdmin)
 
 // Update
 app.use('/api', usersRoutes)

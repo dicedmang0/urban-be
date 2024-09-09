@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const Payment = require('../models/paymentModel');
-const { paymentMethodSpnpay } = require('../helpers/paymentMethodSpnpay');
+const { urlPathSpnpay } = require('../helpers/paymentMethodSpnpay');
 const sequelize = require('../config/database');
 const { default: axios } = require('axios');
 const { bodyMethodSpnpay } = require('../helpers/bodyMethodSpnpay');
@@ -14,34 +14,21 @@ class SPNGATEWAY {
         }
     }
 
-
     static async createTrxPayment(body) {
         try {
-            // const t = await sequelize.transaction();
-
-            console.log('starttt....');
-            
-            
             const credential = this.credential()
 
-            console.log('credential', credential);
-            
-
             // get url payment method
-            const paymentMethod = paymentMethodSpnpay(body?.payment_method);
-            console.log('paymentMethod', paymentMethod);
+            const getPathUrl = urlPathSpnpay(body?.payment_method);
 
-            // create body and signature
+            // create body spnpay and signature
             const bodyMethod = bodyMethodSpnpay(body)
-            console.log('bodyMethod', bodyMethod);
             const signature = this.createSignature(bodyMethod);
-            console.log('signature', signature);
-
 
             const config = {
-                method: 'post',
+                method: 'POST',
                 maxBodyLength: Infinity,
-                url: `${credential.SPNPAY_ENDPOINT}/${paymentMethod}`,
+                url: `${credential.SPNPAY_ENDPOINT}/${getPathUrl}`,
                 headers: {
                     'On-Key': credential.PNPAY_SECRET_KEY,
                     'On-Token': credential.PNPAY_TOKEN,
@@ -50,31 +37,55 @@ class SPNGATEWAY {
                 data: bodyMethod
             };
 
-            // const sendPay = await axios(config)
+            const sendPay = await axios(config);
 
+            const resultSpnPay = await sendPay?.data?.responseData;
 
-            // await Payment.create({
-
-            // }, { transaction: t })
-
-            // await t.commit();
-
-            return config;
+            return resultSpnPay;
         } catch (error) {
-            // await t.rollback()
-            throw new Error(error); 
-        } finally {}
+            console.log("errorrrr", error?.response?.data ?? error);
+            throw new Error(error?.response?.data ?? error); 
+        }
     }
 
     static createSignature(body) {
-        const credential = this.credential()
-        console.log("dataaaaa", credential.PNPAY_TOKEN + JSON.stringify(body));
-
-
-        return crypto.createHmac('sha512', credential.PNPAY_TOKEN).update(JSON.stringify(body)).digest('hex');
+        const credential = this.credential();
+        const key = credential.PNPAY_SECRET_KEY;
+        const token = credential.PNPAY_TOKEN;
+    
+        const dataToSign = key + JSON.stringify(body).replace(/\//g, '\\/');
+    
+        return crypto.createHmac('sha512', token).update(dataToSign).digest('hex');
     }
+    
 }
 
 module.exports = SPNGATEWAY;
 
 // example encode SC-KRW9ESNZUUKQXOOX{"reference":"12345678","bankCode":"014","viewName":"Guntur Brahmaputra","type":"ClosedAmount","amount":10000,"additionalInfo":{"callback":"https:\/\/google.com"}}
+
+// example response 
+// {
+//     "responseCode": 200,
+//     "responseMessage": "success",
+//     "responseData": {
+//         "id": "cef6ebc5-3ab4-4176-9e90-432280d33cbb",
+//         "merchantRef": "asdsad",
+//         "status": "pending",
+//         "feePayer": "merchant",
+//         "amount": 10000,
+//         "fee": 5000,
+//         "totalAmount": 10000,
+//         "expiredDate": "2024-09-07T15:04:28+07:00",
+//         "paidDate": null,
+//         "settleDate": "2024-09-07T14:34:28+07:00",
+//         "additionalInfo": {
+//             "callback": "http://your-site-callback.com/notify"
+//         },
+//         "virtualAccount": {
+//             "bankCode": "014",
+//             "vaNumber": "821881029905",
+//             "viewName": "Mr. Gentur"
+//         }
+//     }
+// }
