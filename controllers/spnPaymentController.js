@@ -6,6 +6,7 @@ const SPNGATEWAY = require("../services/spnpayGateway");
 const { getCodeUtil } = require("../utils/getCodeUtil");
 const Payment = require("../models/paymentModel");
 const { getInquiryDTU, postInquiryPayment } = require("../services/unipinGateway");
+const { getStatusPayment } = require("../utils/getStatusPaymentUtil");
 
 
 exports.paymentTrx = async (req, res, next) => {
@@ -115,7 +116,7 @@ exports.checkTransaction = async (req, res, next) => {
     try {
         const result = await SPNGATEWAY.checkTransaction(req.body?.id);
 
-        const payment_status = this.statusPayment(result?.status);
+        const payment_status = getStatusPayment(result?.status);
 
         await Payment.update({ payment_status }, { where: { transaction_id: result?.id } });
 
@@ -135,7 +136,7 @@ exports.callBackSpnPay = async(req, res, next) => {
         console.log("Dataaaa callbackkkk.............", req.body);
         const newData = req.body;
 
-        const payment_status = this.statusPayment(newData?.responseData?.status)
+        const payment_status = getStatusPayment(newData?.responseData?.status)
 
         await Payment.update({ payment_status }, { where: { transaction_id: newData?.responseData?.id } })
         return res.status(201).json({ status: true, message: 'success' })
@@ -143,12 +144,3 @@ exports.callBackSpnPay = async(req, res, next) => {
         return next(error)
     }
 }
-
-exports.statusPayment = (status) => {
-    switch(status) {
-        case 'success': return "Success";
-        case 'pending': return "Pending";
-        case 'failed': return "Failed"
-    }
-}
-
