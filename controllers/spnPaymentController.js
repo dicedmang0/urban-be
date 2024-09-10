@@ -7,6 +7,7 @@ const { getCodeUtil } = require("../utils/getCodeUtil");
 const Payment = require("../models/paymentModel");
 const { getInquiryDTU, postInquiryPayment } = require("../services/unipinGateway");
 const { getStatusPayment } = require("../utils/getStatusPaymentUtil");
+const { checkUserIdGames } = require("../services/apigamesGateway");
 
 
 exports.paymentTrx = async (req, res, next) => {
@@ -62,6 +63,12 @@ exports.paymentTrx = async (req, res, next) => {
         // if use uniplay and check game, choose package
         let payloadUniplay = {}
         if (isGameHasToCheck?.use_uniplay) {
+            // check username is valid
+            if (isGameHasToCheck?.check_username) {
+                const response = await checkUserIdGames(dto);
+                if (response.status == 0 || !response.data.is_valid) throw new Error('Username invalid!'); 
+            }
+
             const responseDTU = await getInquiryDTU();
             const chooseGame = responseDTU?.list_dtu?.find((val) => val?.name === isGameHasToCheck?.title);
             const checkListDenom = chooseGame?.denom?.find((val) => val?.package === data?.package);
