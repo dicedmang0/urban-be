@@ -15,56 +15,82 @@ class SPNGATEWAY {
     }
 
     static async createTrxPayment(body) {
-        try {
-            const credential = this.credential()
+        const credential = this.credential()
 
-            // get url payment method
-            const getPathUrl = urlPathSpnpay(body?.payment_method);
+        // get url payment method
+        const getPathUrl = urlPathSpnpay(body?.payment_method);
 
-            // create body spnpay and signature
-            const bodyMethod = bodyMethodSpnpay(body)
-            const signature = this.createSignature(bodyMethod);
+        // create body spnpay and signature
+        const bodyMethod = bodyMethodSpnpay(body)
+        const signature = this.createSignatureBody(bodyMethod);
 
-            const config = {
-                method: 'POST',
-                maxBodyLength: Infinity,
-                url: `${credential.SPNPAY_ENDPOINT}/${getPathUrl}`,
-                headers: {
-                    'On-Key': credential.PNPAY_SECRET_KEY,
-                    'On-Token': credential.PNPAY_TOKEN,
-                    'On-Signature': signature
-                },
-                data: bodyMethod
-            };
+        const config = {
+            method: 'POST',
+            maxBodyLength: Infinity,
+            url: `${credential.SPNPAY_ENDPOINT}/${getPathUrl}`,
+            headers: {
+                'On-Key': credential.PNPAY_SECRET_KEY,
+                'On-Token': credential.PNPAY_TOKEN,
+                'On-Signature': signature
+            },
+            data: bodyMethod
+        };
 
-            const sendPay = await axios(config);
+        const sendPay = await axios(config);
 
-            const resultSpnPay = await sendPay?.data?.responseData;
+        const resultSpnPay = await sendPay?.data?.responseData;
 
-            return resultSpnPay;
-        } catch (error) {
-            console.log("errorrrr", error?.response?.data ?? error);
-            throw new Error(error?.response?.data ?? error); 
-        }
+        return resultSpnPay;
     }
 
-    static createSignature(body) {
+    static async checkTransaction(id) {
+        const credential = this.credential();
+        const signature = this.generateSignatureToken();
+
+        const config = {
+            method: 'GET',
+            maxBodyLength: Infinity,
+            url: `${credential.SPNPAY_ENDPOINT}/check/${id}`,
+            headers: {
+                'On-Key': credential.PNPAY_SECRET_KEY,
+                'On-Token': credential.PNPAY_TOKEN,
+                'On-Signature': signature
+            },
+        };
+
+        const sendPay = await axios(config);
+
+        const resultSpnPay = await sendPay?.data?.responseData;
+
+        return resultSpnPay;
+    }
+
+    static createSignatureBody(body) {
         const credential = this.credential();
         const key = credential.PNPAY_SECRET_KEY;
         const token = credential.PNPAY_TOKEN;
-    
+
         const dataToSign = key + JSON.stringify(body).replace(/\//g, '\\/');
-    
+
         return crypto.createHmac('sha512', token).update(dataToSign).digest('hex');
     }
-    
+
+    static generateSignatureToken() {
+        const credential = this.credential();
+        const key = credential.PNPAY_SECRET_KEY;
+        const token = credential.PNPAY_TOKEN;
+
+        return crypto.createHmac('sha512', token)
+            .update(key)
+            .digest('hex');
+    }
 }
 
 module.exports = SPNGATEWAY;
 
 // example encode SC-KRW9ESNZUUKQXOOX{"reference":"12345678","bankCode":"014","viewName":"Guntur Brahmaputra","type":"ClosedAmount","amount":10000,"additionalInfo":{"callback":"https:\/\/google.com"}}
 
-// example response 
+// example response
 // {
 //     "responseCode": 200,
 //     "responseMessage": "success",

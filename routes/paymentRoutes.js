@@ -32,7 +32,7 @@ router.get('/payments/today', paymentController.getTotalTransactionsToday);
 router.post(
   '/payments',
   verifyToken,
-  // validateAddPayment,
+  validateAddPayment,
   paymentController.addPayment
 );
 router.put(
