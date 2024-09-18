@@ -1,9 +1,9 @@
 // routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/userController');
-const verifyToken = require('../middlewares/authJwt').verifyToken;
-const authController = require('../controllers/authController');
+const userController = require('../../controllers/userController');
+const verifyToken = require('../../middlewares/authJwt').verifyToken;
+const authController = require('../../controllers/authController');
 const {
   validateRegister,
   validateLogin,
@@ -16,7 +16,7 @@ const {
   validateAnswerCheck,
   validateUserCheck,
   validateUpdateProfileUsers
-} = require('../middlewares/validatorUsers');
+} = require('../../middlewares/validatorUsers');
 
 router.get('/all-users', verifyToken, userController.getUsersAll);
 router.get('/users', verifyToken, validateGetUsers, userController.getUsers);
