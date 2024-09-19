@@ -15,8 +15,7 @@ exports.getInquirySaldo = async () => {
     if(responseToken.status != 200) {
       throw responseToken
     }
-
-    const response = await API.postUnipin(`/inquiry-saldo`, {}, responseToken.access_token);
+    const response = await API.postUnipin(`/inquiry-saldo`, {}, responseToken?.access_token);
     return response;
   } catch (error) {
     throw { message: error.message };

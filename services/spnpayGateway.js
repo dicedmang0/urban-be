@@ -36,6 +36,9 @@ class SPNGATEWAY {
             data: bodyMethod
         };
 
+        console.log(config);
+        
+
         const sendPay = await axios(config);
 
         const resultSpnPay = await sendPay?.data?.responseData;
