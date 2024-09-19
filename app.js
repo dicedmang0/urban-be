@@ -53,7 +53,8 @@ const corsOptions = {
     'https://nerogames.id',
     'https://advance-genre-425305-g1.web.app',
     'https://dashboard.nerogames.id',
-    'https://nero-game-git-dev-dicedmang0s-projects.vercel.app'
+    'https://nero-game-git-dev-dicedmang0s-projects.vercel.app',
+    'https://urban-umber-alpha.vercel.app'
   ], // Replace with your desired origin & add FE URL
   methods: 'GET,PUT,POST,DELETE',
   allowedHeaders: ['Content-Type', 'X-Access-Token']

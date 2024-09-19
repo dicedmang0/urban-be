@@ -46,7 +46,7 @@ exports.paymentTrx = async (req, res, next) => {
             const getAgent = await Agents.findOne({ where: { id: user_agent?.agent_id } });
 
             if (getAgent) {
-                data.fee_reff = Math.floor((priceWithFee * getAgent?.fee ?? 0) / 100);
+                data.fee_reff = Math.floor((newPriceWithFee * getAgent?.fee ?? 0) / 100);
             }
         }
 
@@ -65,6 +65,7 @@ exports.paymentTrx = async (req, res, next) => {
         let payloadUniplay = {}
         if (isGameHasToCheck?.use_uniplay) {
             // check username is valid
+            
             if (isGameHasToCheck?.check_username) {
                 const response = await checkUserIdGames(data);
                 if (response.status == 0 || !response.data.is_valid) throw new Error('Username invalid!');
