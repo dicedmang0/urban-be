@@ -1,7 +1,14 @@
 const getGameModel = require('../models/gameModel');
 
 // Define game model here
-const gameIds = ['idlemarket', 'sugarpuff', 'bitcoinclicker', 'jetpack'];
+const gameIds = [
+  'idlemarket',
+  'sugarpuff',
+  'bitcoinclicker',
+  'jetpack',
+  'warriorvsevil',
+  'ninjafruit'
+];
 
 const initGameModel = async () => {
   try {
