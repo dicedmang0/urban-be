@@ -4,6 +4,7 @@ const PaymentMethodDetail = require('../models/paymentMethodDetailModel');
 const PaymentMethod = require('../models/paymentMethodModel');
 const AgentDetail = require('../models/agentDetailModel');
 const moment = require('moment');
+const momenttz = require('moment-timezone');
 const { Op } = require('sequelize'); // Import Op from Sequelize
 const { v4: uuidv4 } = require('uuid');
 const {
@@ -56,12 +57,12 @@ exports.getAllPayment = async (req, res) => {
     };
 
     if (startDate && endDate) {
-      const endDatePlusOne = new Date(
-        new Date(endDate).setDate(new Date(endDate).getDate() + 1)
-      );
+      // Convert input dates to Asia/Jakarta timezone and set time for start and end of the day
+      const startOfDay = momenttz.tz(startDate, 'Asia/Jakarta').startOf('day').toDate();
+      const endOfDay = momenttz.tz(endDate, 'Asia/Jakarta').endOf('day').toDate();
 
       queryOptions.where.request_date = {
-        [Op.between]: [new Date(startDate), endDatePlusOne]
+        [Op.between]: [startOfDay, endOfDay]
       };
     }
 
@@ -71,14 +72,18 @@ exports.getAllPayment = async (req, res) => {
     let totalDataEntries = 0;
 
     if (payment.length) {
+      // Group by just the date (YYYY-MM-DD)
       const formattedData = payment.reduce((acc, item) => {
-        const date = moment(item.request_date).format('YYYY-MM-DD');
+        // Convert request_date to 'YYYY-MM-DD' format in Jakarta timezone (remove time part)
+        const date = momenttz.tz(item.request_date, 'Asia/Jakarta').format('YYYY-MM-DD');
+        
         if (!acc[date]) {
           acc[date] = {
             date,
             data: []
           };
         }
+
         acc[date].data.push(item);
         return acc;
       }, {});
@@ -99,6 +104,7 @@ exports.getAllPayment = async (req, res) => {
     res.status(400).send({ status: 'Bad Request', message: error.message });
   }
 };
+
 
 exports.getTotalTransactionsToday = async (req, res) => {
   try {
