@@ -19,6 +19,7 @@ const {
   getCheckOrder
 } = require('../services/unipinGateway');
 const verifyToken = require('../middlewares/authJwt').verifyToken;
+const { simulateMultiplePayments } = require('../controllers/paymentController');
 
 router.get('/all-payments', verifyToken, paymentController.getAllPayment);
 router.get(
@@ -42,7 +43,17 @@ router.put(
   paymentController.updatePayment
 );
 
+// router.post('/simulate-payment', paymentController.simulatePayment);
 // TODO: Swagger For Checking Transactions
+
+router.get('/simulate-transactions', async (req, res) => {
+  try {
+    await simulateMultiplePayments(50);  // Simulate 50 transactions
+    res.status(200).send('50 transactions created and payment statuses are being updated.');
+  } catch (error) {
+    res.status(500).send('An error occurred while simulating payments.');
+  }
+});
 
 router.get(
   '/check-payments/:payment_id',

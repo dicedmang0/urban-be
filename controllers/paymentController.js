@@ -46,6 +46,11 @@ const {
 const RulePayment = require('../models/rulePaymentModel');
 const Agents = require('../models/agentModel');
 const { getCodeUtil } = require('../utils/getCodeUtil');
+const dummyPackage = require('../dummy/dummyUniplay');
+const updateSimulatedPaymentStatus = exports.updateSimulatedPaymentStatus;
+
+
+
 
 exports.getAllPayment = async (req, res) => {
   try {
@@ -1061,6 +1066,125 @@ exports.checkOrderOnUniPlay = async (req, res) => {
   }
 };
 
+const randomInterval = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
+exports.simulateMultiplePayments = async (numberOfTransactions) => {
+  try {
+    for (let i = 0; i < numberOfTransactions; i++) {
+      let finalName = null;
+      let finalUserId = null;
+      let finalUserIdNero = null;
+
+      const ref_id = uuidv4();
+      const transaction_id = uuidv4();
+      const userIdLength = Math.random() < 0.5 ? 9 : 16;
+      finalUserId = Math.floor(Math.random() * Math.pow(10, userIdLength))
+        .toString()
+        .padStart(userIdLength, '0');
+
+      const randomUser = await getRandomUser();
+      finalUserIdNero = randomUser.id;
+
+      const numberDictionary = NumberDictionary.generate({
+        min: 100,
+        max: 999
+      });
+      const configNames = {
+        dictionaries: [adjectives, names, numberDictionary]
+      };
+      finalName = uniqueNamesGenerator(configNames);
+
+      const payment_method = "QRIS";
+      const nmid = "simulatedMerchantID";
+      const phone_number = await getRandomIndonesianPhoneNumber();
+
+      const selectedGame = getRandomElement(dummyPackage.dummyUniplay.response.list_dtu);
+      const selectedPackage = getRandomElement(selectedGame.denom);
+      const amount = parseInt(selectedPackage.price);
+      const packageName = selectedPackage.package;
+
+      console.log('Selected game:', selectedGame);
+      console.log('Selected package:', selectedPackage);
+
+      let dto = {
+        ref_id: ref_id,
+        transaction_id: transaction_id,
+        amount: amount,
+        user_id: finalUserId,
+        name: finalName,
+        nmid: nmid,
+        payment_method: payment_method,
+        phone_number: phone_number,
+        request_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+        payment_status: 'Pending', // Initial status
+        package: packageName,
+        game_id: selectedGame.name,
+        fee: null,
+        fee_reff: null,
+        inquiry_id: null,
+        user_id_nero: finalUserIdNero,
+        rrn: null,
+        payment_date: null,
+        server_id: null,
+      };
+
+      // Create the transaction
+      console.log(`Creating transaction ${i + 1} of ${numberOfTransactions}...`);
+      await Payment.create(dto);
+      console.log(`Transaction created with transaction_id: ${transaction_id}`);
+
+      // Simulate status update after a random delay
+      const updateInterval = randomInterval(60 * 1000, 3 * 60 * 1000);
+      setTimeout(async () => {
+        try {
+          console.log(`Attempting to update status for transaction_id: ${transaction_id}`);
+          
+          // 20% chance for 'Pending', otherwise 'Success'
+          const paymentStatus = Math.random() < 0.2 ? 'Pending' : 'Success';
+          
+          await exports.updateSimulatedPaymentStatus(transaction_id, paymentStatus);
+          
+        } catch (error) {
+          console.error(`Error updating transaction ${transaction_id}:`, error.message);
+        }
+      }, updateInterval);
+    }
+
+    console.log(`${numberOfTransactions} transactions have been created and their statuses are being updated.`);
+  } catch (error) {
+    console.error('Error in simulateMultiplePayments:', error.message);
+  }
+};
+
+// Call the function to simulate 50 transactions
+
+
+
+exports.updateSimulatedPaymentStatus = async (transaction_id, status) => {
+  try {
+    console.log(`Received transaction_id: ${transaction_id} for status update`);
+
+    const simulatedPayment = await Payment.findOne({ where: { transaction_id: transaction_id } });
+
+    if (!simulatedPayment) {
+      console.error(`Simulated payment with transaction_id ${transaction_id} not found.`);
+      return;
+    }
+
+    simulatedPayment.payment_status = status;
+    await simulatedPayment.save();
+
+    console.log(`Payment status updated successfully for transaction_id ${transaction_id} to ${status}.`);
+  } catch (error) {
+    console.error(`Error updating payment status for transaction_id ${transaction_id}:`, error.message);
+  }
+};
+
+
+
+
 const checkCronosPaymentStatus = async (object) => {
   try {
     const response = await cronosSingleTransactions(object);
@@ -1254,3 +1378,8 @@ const sendCronosGateway = async (object) => {
     throw error;
   }
 };
+
+function getRandomElement(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
