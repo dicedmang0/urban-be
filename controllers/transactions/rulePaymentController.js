@@ -1,5 +1,5 @@
 // controllers/userController.js
-const RulePayment = require('../models/rulePaymentModel');
+const RulePayment = require('../../models/rulePaymentModel');
 
 exports.getRulePayment = async (req, res) => {
   try {

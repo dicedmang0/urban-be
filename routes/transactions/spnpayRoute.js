@@ -1,5 +1,5 @@
 const express = require('express');
-const spnController = require('../../controllers/spnPaymentController');
+const spnController = require('../../controllers/transactions/spnPaymentController');
 const { verifyToken } = require('../../middlewares/authJwt');
 const router = express.Router();
 

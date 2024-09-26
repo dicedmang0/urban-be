@@ -1,4 +1,4 @@
-const { arrayFund } = require("../config/initialPayment")
+const { arrayFund } = require("../../config/initialPayment")
 
 exports.getCodeUtil = (payment_method, code) => {
     const getPaymentMethod = arrayFund.find((val) => val?.name?.toLowerCase() === payment_method?.toLowerCase());

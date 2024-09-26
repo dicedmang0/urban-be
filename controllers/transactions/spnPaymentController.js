@@ -1,15 +1,15 @@
-const Agents = require("../models/agentModel");
-const GamePackage = require("../models/gamePackageModel");
-const RulePayment = require("../models/rulePaymentModel");
-const User = require("../models/userModel");
-const SPNGATEWAY = require("../services/spnpayGateway");
-const { getCodeUtil } = require("../utils/getCodeUtil");
-const Payment = require("../models/paymentModel");
-const { getInquiryDTU, postInquiryPayment, postConfirmPayment } = require("../services/unipinGateway");
-const { getStatusPayment } = require("../utils/getStatusPaymentUtil");
-const { checkUserIdGames } = require("../services/apigamesGateway");
-const sequelize = require("../config/database");
-const gameController = require('./gameController');
+const Agents = require("../../models/agentModel");
+const GamePackage = require("../../models/gamePackageModel");
+const RulePayment = require("../../models/rulePaymentModel");
+const User = require("../../models/userModel");
+const SPNGATEWAY = require("../../services/spnpayGateway");
+const Payment = require("../../models/paymentModel");
+const { getInquiryDTU, postInquiryPayment, postConfirmPayment } = require("../../services/unipinGateway");
+const { getStatusPayment } = require("../../libs/utils/getStatusPaymentUtil");
+const { checkUserIdGames } = require("../../services/apigamesGateway");
+const sequelize = require("../../config/database");
+const gameController = require('../gameController');
+const { getCodeUtil } = require("../../libs/utils/getCodeUtil");
 
 exports.paymentTrx = async (req, res, next) => {
     try {
@@ -26,7 +26,7 @@ exports.paymentTrx = async (req, res, next) => {
             ...req.body,
             ...getCodeName,
             name: req.body?.name ?? checkUser?.username ?? "-",
-            user_id_nero: user?.id,
+            user_id_nero: user?.id, 
             ref_id: req?.body?.ref_id,
             payment_status: 'Pending',
             fee_reff: 0,
@@ -117,8 +117,8 @@ exports.paymentTrx = async (req, res, next) => {
             data: result
         })
     } catch (error) {
-        console.log("errorrrr", error?.response?.data ?? error);
-        return next(error?.response?.data ?? error)
+        console.log("errorrrr", error?.message ?? error);
+        return next(error)
     }
 }
 

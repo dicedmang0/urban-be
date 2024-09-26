@@ -1,34 +1,15 @@
 // app.js
 const express = require('express');
 const bodyParser = require('body-parser');
-
-// Routes
-const userRoutes = require('./routes/users/userRoutes');
-const usersRoutes = require('./routes/users/user.route');
-const coinRoutes = require('./routes/coinRoutes');
-const paymentRoutes = require('./routes/paymentRoutes');
-const paymentMethodRoutes = require('./routes/paymentMethodRoutes');
-const gameRoutes = require('./routes/gameRoutes');
-const sequelize = require('./config/database');
-const agentRoutes = require("./routes/agentRoutes");
-const recoveryQuestionsRoutes = require("./routes/recoveryQuestionsRoutes");
-const rulePaymentRoutes = require("./routes/rulePaymentRoutes");
-const gamePackageRoutes = require("./routes/gamePackageRoutes");
-const spnpayRoute = require("./routes/payments/spnpayRoute");
-
-// admin routes
-const dashboardAdmin = require("./routes/admins/dashboardAdminRoute");
-
-const initDB = require('./config/initializeDB');
-// const swaggerUi = require('swagger-ui-express');
-const { swaggerUi, specs } = require('./swagger/swagger');
-// const swaggerDocument = require('./swagger/swagger.json');
-const errorHandler = require('./middlewares/errorHandler');
-const swaggerJsdoc = require('swagger-jsdoc');
 const fs = require('fs');
 const dotenv = require('dotenv');
 const cors = require('cors');
+
+const sequelize = require('./config/database');
+const initDB = require('./config/initializeDB');
 const { initGameModel } = require('./config/initializeGameModel');
+const { notFound, globalErrorHandler } = require('./middlewares/globalErrorHandler');
+const router = require('./routes');
 
 const ENV = process.env.NODE_ENV || 'development';
 const ENV_FILE = `.env.${ENV}`;
@@ -64,26 +45,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.use('/api', userRoutes);
-app.use('/api', coinRoutes);
-app.use('/api', paymentRoutes);
-app.use('/api', paymentMethodRoutes);
-app.use('/api', gameRoutes);
-app.use("/api", agentRoutes);
-app.use("/api", recoveryQuestionsRoutes);
-app.use("/api", gamePackageRoutes);
-app.use("/api", rulePaymentRoutes);
-app.use('/api', spnpayRoute)
-app.use('/api', dashboardAdmin)
+router(app)
 
-// Update
-app.use('/api', usersRoutes)
-
-// Error handling middleware
-app.use(errorHandler);
+// global error handlers
+app.use(notFound);
+app.use(globalErrorHandler);
 
 // Initialize the database and start the server.
 const startServer = async () => {

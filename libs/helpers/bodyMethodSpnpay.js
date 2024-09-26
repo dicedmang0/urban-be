@@ -17,7 +17,7 @@ exports.bodyMethodSpnpay = (body) => {
                     callback: callback_url,
                 }
             }
-        case 'virtual account':
+        case 'virtual-account':
             return {
                 bankCode: body?.code,
                 singleUse: true,
@@ -41,7 +41,7 @@ exports.bodyMethodSpnpay = (body) => {
                 }
             }
             
-        case 'credit card':
+        case 'credit-card':
             return {
                 reference: uuidv4(),
                 phoneNumber: body?.phone_number,

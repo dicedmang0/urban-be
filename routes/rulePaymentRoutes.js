@@ -1,7 +1,7 @@
 // routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
-const rulePayment = require('../controllers/rulePaymentController');
+const rulePayment = require('../controllers/transactions/rulePaymentController');
 const verifyToken = require('../middlewares/authJwt').verifyToken;
 
 // TODO: Swagger For This Rules

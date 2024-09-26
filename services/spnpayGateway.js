@@ -1,9 +1,9 @@
 const crypto = require('crypto');
 const Payment = require('../models/paymentModel');
-const { urlPathSpnpay } = require('../helpers/paymentMethodSpnpay');
+const { urlPathSpnpay } = require('../libs/helpers/paymentMethodSpnpay');
 const sequelize = require('../config/database');
 const { default: axios } = require('axios');
-const { bodyMethodSpnpay } = require('../helpers/bodyMethodSpnpay');
+const { bodyMethodSpnpay } = require('../libs/helpers/bodyMethodSpnpay');
 
 class SPNGATEWAY {
     static credential() {
@@ -35,7 +35,7 @@ class SPNGATEWAY {
             },
             data: bodyMethod
         };
-
+        
         console.log(config);
         
 

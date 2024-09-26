@@ -45,7 +45,7 @@ const {
 } = require('../dummy/funcRandomizeMasking');
 const RulePayment = require('../models/rulePaymentModel');
 const Agents = require('../models/agentModel');
-const { getCodeUtil } = require('../utils/getCodeUtil');
+const { getCodeUtil } = require('../libs/utils/getCodeUtil');
 
 exports.getAllPayment = async (req, res) => {
   try {
