@@ -5,5 +5,6 @@ const trxController = require('../../controllers/transactions/transactionControl
 const { verifyToken } = require('../../middlewares/authJwt');
 
 router.post('/top-up', verifyToken, trxController.topUp)
+router.post('/callback-trx', trxController.callback)
 
 module.exports = router;

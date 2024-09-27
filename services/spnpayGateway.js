@@ -34,10 +34,7 @@ class SPNGATEWAY {
                 'On-Signature': signature
             },
             data: bodyMethod
-        };
-        
-        console.log(config);
-        
+        };        
 
         const sendPay = await axios(config);
 
