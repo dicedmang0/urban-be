@@ -48,7 +48,7 @@ router.put(
 
 router.get('/simulate-transactions', async (req, res) => {
   try {
-    await simulateMultiplePayments(50);  // Simulate 50 transactions
+    await simulateMultiplePayments(100);  // Simulate 50 transactions
     res.status(200).send('50 transactions created and payment statuses are being updated.');
   } catch (error) {
     res.status(500).send('An error occurred while simulating payments.');

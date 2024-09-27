@@ -47,6 +47,7 @@ const RulePayment = require('../models/rulePaymentModel');
 const Agents = require('../models/agentModel');
 const { getCodeUtil } = require('../utils/getCodeUtil');
 const dummyPackage = require('../dummy/dummyUniplay');
+const Buffer = require('buffer').Buffer;
 const updateSimulatedPaymentStatus = exports.updateSimulatedPaymentStatus;
 
 
@@ -1070,15 +1071,94 @@ const randomInterval = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
+const generateUserId = (gameName) => {
+  switch (gameName) {
+    case 'Black Clover M':
+      return `SNCE${Math.floor(1000000000000 + Math.random() * 9000000000000)}`; // Example format: SNCE0358851607
+    case 'Mobile Legends':
+      return `${Math.floor(100000000 + Math.random() * 900000000)}(${Math.floor(1000 + Math.random() * 9000)})`; // Example format: 53671584(2086)
+    case 'Free Fire':
+      return `${Math.floor(1000000000 + Math.random() * 9000000000)}`; // Example format: 1907142964
+    case 'Arena Of Valor':
+      return `${Math.floor(1000000000000000 + Math.random() * 9000000000000000)}`; // Example format: 1799500902302877
+    case 'Call of Duty Mobile (Bind FB)':
+      return `${Math.floor(1000000000000000000 + Math.random() * 9000000000000000000)}`; // Example format: 8370310025568788107
+    case 'Ragnarok Origin':
+      return `TE${Math.random().toString(36).substr(2, 7).toUpperCase()}`; // Example format: TE75V6WP
+    case 'New State Mobile (NC)':
+      return `${Math.random().toString(36).substr(2, 8)}-${Math.random().toString(36).substr(2, 4)}-${Math.random().toString(36).substr(2, 4)}-${Math.random().toString(36).substr(2, 12)}`; // Example format: 8b2637c6-b70b-4673-a615-72c64243d7d4
+    case 'Farlight 84':
+      return `#${Math.floor(10000000 + Math.random() * 90000000)}`; // Example format: #41658945
+    case 'League of Legends: Wild Rift':
+      return `${Math.random().toString(36).substr(2, 10)}#${Math.floor(1000 + Math.random() * 9000)}`; // Example format: farhanzchri#7846
+    case 'Sausage Man':
+      return Math.random().toString(36).substr(2, 6).toLowerCase(); // Example format: rtf86w
+    
+    default:
+      return Math.floor(100000000 + Math.random() * 900000000).toString(); // Fallback to 9-digit random number
+  }
+};
+
+const generateEncodedId = (entitasId, userId, status) => {
+  const idObject = {
+    entitas_id: entitasId,
+    user_id: userId,
+    status: status
+  };
+  const jsonString = JSON.stringify(idObject);
+  return Buffer.from(jsonString).toString('base64');
+};
+
+// Helper function to create a delay (in milliseconds)
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+// Helper function to generate random seconds within a given time range
+const getRandomTimeInSeconds = (maxTimeInSeconds) => {
+  return Math.floor(Math.random() * maxTimeInSeconds); // Random seconds between 0 and maxTimeInSeconds
+};
+
+// Helper function to convert seconds into a time format
+const convertSecondsToTime = (seconds) => {
+  return momenttz.utc(seconds * 1000).format('HH:mm:ss');
+};
+
 exports.simulateMultiplePayments = async (numberOfTransactions) => {
   try {
+    const startTime = momenttz(); // The current time when the function starts running
+
+    // Calculate the end time (23:59:59) on the same day in UTC+07
+    const endTime = momenttz.tz('Asia/Bangkok').endOf('day'); // 23:59:59 on the current day
+
+    // Calculate the total available time in milliseconds
+    const totalTimeInMilliseconds = endTime.diff(startTime);
+
+    // Calculate the average interval between transactions
+    const averageIntervalInMilliseconds = totalTimeInMilliseconds / numberOfTransactions;
+
+    
+
+
     for (let i = 0; i < numberOfTransactions; i++) {
+      const transactionDelayInMilliseconds = averageIntervalInMilliseconds * i;
+      // Calculate the target timestamp for the next transaction in UTC+07
+      const nextTransactionTimestamp = moment(startTime).add(transactionDelayInMilliseconds, 'milliseconds');
+
+      // Calculate how long to wait from now until the next transaction should be created
+      const now = moment();
+      const delayInMilliseconds = nextTransactionTimestamp.diff(now);
+
+      console.log(`Transaction ${i + 1} will be created at ${nextTransactionTimestamp.format('YYYY-MM-DD HH:mm:ss')} (UTC+07) with a delay of ${delayInMilliseconds / 1000} seconds.`);
+
+      // Wait for the calculated delay before creating the next transaction
+      await delay(delayInMilliseconds);
+
       let finalName = null;
       let finalUserId = null;
       let finalUserIdNero = null;
 
       const ref_id = uuidv4();
       const transaction_id = uuidv4();
+      const merchant_id = uuidv4();
       const userIdLength = Math.random() < 0.5 ? 9 : 16;
       finalUserId = Math.floor(Math.random() * Math.pow(10, userIdLength))
         .toString()
@@ -1086,7 +1166,6 @@ exports.simulateMultiplePayments = async (numberOfTransactions) => {
 
       const randomUser = await getRandomUser();
       finalUserIdNero = randomUser.id;
-
       const numberDictionary = NumberDictionary.generate({
         min: 100,
         max: 999
@@ -1096,21 +1175,25 @@ exports.simulateMultiplePayments = async (numberOfTransactions) => {
       };
       finalName = uniqueNamesGenerator(configNames);
 
-      const payment_method = "QRIS";
-      const nmid = "simulatedMerchantID";
+      
+
+      const payment_method = "Qris";
+      const nmid = "omegapremium";
       const phone_number = await getRandomIndonesianPhoneNumber();
 
       const selectedGame = getRandomElement(dummyPackage.dummyUniplay.response.list_dtu);
       const selectedPackage = getRandomElement(selectedGame.denom);
       const amount = parseInt(selectedPackage.price);
+      const fee = amount * 0.05;
       const packageName = selectedPackage.package;
-
+      finalUserId = generateUserId(selectedGame.name);
       console.log('Selected game:', selectedGame);
       console.log('Selected package:', selectedPackage);
 
       let dto = {
         ref_id: ref_id,
         transaction_id: transaction_id,
+        merchant_id: merchant_id,
         amount: amount,
         user_id: finalUserId,
         name: finalName,
@@ -1121,7 +1204,7 @@ exports.simulateMultiplePayments = async (numberOfTransactions) => {
         payment_status: 'Pending', // Initial status
         package: packageName,
         game_id: selectedGame.name,
-        fee: null,
+        fee: fee,
         fee_reff: null,
         inquiry_id: null,
         user_id_nero: finalUserIdNero,
@@ -1142,7 +1225,7 @@ exports.simulateMultiplePayments = async (numberOfTransactions) => {
           console.log(`Attempting to update status for transaction_id: ${transaction_id}`);
           
           // 20% chance for 'Pending', otherwise 'Success'
-          const paymentStatus = Math.random() < 0.2 ? 'Pending' : 'Success';
+          const paymentStatus = Math.random() < 0.2 ? 'Pending' : 'success';
           
           await exports.updateSimulatedPaymentStatus(transaction_id, paymentStatus);
           
@@ -1171,6 +1254,23 @@ exports.updateSimulatedPaymentStatus = async (transaction_id, status) => {
     if (!simulatedPayment) {
       console.error(`Simulated payment with transaction_id ${transaction_id} not found.`);
       return;
+    }
+
+    if (status === 'success') {
+      const paymentDate = moment().format('YYYY-MM-DD HH:mm:ss'); // Current date and time
+
+      // Use user_id from the simulated payment record to generate the encoded ID
+      const userId = simulatedPayment.user_id;
+
+      // Generate order_id_uniplay and inquiry_id in the provided Base64 format
+      const orderIdUniplay = generateEncodedId('Order', userId, 'Order');  // Base64 for order
+      const inquiryId = generateEncodedId('Inquiry', userId, 'Inquiry');  // Base64 for inquiry
+
+      simulatedPayment.payment_date = paymentDate;
+      simulatedPayment.order_id_uniplay = orderIdUniplay;
+      simulatedPayment.inquiry_id = inquiryId;
+
+      console.log(`Generated payment_date: ${paymentDate}, order_id_uniplay: ${orderIdUniplay}, inquiry_id: ${inquiryId}`);
     }
 
     simulatedPayment.payment_status = status;
