@@ -21,10 +21,7 @@ exports.topUp = async (req, res, next) => {
         const getCodeName = getCodeUtil(payload.payment_method, payload.code);
         payload.name = checkUser?.username;
 
-        const result = await SPNGATEWAY.createTrxPayment(payload);
-
-        console.log(result);
-        
+        const result = await SPNGATEWAY.createTrxPayment(payload);        
 
         if (!result) {
             return next(createError.InternalServerError('Empty Response From SPNPAY!'));
