@@ -23,6 +23,13 @@ exports.topUp = async (req, res, next) => {
 
         const result = await SPNGATEWAY.createTrxPayment(payload);
 
+        console.log(result);
+        
+
+        if (!result) {
+            return next(createError.InternalServerError('Empty Response From SPNPAY!'));
+        }
+
         payload.user_id = checkUser?.id;
         payload.code = getCodeName.code;
         payload.code_name = getCodeName.code_name;
@@ -43,6 +50,7 @@ exports.topUp = async (req, res, next) => {
             data: result
         })
     } catch (error) {
+        console.log('error', error);
         // await t.rollback()
         return next(error)
     }
@@ -87,6 +95,8 @@ exports.callback = async (req, res, next) => {
             data: payload
         })
     } catch (error) {
+        console.log('error', error);
+        
         await t.rollback()
         return next(error)
     }

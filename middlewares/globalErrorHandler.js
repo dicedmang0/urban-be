@@ -23,7 +23,7 @@ function globalErrorHandler(err, req, res, next) {
   // Response JSON for other types of errors
   res.json({
     status: statusCode,
-    message: err?.message ?? err,
+    message: err?.response?.data?.message ?? err?.response?.data?.responseMessage ?? err?.message ?? err,
     ...(req.app.get('env') === 'development' && { stack: err.stack })
   });
 }

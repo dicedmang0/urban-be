@@ -15,6 +15,7 @@ exports.bodyMethodSpnpay = (body) => {
                 viewName: body?.name,
                 additionalInfo: {
                     callback: callback_url,
+                    successRedirectUrl: "https://nerogames.id/profile",
                 }
             }
         case 'virtual-account':

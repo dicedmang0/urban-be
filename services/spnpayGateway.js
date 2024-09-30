@@ -25,7 +25,7 @@ class SPNGATEWAY {
         const signature = this.createSignatureBody(bodyMethod);
 
         const config = {
-            method: 'POST',
+            method: 'HEAD',
             maxBodyLength: Infinity,
             url: `${credential.SPNPAY_ENDPOINT}/${getPathUrl}`,
             headers: {
