@@ -1,5 +1,5 @@
 apps:
-  - name: nero
+  - name: urban
     script: ./app.js
     exec_mode: cluster
     instances: 1
