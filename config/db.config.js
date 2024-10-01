@@ -1,10 +1,10 @@
 require('dotenv').config();
 module.exports = {
-  HOST: process.env.DB_HOST || "34.124.207.224",
+  HOST: process.env.DB_HOST || "34.101.250.7",
   PORT: process.env.DB_PORT ||"5432",
-  USER: process.env.DB_USER ||"Nero-Admin",
-  PASSWORD: process.env.DB_PASSWORD ||"Neroadmin12",
-  DB: process.env.DB_DBNAME ||"Nero"
+  USER: process.env.DB_USER ||"Urban-Admin",
+  PASSWORD: process.env.DB_PASSWORD ||"Urbanadmin12",
+  DB: process.env.DB_DBNAME ||"Urban"
 };
 
 // require('dotenv').config();
