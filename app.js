@@ -30,6 +30,7 @@ const corsOptions = {
     'https://urban-umber-alpha.vercel.app',
     'http://127.0.0.1:3001',
     'https://urban-gaming.com',
+    'https://www.urban-gaming.com',
     'https://urban-games.vercel.app',
     'https://nerogames.id',
   ],
