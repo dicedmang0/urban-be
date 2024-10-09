@@ -32,7 +32,7 @@ const corsOptions = {
     'https://urban-gaming.com',
     'https://urban-games.vercel.app',
   ],
-  methods: 'GET,PUT,POST,DELETE',
+  methods: ['GET','PUT','POST','DELETE'],
   allowedHeaders: ['Content-Type', 'X-Access-Token'],
 };
 
