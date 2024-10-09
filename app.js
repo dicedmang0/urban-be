@@ -26,15 +26,10 @@ const app = express();
 // Configure CORS options
 const corsOptions = {
   origin: [
+    'https://urban-gaming.com',
     'https://advance-genre-425305-g1.web.app',
     'https://urban-umber-alpha.vercel.app',
-    'http://127.0.0.1:3001',
-    'https://urban-gaming.com/',
-    'https://urban-dashboard-git-main-dicedmang0s-projects.vercel.app',
-    'https://urban-dashboard-dicedmang0s-projects.vercel.app',
-    'https://urban-dashboard-dicedmang0s-projects.vercel.app/',
-    'https://urban-dashboard.vercel.app/',
-    'https://urban-dashboard.vercel.app'
+    'http://127.0.0.1:3001'
 
   ], // Replace with your desired origin & add FE URL
   methods: 'GET,PUT,POST,DELETE',
