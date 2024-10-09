@@ -34,8 +34,8 @@ const corsOptions = {
     'https://advance-genre-425305-g1.web.app',
     'https://urban-umber-alpha.vercel.app',
     'http://127.0.0.1:3001',
-    'https://urban-gaming.com',
-    'https://urban-dashboard.vercel.app'
+    'https://urban-gaming.com/',
+    'https://urban-dashboard.vercel.app/'
 
   ], // Replace with your desired origin & add FE URL
   methods: 'GET,PUT,POST,DELETE',
