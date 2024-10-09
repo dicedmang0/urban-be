@@ -26,10 +26,7 @@ const app = express();
 // Configure CORS options
 const corsOptions = {
   origin: [
-    'http://127.0.0.1:3001',
-    'https://urban-gaming.com/login',
-    'https://advance-genre-425305-g1.web.app',
-    'https://urban-umber-alpha.vercel.app'
+    '*'
   ], // Replace with your desired origin & add FE URL
   methods: 'GET,PUT,POST,DELETE',
   allowedHeaders: ['Content-Type', 'X-Access-Token']
