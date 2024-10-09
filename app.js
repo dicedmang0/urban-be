@@ -33,7 +33,7 @@ const corsOptions = {
     'https://urban-games.vercel.app',
     'https://nerogames.id',
   ],
-  methods: ['GET','PUT','POST','DELETE'],
+  methods: ['GET','PUT','POST','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type', 'X-Access-Token'],
 };
 
