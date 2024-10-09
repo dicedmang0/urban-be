@@ -30,13 +30,12 @@ const corsOptions = {
     'https://urban-umber-alpha.vercel.app',
     'http://127.0.0.1:3001',
     'https://urban-gaming.com',
-    'urban-gaming.com',
     'https://urban-dashboard-git-main-dicedmang0s-projects.vercel.app',
     'https://urban-dashboard-dicedmang0s-projects.vercel.app',
     'https://urban-dashboard-dicedmang0s-projects.vercel.app/',
     'https://urban-dashboard.vercel.app/',
-    'https://urban-dashboard.vercel.app'
-
+    'https://urban-dashboard.vercel.app',
+    'https://urban-games.vercel.app'
   ], // Replace with your desired origin & add FE URL
   methods: 'GET,PUT,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'X-Access-Token'],
@@ -46,16 +45,6 @@ const corsOptions = {
 // Use CORS middleware with options
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-    return res.status(200).json({});
-  }
-  next();
-});
 
 app.use(bodyParser.json());
 
