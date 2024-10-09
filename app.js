@@ -38,7 +38,8 @@ const corsOptions = {
 
   ], // Replace with your desired origin & add FE URL
   methods: 'GET,PUT,POST,DELETE',
-  allowedHeaders: ['Content-Type', 'X-Access-Token']
+  allowedHeaders: ['Content-Type', 'X-Access-Token'],
+  credentials: true
 };
 
 // Use CORS middleware with options
