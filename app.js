@@ -32,6 +32,7 @@ const corsOptions = {
     'https://urban-gaming.com/',
     'https://urban-dashboard-git-main-dicedmang0s-projects.vercel.app',
     'https://urban-dashboard-dicedmang0s-projects.vercel.app',
+    'https://urban-dashboard-dicedmang0s-projects.vercel.app/',
     'https://urban-dashboard.vercel.app/',
     'https://urban-dashboard.vercel.app'
 
